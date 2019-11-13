@@ -1,0 +1,104 @@
+{
+    "Framework": {
+        "basePath": "\/sw6\/vendor\/shopware\/core\/Framework\/",
+        "views": [
+            "Resources\/views"
+        ],
+        "administration": {
+            "path": "Resources\/administration",
+            "entryFilePath": null,
+            "webpack": null
+        },
+        "storefront": {
+            "path": "Resources\/storefront",
+            "entryFilePath": null,
+            "webpack": null
+        }
+    },
+    "System": {
+        "basePath": "\/sw6\/vendor\/shopware\/core\/System\/",
+        "views": [
+            "Resources\/views"
+        ],
+        "administration": {
+            "path": "Resources\/app\/administration",
+            "entryFilePath": null,
+            "webpack": null
+        },
+        "storefront": {
+            "path": "Resources\/app\/storefront",
+            "entryFilePath": null,
+            "webpack": null
+        }
+    },
+    "Content": {
+        "basePath": "\/sw6\/vendor\/shopware\/core\/Content\/",
+        "views": [
+            "Resources\/views"
+        ],
+        "administration": {
+            "path": "Resources\/app\/administration",
+            "entryFilePath": null,
+            "webpack": null
+        },
+        "storefront": {
+            "path": "Resources\/app\/storefront",
+            "entryFilePath": null,
+            "webpack": null
+        }
+    },
+    "Checkout": {
+        "basePath": "\/sw6\/vendor\/shopware\/core\/Checkout\/",
+        "views": [
+            "Resources\/views"
+        ],
+        "administration": {
+            "path": "Resources\/administration",
+            "entryFilePath": null,
+            "webpack": null
+        },
+        "storefront": {
+            "path": "Resources\/storefront",
+            "entryFilePath": null,
+            "webpack": null
+        }
+    },
+
+    "Administration": {
+        "basePath": "\/sw6\/vendor\/shopware\/administration\/",
+        "views": [
+            "Resources\/views"
+        ],
+        "administration": {
+            "path": "Resources\/app\/administration\/src",
+            "entryFilePath": null,
+            "webpack": null
+        },
+        "storefront": {
+            "path": "Resources\/app\/storefront\/src",
+            "entryFilePath": null,
+            "webpack": null,
+            "styleFiles": []
+        }
+    },
+    "Storefront": {
+        "basePath": "\/sw6\/vendor\/shopware\/storefront\/",
+        "views": [
+            "Resources\/views"
+        ],
+        "administration": {
+            "path": "Resources\/app\/administration\/src",
+            "entryFilePath": "Resources\/app\/administration\/src\/main.js",
+            "webpack": null
+        },
+        "storefront": {
+            "path": "Resources\/app\/storefront\/src",
+            "entryFilePath": "Resources\/app\/storefront\/src\/main.js",
+            "webpack": null,
+            "styleFiles": [
+                "\/sw6\/vendor\/shopware\/storefront\/Resources\/app\/storefront\/src\/scss\/base.scss",
+                "@Plugins"
+            ]
+        }
+    }
+}

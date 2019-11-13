@@ -1,0 +1,44 @@
+#override defaults for dev
+version: "3.7"
+
+services:
+  app_server:
+    build: .
+    links:
+      - mysql
+    ports:
+      - 8000:8080
+    env_file: .env
+    environment:
+      - SHOPWARE_SES_ENABLED=0
+      - SHOPWARE_SES_HOSTS=elasticsearch:9200
+      - SHOPWARE_SES_INDEXING_ENABLED=0
+      - SHOPWARE_SES_INDEX_PREFIX=
+      - SHOPWARE_HTTP_CACHE_ENABLED=
+      - SHOPWARE_HTTP_DEFAULT_TTL=
+      - JWT_PRIVATE_KEY_PASSPHRASE="shopware"
+      - APP_SECRET=8583a6ff63c5894a3195331701749943
+    volumes:
+      - "./config/keys/jwt:/sw6/config/keys/jwt"
+      - "./bin:/sw6/bin"
+      - "./public:/sw6/public"
+      - "./src:/sw6/src"
+      - "./var:/sw6/var"
+      - "./vendor:/sw6/vendor"
+
+  mysql:
+    image: mysql:5.7
+    tmpfs:
+      - /var/lib/mysql:uid=999,gid=999
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+
+  adminer:
+    image: adminer
+    restart: always
+    links:
+      - mysql
+    environment:
+      - ADMINER_DESIGN=pepa-linha
+    ports:
+      - 8888:8080

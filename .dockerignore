@@ -1,0 +1,9 @@
+/vendor
+/var
+/.*
+**/*.git
+
+/config/keys
+
+docker-compose.yml
+docker-compose.override.yml

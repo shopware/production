@@ -1,0 +1,40 @@
+{
+    "name": "shopware/production",
+    "type": "project",
+    "license": "MIT",
+    "config": {
+        "optimize-autoloader": true
+    },
+    "prefer-stable": true,
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-4": {
+            "Shopware\\Production\\": "src/"
+        }
+    },
+    "require": {
+        "php": "~7.2",
+        "ocramius/package-versions": "1.4.0",
+        "shopware/core": "dev-master#65bff6613f49b479c374d24456a8c320a451084e",
+        "shopware/administration": "dev-master#b85b7277ef676a40f70a53f7a6261aa9c5873fe5",
+        "shopware/storefront": "dev-master#648ad1f95c9181cc3ea1fb49e32b002c82c5e7d7",
+        "shopware/elasticsearch": "dev-master#ccee8c793cb814eaadfcc6d098d1163c9506c075"
+    },
+    "require-dev": {
+        "ext-tokenizer": "*",
+        "ext-xmlwriter": "*",
+        "bheller/images-generator": "~1.0.1",
+        "fzaninotto/faker": "~1.8.0",
+        "johnkary/phpunit-speedtrap": "~3.1.0",
+        "league/flysystem-memory": "~1.0.2",
+        "mbezhanov/faker-provider-collection": "~1.2.1",
+        "phpunit/phpunit": "~8.3.4",
+        "smalot/pdfparser": "~0.14.0",
+        "symfony/browser-kit": "~4.3",
+        "symfony/dependency-injection": "~4.3",
+        "symfony/phpunit-bridge": "~4.3",
+        "symfony/stopwatch": "~4.3",
+        "symfony/var-dumper": "~4.3",
+        "symfony/web-profiler-bundle": "~4.3"
+    }
+}
