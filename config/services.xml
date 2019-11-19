@@ -13,6 +13,24 @@
             <tag name="console.command"/>
         </service>
 
+        <service id="Shopware\Production\Command\SystemCheckCommand">
+            <tag name="console.command"/>
+        </service>
+
+        <service id="Shopware\Production\Command\SystemUpdatePrepareCommand">
+            <tag name="console.command"/>
+        </service>
+
+        <service id="Shopware\Production\Command\SystemUpdateFinishCommand">
+            <argument type="service" id="event_dispatcher" />
+            <argument type="string">%kernel.project_dir%</argument>
+            <tag name="console.command"/>
+        </service>
+
+        <service id="Shopware\Production\Command\SystemMaintenanceCommand">
+            <argument type="service" id="event_dispatcher" />
+        </service>
+
         <service class="League\OAuth2\Server\CryptKey" id="shopware.private_key">
             <argument>%kernel.project_dir%/config/keys/jwt/private.pem</argument>
             <argument>%env(string:JWT_PRIVATE_KEY_PASSPHRASE)%</argument>

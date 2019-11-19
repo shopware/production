@@ -26,6 +26,7 @@ class SystemSetupCommand extends Command
             ->addOption('generate-jwt-keys', null, InputOption::VALUE_NONE, 'Generate jwt private and public key')
             ->addOption('jwt-passphrase', null, InputOption::VALUE_OPTIONAL, 'JWT private key passphrase', 'shopware')
         ;
+        $this->addOption('force', 'f', InputOption::VALUE_NONE, 'Force setup');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
