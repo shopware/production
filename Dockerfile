@@ -11,10 +11,8 @@ RUN apk --no-cache add \
         php7-mysqli php7-openssl php7-openssl php7-pdo php7-pdo_mysql php7-phar php7-phar \
         php7-session php7-simplexml php7-tokenizer php7-xml php7-xml php7-xmlreader php7-xmlwriter \
         php7-zip php7-zlib php7-zlib \
-    && adduser -u 1000 -D -h $PROJECT_ROOT sw6 sw6
-
-# Remove default server definition
-RUN rm /etc/nginx/conf.d/default.conf
+    && adduser -u 1000 -D -h $PROJECT_ROOT sw6 sw6 \
+    && rm /etc/nginx/conf.d/default.conf
 
 # Copy system configs
 COPY config/etc /etc
@@ -29,7 +27,7 @@ WORKDIR $PROJECT_ROOT
 
 ADD config/plugins.json $PROJECT_ROOT/var/plugins.json
 ADD composer.* $PROJECT_ROOT/
-ADD bin/build.sh $PROJECT_ROOT/bin/build.sh
+ADD bin/build*.sh $PROJECT_ROOT/bin/
 
 RUN apk add --no-cache bash git composer npm \
     && bin/build.sh \
@@ -39,6 +37,8 @@ RUN apk add --no-cache bash git composer npm \
 USER sw6
 
 ADD --chown=sw6 . .
+
+RUN bin/console assets:install
 
 # Expose the port nginx is reachable on
 EXPOSE 8080

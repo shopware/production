@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shopware\Production\Command;
 
 use Shopware\Core\Framework\Console\ShopwareStyle;
+use Shopware\Production\Kernel;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
@@ -27,15 +28,15 @@ class SystemUpdatePrepareCommand extends Command
             ->addOption('deactivate-plugins', null, InputOption::VALUE_NONE, 'Deactivate all plugins.');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $output = new ShopwareStyle($input, $output);
 
         $params = parse_url($_SERVER['DATABASE_URL']);
 
-        if ($params['host'] === '_placeholder.test') {
+        if ($params['host'] === Kernel::PLACEHOLDER_DATABASE_URL) {
             $output->error("Environment variable 'DATABASE_URL' not defined. \nPlease create an .env by running 'bin/console system:setup' or pass it manually");
-            return -1;
+            return 1;
         }
 
         $output->writeln('Run Update preparations');
@@ -65,7 +66,7 @@ class SystemUpdatePrepareCommand extends Command
             //$updateEvent = new UpdatePreparationEvent(Context::createDefaultContext());
             //$this->eventDispatcher->dispatch($updateEvent);
         } catch(\Throwable $e) {
-            $result = -1;
+            $result = 1;
         }
 
         return $result;
@@ -92,20 +93,20 @@ class SystemUpdatePrepareCommand extends Command
     {
         $output->writeln('Check requirements');
 
-        return -1;
+        return 1;
     }
 
     private function enableMaintenanceMode(InputInterface $input, OutputInterface $output): int
     {
         $output->writeln('Enable maintenance mode');
 
-        return -1;
+        return 1;
     }
 
     private function deactivatePlugins(InputInterface $input, OutputInterface $output): int
     {
         $output->writeln('Deactivate plugins');
 
-        return -1;
+        return 1;
     }
 }

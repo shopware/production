@@ -3,7 +3,7 @@
 /.*
 **/*.git
 
-/config/keys
+/config/jwt
 
 docker-compose.yml
 docker-compose.override.yml

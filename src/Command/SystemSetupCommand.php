@@ -29,7 +29,7 @@ class SystemSetupCommand extends Command
         $this->addOption('force', 'f', InputOption::VALUE_NONE, 'Force setup');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $env = [];
 
@@ -91,7 +91,7 @@ class SystemSetupCommand extends Command
 
         $this->createEnvFile($input, $io, $env);
 
-        return null;
+        return 0;
     }
 
     private function getDsn(InputInterface $input, OutputInterface $io): string

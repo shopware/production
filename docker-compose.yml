@@ -8,23 +8,25 @@ services:
       - mysql
     ports:
       - 8000:8080
-    env_file: .env
     environment:
-      - SHOPWARE_SES_ENABLED=0
-      - SHOPWARE_SES_HOSTS=elasticsearch:9200
-      - SHOPWARE_SES_INDEXING_ENABLED=0
-      - SHOPWARE_SES_INDEX_PREFIX=
-      - SHOPWARE_HTTP_CACHE_ENABLED=
-      - SHOPWARE_HTTP_DEFAULT_TTL=
-      - JWT_PRIVATE_KEY_PASSPHRASE="shopware"
+      - DATABASE_URL=mysql://root:root@mysql:3306/prod_test
+      - APP_URL=http://localhost:8000
       - APP_SECRET=8583a6ff63c5894a3195331701749943
+      - APP_ENV=dev
+      - INSTANCE_ID=
+      - SHOPWARE_ES_ENABLED=0
+      - SHOPWARE_ES_HOSTS=elasticsearch:9200
+      - SHOPWARE_ES_INDEXING_ENABLED=0
+      - SHOPWARE_ES_INDEX_PREFIX=
+      - SHOPWARE_HTTP_CACHE_ENABLED=0
+      - SHOPWARE_HTTP_DEFAULT_TTL=
     volumes:
-      - "./config/keys/jwt:/sw6/config/keys/jwt"
-      - "./bin:/sw6/bin"
+      - "./config/jwt:/sw6/config/jwt"
       - "./public:/sw6/public"
+      - "./bin:/sw6/bin"
       - "./src:/sw6/src"
       - "./var:/sw6/var"
-      - "./vendor:/sw6/vendor"
+      #- "./vendor:/sw6/vendor"
 
   mysql:
     image: mysql:5.7

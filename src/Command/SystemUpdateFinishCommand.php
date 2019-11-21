@@ -45,7 +45,7 @@ class SystemUpdateFinishCommand extends Command
         $this->addOption('no-stop-maintenance', null, InputOption::VALUE_NONE, 'Dont stop maintenance');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->io = new ShopwareStyle($input, $output);
         $envFile = $this->projectDir . '/.env';

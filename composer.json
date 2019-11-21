@@ -12,17 +12,28 @@
             "Shopware\\Production\\": "src/"
         }
     },
+
+    "scripts": {
+        "pre-install-cmd": [
+            "test ! -r vendor/autoload.php || bin/console system:update:prepare"
+        ],
+        "post-install-cmd": [
+            "bin/console system:update:finish || true"
+        ]
+    },
+
     "require": {
         "php": "~7.2",
         "ocramius/package-versions": "1.4.0",
-        "shopware/core": "dev-master#65bff6613f49b479c374d24456a8c320a451084e",
-        "shopware/administration": "dev-master#b85b7277ef676a40f70a53f7a6261aa9c5873fe5",
-        "shopware/storefront": "dev-master#648ad1f95c9181cc3ea1fb49e32b002c82c5e7d7",
-        "shopware/elasticsearch": "dev-master#ccee8c793cb814eaadfcc6d098d1163c9506c075"
+        "shopware/core": "dev-master#176813377a5f94be433aafea1ca55234c1d2ea9b",
+        "shopware/administration": "dev-master#69b633fec5e01508817fc21161beae28afec3df6",
+        "shopware/storefront": "dev-master#05072a95bd03a7100f9c9611d1593ea73b5a26de",
+        "shopware/elasticsearch": "dev-master#05c6e4575b391148eb75de456c582ad7893601ec"
     },
     "require-dev": {
         "ext-tokenizer": "*",
         "ext-xmlwriter": "*",
+        "ext-openssl": "*",
         "bheller/images-generator": "~1.0.1",
         "fzaninotto/faker": "~1.8.0",
         "johnkary/phpunit-speedtrap": "~3.1.0",
@@ -35,6 +46,8 @@
         "symfony/phpunit-bridge": "~4.3",
         "symfony/stopwatch": "~4.3",
         "symfony/var-dumper": "~4.3",
-        "symfony/web-profiler-bundle": "~4.3"
+        "symfony/web-profiler-bundle": "~4.3",
+        "defuse/php-encryption": "~2.2.1",
+        "symfony/dom-crawler": "~4.3.8"
     }
 }

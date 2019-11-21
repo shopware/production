@@ -8,6 +8,7 @@ use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\FetchMode;
 use Shopware\Core\Framework\Console\ShopwareStyle;
+use Shopware\Production\Kernel;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
@@ -42,7 +43,7 @@ class SystemInstallCommand extends Command
             ->addOption('basic-setup', null, InputOption::VALUE_NONE, 'Create storefront sales channel and admin user');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->io = new ShopwareStyle($input, $output);
 
@@ -53,7 +54,7 @@ class SystemInstallCommand extends Command
 
         $params = parse_url($dsn);
 
-        if ($params['host'] === '_placeholder.test') {
+        if ($params['host'] === Kernel::PLACEHOLDER_DATABASE_URL) {
             $this->io->error("Environment variable 'DATABASE_URL' not defined. \nPlease create an .env by running 'bin/console system:setup' or pass it manually");
             return -1;
         }
@@ -87,7 +88,7 @@ class SystemInstallCommand extends Command
         $createDatabase = $input->getOption('create-database') || $dropDatabase;
         if ($createDatabase) {
             $connection->executeUpdate('CREATE DATABASE IF NOT EXISTS `' . $dbName . '`');
-            $this->io->writeln('Create database `' . $dbName . '`');
+            $this->io->writeln('Created database `' . $dbName . '`');
         }
 
         $connection->exec('USE `' . $dbName . '`');
@@ -153,7 +154,7 @@ class SystemInstallCommand extends Command
 
         $this->runCommands($commands, $this->io);
 
-        return null;
+        return 0;
     }
 
     /**

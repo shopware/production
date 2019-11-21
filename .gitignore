@@ -30,6 +30,3 @@
 /platform/
 
 .env
-/public/bundles/
-/var
-!/var/.gitkeep

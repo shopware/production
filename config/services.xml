@@ -3,6 +3,10 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
+    <parameters>
+        <parameter key="jwt_private_key_passphrase_default">shopware</parameter>
+    </parameters>
+
     <services>
         <service id="Shopware\Production\Command\SystemInstallCommand">
             <argument type="string">%kernel.project_dir%</argument>
@@ -32,12 +36,12 @@
         </service>
 
         <service class="League\OAuth2\Server\CryptKey" id="shopware.private_key">
-            <argument>%kernel.project_dir%/config/keys/jwt/private.pem</argument>
-            <argument>%env(string:JWT_PRIVATE_KEY_PASSPHRASE)%</argument>
+            <argument>%kernel.project_dir%/config/jwt/private.pem</argument>
+            <argument>%env(string:default:jwt_private_key_passphrase_default:JWT_PRIVATE_KEY_PASSPHRASE)%</argument>
         </service>
 
         <service class="League\OAuth2\Server\CryptKey" id="shopware.public_key">
-            <argument>%kernel.project_dir%/config/keys/jwt/public.pem</argument>
+            <argument>%kernel.project_dir%/config/jwt/public.pem</argument>
         </service>
     </services>
 </container>

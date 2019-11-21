@@ -39,7 +39,7 @@ class SystemMaintenanceCommand extends Command
         // admin?
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->io = $output = new ShopwareStyle($input, $output);
 
@@ -56,6 +56,6 @@ class SystemMaintenanceCommand extends Command
                 $output->writeln('System is currently not in maintenance mode');
         }
 
-        return null;
+        return 0;
     }
 }

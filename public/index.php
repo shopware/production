@@ -19,11 +19,14 @@ if (!isset($_SERVER['APP_ENV']) && !isset($_ENV['APP_ENV'])) {
     if (!class_exists(Dotenv::class)) {
         throw new \RuntimeException('APP_ENV environment variable is not defined. You need to define environment variables for configuration or add "symfony/dotenv" as a Composer dependency to load variables from a .env file.');
     }
-    (new Dotenv(true))->load(__DIR__.'/../.env');
+    $envFile = __DIR__.'/../.env';
+    if (file_exists($envFile)) {
+        (new Dotenv(true))->load($envFile);
+    }
 }
 
-$env = $_SERVER['APP_ENV'] ?? $_ENV['APP_ENV'] ?? 'dev';
-$debug = (bool) ($_SERVER['APP_DEBUG'] ?? $_ENV['APP_DEBUG'] ?? ('prod' !== $env));
+$appEnv = $_SERVER['APP_ENV'] ?? $_ENV['APP_ENV'] ?? 'dev';
+$debug = (bool) ($_SERVER['APP_DEBUG'] ?? $_ENV['APP_DEBUG'] ?? ('prod' !== $appEnv));
 
 if ($debug) {
     umask(0000);
@@ -43,7 +46,7 @@ if ($trustedHosts = $_SERVER['TRUSTED_HOSTS'] ?? $_ENV['TRUSTED_HOSTS'] ?? false
 $request = Request::createFromGlobals();
 $connection = Kernel::getConnection();
 
-if ($env === 'dev') {
+if ($appEnv === 'dev') {
     $connection->getConfiguration()->setSQLLogger(
         new \Shopware\Core\Profiling\Doctrine\DebugStack()
     );
@@ -54,7 +57,7 @@ try {
 
     $pluginLoader = new DbalKernelPluginLoader($classLoader, null, $connection);
 
-    $kernel = new Kernel($env, $debug, $pluginLoader, $shopwareVersion, $connection);
+    $kernel = new Kernel($appEnv, $debug, $pluginLoader, $_SERVER['SW_CACHE_ID'] ?? null, $shopwareVersion);
     $kernel->boot();
 
     // resolves seo urls and detects storefront sales channels
