@@ -4,7 +4,7 @@ ENV COMPOSER_HOME=/var/cache/composer
 ENV PROJECT_ROOT=/sw6
 
 RUN apk --no-cache add \
-        nginx supervisor curl \
+        nginx supervisor curl zip rsync \
         php7 php7-fpm \
         php7-ctype php7-curl php7-curl php7-dom php7-dom php7-fileinfo php7-gd php7-gd \
         php7-iconv php7-intl php7-intl php7-json php7-json php7-mbstring php7-mbstring \
@@ -30,6 +30,7 @@ ADD composer.* $PROJECT_ROOT/
 ADD bin/build*.sh $PROJECT_ROOT/bin/
 
 RUN apk add --no-cache bash git composer npm \
+    && composer global require hirak/prestissimo \
     && bin/build.sh \
     && apk del bash git composer npm \
     && chown -R sw6:sw6 $PROJECT_ROOT
@@ -38,7 +39,7 @@ USER sw6
 
 ADD --chown=sw6 . .
 
-RUN bin/console assets:install
+RUN bin/console assets:install && rm -Rf var/cache
 
 # Expose the port nginx is reachable on
 EXPOSE 8080

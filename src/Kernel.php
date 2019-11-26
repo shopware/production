@@ -74,7 +74,7 @@ class Kernel extends \Shopware\Core\Kernel
 
         $reflection = new \ReflectionMethod(\Shopware\Core\Kernel::class, 'initializeDatabaseConnectionVariables');
         if (!$reflection->isPrivate()) {
-            parent::initializeDatabaseConnectionVariables();
+            call_user_func('parent::initializeDatabaseConnectionVariables');
         }
 
         // TODO: remove

@@ -26,6 +26,7 @@ services:
       - "./bin:/sw6/bin"
       - "./src:/sw6/src"
       - "./var:/sw6/var"
+      - "./artifacts:/artifacts"
       #- "./vendor:/sw6/vendor"
 
   mysql:

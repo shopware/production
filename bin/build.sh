@@ -18,5 +18,5 @@ composer clearcache
 npm cache clean --force
 
 rm -Rf vendor/shopware/{core,administration,storefront,elasticsearch}/.git
-rm -Rf vendor/shopware/administration/Resources/{,app/administration/,common/webpack-plugin-injector/}/node_modules
+rm -Rf vendor/shopware/administration/Resources/{,app/administration/,app/common/webpack-plugin-injector/}/node_modules
 rm -Rf vendor/shopware/storefront/Resources/app/storefront/node_modules

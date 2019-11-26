@@ -45,9 +45,11 @@ class SystemUpdateFinishCommand extends Command
         $this->addOption('no-stop-maintenance', null, InputOption::VALUE_NONE, 'Dont stop maintenance');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): int
+    protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->io = new ShopwareStyle($input, $output);
+
+        // TODO: dont require .env file but DATABASE_URL
         $envFile = $this->projectDir . '/.env';
         if (!is_readable($envFile) || is_dir($envFile)) {
             $this->io->error("No .env found. \nPlease create one or run 'bin/console system:setup'");
@@ -60,7 +62,7 @@ class SystemUpdateFinishCommand extends Command
 
         $this->runMigrations($input, $this->io);
 
-        // TODO: try activating all plugins
+        // TODO: activate all plugins and reboot kernel
 
         $updateEvent = new UpdateFinishedEvent(Context::createDefaultContext());
         $this->eventDispatcher->dispatch($updateEvent);

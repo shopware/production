@@ -5,5 +5,7 @@
 
 /config/jwt
 
+/artifacts
+
 docker-compose.yml
 docker-compose.override.yml

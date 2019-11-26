@@ -25,10 +25,10 @@
     "require": {
         "php": "~7.2",
         "ocramius/package-versions": "1.4.0",
-        "shopware/core": "dev-master#176813377a5f94be433aafea1ca55234c1d2ea9b",
-        "shopware/administration": "dev-master#69b633fec5e01508817fc21161beae28afec3df6",
-        "shopware/storefront": "dev-master#05072a95bd03a7100f9c9611d1593ea73b5a26de",
-        "shopware/elasticsearch": "dev-master#05c6e4575b391148eb75de456c582ad7893601ec"
+        "shopware/core": "dev-master#35f33778e4b863201368d99b01d02ec07b0e6a38",
+        "shopware/administration": "dev-master#a07475cebfd363dde84b762b017c7ca34b6d2e47",
+        "shopware/storefront": "dev-master#5d5352a73ad257ebfbfe79e3b1fc82f50e2adc86",
+        "shopware/elasticsearch": "dev-master#d8ae89c8ef4fc853b6eafca3ca827b6ee7ba3d68"
     },
     "require-dev": {
         "ext-tokenizer": "*",
