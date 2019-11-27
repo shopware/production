@@ -69,7 +69,7 @@ class SystemSetupCommand extends Command
         $env['APP_SECRET'] = $key->saveToAsciiSafeString();
 
         // TODO: generate
-        $env['INSTANCE_ID'] = '';
+        $env['INSTANCE_ID'] = $this->generateInstanceId();
 
         $io->section('Database information');
 
@@ -167,14 +167,16 @@ class SystemSetupCommand extends Command
         file_put_contents($envFile, $envVars);
     }
 
+    // TODO: refactor into separate command
     private function generateJwt(InputInterface $input, OutputStyle $io): int
     {
-        $jwtDir = $_SERVER['PROJECT_ROOT'] . '/config/keys/jwt';
+        $jwtDir = $_SERVER['PROJECT_ROOT'] . '/config/jwt';
 
         if (!file_exists($jwtDir) && !mkdir($jwtDir, 0700, true) && !is_dir($jwtDir)) {
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $jwtDir));
         }
 
+        // TODO: make it regenerate the public key if only private exists
         if (file_exists($jwtDir . '/private.pem') && !$input->getOption('force')) {
             $io->note('Private/Public key already exists. Skipping');
             return 0;
@@ -206,5 +208,19 @@ class SystemSetupCommand extends Command
         chmod($jwtDir . '/public.pem', 0660);
 
         return 0;
+    }
+
+    private function generateInstanceId(): string
+    {
+        $length = 32;
+        $keySpace = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+        $str = '';
+        $max = mb_strlen($keySpace, '8bit') - 1;
+        for ($i = 0; $i < $length; ++$i) {
+            $str .= $keySpace[random_int(0, $max)];
+        }
+
+        return $str;
     }
 }

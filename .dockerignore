@@ -1,5 +1,6 @@
 /vendor
 /var
+!/var/plugins.json
 /.*
 **/*.git
 
@@ -9,3 +10,5 @@
 
 docker-compose.yml
 docker-compose.override.yml
+
+/platform
