@@ -7,7 +7,7 @@ namespace Shopware\Production\Command;
 use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\FetchMode;
-use Shopware\Core\Framework\Console\ShopwareStyle;
+use Shopware\Core\Framework\Adapter\Console\ShopwareStyle;
 use Shopware\Production\Kernel;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -87,7 +87,7 @@ class SystemInstallCommand extends Command
 
         $createDatabase = $input->getOption('create-database') || $dropDatabase;
         if ($createDatabase) {
-            $connection->executeUpdate('CREATE DATABASE IF NOT EXISTS `' . $dbName . '`');
+            $connection->executeUpdate('CREATE DATABASE IF NOT EXISTS `' . $dbName . '` CHARACTER SET `utf8mb4` COLLATE `utf8mb4_unicode_ci`');
             $this->io->writeln('Created database `' . $dbName . '`');
         }
 

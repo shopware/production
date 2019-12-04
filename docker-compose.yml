@@ -7,27 +7,31 @@ services:
     links:
       - mysql
     ports:
-      - 8000:8080
+      - 8000:8000
     environment:
-      - DATABASE_URL=mysql://root:root@mysql:3306/prod_test
+      - DATABASE_URL=mysql://root:root@mysql:3306/sw6
       - APP_URL=http://localhost:8000
       - APP_SECRET=8583a6ff63c5894a3195331701749943
-      - APP_ENV=dev
+      - APP_ENV=prod
       - INSTANCE_ID=
-      - SHOPWARE_ES_ENABLED=0
+      - SHOPWARE_ES_ENABLED=1
       - SHOPWARE_ES_HOSTS=elasticsearch:9200
-      - SHOPWARE_ES_INDEXING_ENABLED=0
-      - SHOPWARE_ES_INDEX_PREFIX=
-      - SHOPWARE_HTTP_CACHE_ENABLED=0
-      - SHOPWARE_HTTP_DEFAULT_TTL=
+      - SHOPWARE_ES_INDEXING_ENABLED=1
+      - SHOPWARE_ES_INDEX_PREFIX=sw
+      - SHOPWARE_HTTP_CACHE_ENABLED=1
+      - SHOPWARE_HTTP_DEFAULT_TTL=7200
     volumes:
       - "./config/jwt:/sw6/config/jwt"
-      - "./public:/sw6/public"
-      - "./bin:/sw6/bin"
-      - "./src:/sw6/src"
-      - "./var:/sw6/var"
       - "./artifacts:/artifacts"
+      #- "./public:/sw6/public"
+      #- "./var:/sw6/var"
+      #- "./bin:/sw6/bin"
+      #- "./src:/sw6/src"
       #- "./vendor:/sw6/vendor"
+      #- "./platform/src/Core:/sw6/vendor/shopware/core"
+      #- "./platform/src/Administration:/sw6/vendor/shopware/administration"
+      #- "./platform/src/Elasticsearch:/sw6/vendor/shopware/elasticsearch"
+      #- "./platform/src/Recovery:/sw6/vendor/shopware/recovery"
 
   mysql:
     image: mysql:5.7
@@ -36,12 +40,8 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=root
 
-  adminer:
-    image: adminer
-    restart: always
-    links:
-      - mysql
+  elasticsearch:
+    image: elastic/elasticsearch:7.1.1
     environment:
-      - ADMINER_DESIGN=pepa-linha
-    ports:
-      - 8888:8080
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - discovery.type=single-node

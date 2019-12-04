@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace Shopware\Production\Command;
 
-use Shopware\Core\Framework\Console\ShopwareStyle;
+use Shopware\Core\Framework\Adapter\Console\ShopwareStyle;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\Update\Event\UpdateFinishedEvent;
+use Shopware\Core\Framework\Update\Event\UpdatePostFinishEvent;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -40,12 +39,7 @@ class SystemUpdateFinishCommand extends Command
         $this->projectDir = $projectDir;
     }
 
-    protected function configure(): void
-    {
-        $this->addOption('no-stop-maintenance', null, InputOption::VALUE_NONE, 'Dont stop maintenance');
-    }
-
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->io = new ShopwareStyle($input, $output);
 
@@ -63,20 +57,17 @@ class SystemUpdateFinishCommand extends Command
         $this->runMigrations($input, $this->io);
 
         // TODO: activate all plugins and reboot kernel
-
-        $updateEvent = new UpdateFinishedEvent(Context::createDefaultContext());
+        // TODO: fix versions
+        $updateEvent = new UpdatePostFinishEvent(Context::createDefaultContext(), '', '');
         $this->eventDispatcher->dispatch($updateEvent);
+
+        // TODO: delete update assets
 
         $this->installAssets($input, $this->io);
 
-        if ($input->getOption('no-stop-maintenance')) {
-            return 0;
-        }
-
         $output->writeln('');
 
-        $command = $this->getApplication()->find('system:maintenance');
-        return $command->run(new ArrayInput(['action' => 'stop'], $command->getDefinition()), $output);
+        return 0;
     }
 
     private function runMigrations(InputInterface $input, OutputInterface $output): int

@@ -1,0 +1,77 @@
+variables:
+  DOCKER_DRIVER: overlay2
+  DOCKER_HOST: "tcp://docker:2375"
+  DOCKER_TLS_CERTDIR: "/certs"
+  COMPOSE_PROJECT_NAME: "sw6_ci"
+  BUILD_VERSION: "6.1.0"
+  BUILD_VERSION_TEXT: "rc1"
+
+stages:
+  - build
+  - test
+  - package
+
+
+image:
+  name: docker/compose:1.24.1
+  entrypoint: [""]
+services:
+  - name: docker:18.09.7-dind
+    alias: docker
+
+build:
+  stage: build
+  script:
+    - docker info
+    - docker-compose build
+    - docker save -o artifacts/app_server.tar ${COMPOSE_PROJECT_NAME}_app_server
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - artifacts/app_server.tar
+
+test:
+  stage: test
+  dependencies:
+    - build
+  variables:
+    # TODO: fix framework migration tests and append to list
+    TEST_SUITES: "administration storefront checkout content system elasticsearch docs"
+  script:
+    - docker-compose up -d mysql
+    - docker load -i artifacts/app_server.tar
+    - docker-compose up -d
+    - sleep 3
+    - docker-compose exec -T app_server bin/console system:install --drop-database --create-database --basic-setup
+    - mkdir -p artifacts/
+    - echo -e
+      "<?xml version="1.0" encoding="UTF-8"?>
+      <testsuites>
+      " > artifacts/phpunit.junit.xml
+    - >
+      for TEST_SUITE in $TEST_SUITES; do
+          log_unit_file=/artifacts/$TEST_SUITE.junit.xml
+          set -x
+          docker-compose exec -T app_server php vendor/bin/phpunit --configuration phpunit.xml.dist --log-junit "$log_unit_file" --colors=never --testsuite "$TEST_SUITE"
+          set +x
+          tail -n +3 artifacts/$TEST_SUITE.junit.xml | head -n -1 >> artifacts/phpunit.junit.xml
+      done
+    - echo -e "</testsuites>" >> "artifacts/phpunit.junit.xml"
+
+  artifacts:
+    paths:
+      - artifacts/
+    reports:
+      junit: artifacts/phpunit.junit.xml
+
+package:
+  stage: package
+  dependencies:
+    - test
+    - build
+  script:
+    - docker load -i artifacts/app_server.tar
+    - docker-compose run --entrypoint=bin/package.sh app_server
+  artifacts:
+    paths:
+      - artifacts/

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Shopware\Production\Command;
 
-use Shopware\Core\Framework\Console\ShopwareStyle;
+use Shopware\Core\Framework\Adapter\Console\ShopwareStyle;
 use Shopware\Production\Kernel;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -41,17 +41,6 @@ class SystemUpdatePrepareCommand extends Command
 
         $output->writeln('Run Update preparations');
 
-        $commands = [
-            ['command' =>'system:check']
-        ];
-
-        if ($input->getOption('maintenance')) {
-            $commands[] = [
-                'command' => 'system:maintenance',
-                'action' => 'start',
-            ];
-        }
-
         if ($input->getOption('deactivate-plugins')) {
             // TODO: implement
 //            $commands[] = [
@@ -60,8 +49,6 @@ class SystemUpdatePrepareCommand extends Command
 //            ];
         }
 
-        $result = $this->runCommands($commands, $output);
-
         try {
             //$updateEvent = new UpdatePreparationEvent(Context::createDefaultContext());
             //$this->eventDispatcher->dispatch($updateEvent);
@@ -69,7 +56,7 @@ class SystemUpdatePrepareCommand extends Command
             $result = 1;
         }
 
-        return $result;
+        return 0;
     }
 
     private function runCommands(array $commands, OutputInterface $output): int
@@ -87,26 +74,5 @@ class SystemUpdatePrepareCommand extends Command
         }
 
         return 0;
-    }
-
-    private function checkRequirements(InputInterface $input, OutputInterface $output): int
-    {
-        $output->writeln('Check requirements');
-
-        return 1;
-    }
-
-    private function enableMaintenanceMode(InputInterface $input, OutputInterface $output): int
-    {
-        $output->writeln('Enable maintenance mode');
-
-        return 1;
-    }
-
-    private function deactivatePlugins(InputInterface $input, OutputInterface $output): int
-    {
-        $output->writeln('Deactivate plugins');
-
-        return 1;
     }
 }

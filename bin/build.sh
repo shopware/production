@@ -7,6 +7,7 @@ BIN_DIR="$(dirname $(readlink -f "$0"))"
 export PROJECT_ROOT="${PROJECT_ROOT:-"$(dirname "$BIN_DIR")"}"
 
 composer install -d ${PROJECT_ROOT} --no-interaction --optimize-autoloader --no-suggest --no-scripts
+composer install -d ${PROJECT_ROOT}/vendor/shopware/recovery --no-interaction --optimize-autoloader --no-suggest
 
 $SHELL "$BIN_DIR/build-js.sh"
 
