@@ -35,8 +35,8 @@ test:
   dependencies:
     - build
   variables:
-    # TODO: fix framework migration tests and append to list
-    TEST_SUITES: "administration storefront checkout content system elasticsearch docs"
+    # TODO: fix framework tests
+    TEST_SUITES: "administration storefront checkout content system elasticsearch docs migration"
   script:
     - docker-compose up -d mysql
     - docker load -i artifacts/app_server.tar
