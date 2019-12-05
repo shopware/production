@@ -31,7 +31,14 @@ class SystemSetupCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $env = [];
+        $env = [
+            'SHOPWARE_ES_HOSTS' => 'elasticsearch:9200',
+            'SHOPWARE_ES_ENABLED' => '0',
+            'SHOPWARE_ES_INDEXING_ENABLED' => '0',
+            'SHOPWARE_ES_INDEX_PREFIX' => 'sw',
+            'SHOPWARE_HTTP_CACHE_ENABLED' => '1',
+            'SHOPWARE_HTTP_DEFAULT_TTL' => '7200'
+        ];
 
         $io = new SymfonyStyle($input, $output);
 
