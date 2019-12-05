@@ -45,20 +45,15 @@ class SystemInstallCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->io = new ShopwareStyle($input, $output);
+        $output = new ShopwareStyle($input, $output);
 
-        $dsn = (string)($_SERVER['DATABASE_URL'] ?? getenv('DATABASE_URL'));
-        if (trim($dsn) === '')  {
-            throw new \RuntimeException('DATABASE_URL is not defined');
+        $dsn = trim((string)($_SERVER['DATABASE_URL'] ?? getenv('DATABASE_URL')));
+        if ($dsn === '' || $dsn === Kernel::PLACEHOLDER_DATABASE_URL)  {
+            $output->error("Environment variable 'DATABASE_URL' not defined.");
+            return 1;
         }
 
         $params = parse_url($dsn);
-
-        if ($params['host'] === Kernel::PLACEHOLDER_DATABASE_URL) {
-            $this->io->error("Environment variable 'DATABASE_URL' not defined. \nPlease create an .env by running 'bin/console system:setup' or pass it manually");
-            return -1;
-        }
-
         $dbName = substr($params['path'], 1);
 
         $dsnWithoutDb = sprintf(
@@ -76,19 +71,19 @@ class SystemInstallCommand extends Command
 
         $connection = DriverManager::getConnection($parameters, new Configuration());
 
-        $this->io->writeln('Prepare installation');
-        $this->io->writeln('');
+        $output->writeln('Prepare installation');
+        $output->writeln('');
 
         $dropDatabase = $input->getOption('drop-database');
         if ($dropDatabase) {
             $connection->executeUpdate('DROP DATABASE IF EXISTS `' . $dbName . '`');
-            $this->io->writeln('Drop database `' . $dbName . '`');
+            $output->writeln('Drop database `' . $dbName . '`');
         }
 
         $createDatabase = $input->getOption('create-database') || $dropDatabase;
         if ($createDatabase) {
             $connection->executeUpdate('CREATE DATABASE IF NOT EXISTS `' . $dbName . '` CHARACTER SET `utf8mb4` COLLATE `utf8mb4_unicode_ci`');
-            $this->io->writeln('Created database `' . $dbName . '`');
+            $output->writeln('Created database `' . $dbName . '`');
         }
 
         $connection->exec('USE `' . $dbName . '`');
@@ -96,11 +91,11 @@ class SystemInstallCommand extends Command
         $tables = $connection->query('SHOW TABLES')->fetchAll(FetchMode::COLUMN);
 
         if (!in_array('migration', $tables, true)) {
-            $this->io->writeln('Importing base schema.sql');
+            $output->writeln('Importing base schema.sql');
             $connection->exec($this->getBaseSchema());
         }
 
-        $this->io->writeln('');
+        $output->writeln('');
 
         $commands = [
             [
@@ -152,7 +147,7 @@ class SystemInstallCommand extends Command
                 ],
         ]);
 
-        $this->runCommands($commands, $this->io);
+        $this->runCommands($commands, $output);
 
         return 0;
     }

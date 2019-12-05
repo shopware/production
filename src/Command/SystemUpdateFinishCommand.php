@@ -6,13 +6,18 @@ namespace Shopware\Production\Command;
 
 use Shopware\Core\Framework\Adapter\Console\ShopwareStyle;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Plugin\KernelPluginLoader\StaticKernelPluginLoader;
+use Shopware\Core\Framework\Update\Api\UpdateController;
 use Shopware\Core\Framework\Update\Event\UpdatePostFinishEvent;
+use Shopware\Core\Framework\Update\Event\UpdatePreFinishEvent;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Shopware\Production\Kernel;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class SystemUpdateFinishCommand extends Command
 {
@@ -24,46 +29,45 @@ class SystemUpdateFinishCommand extends Command
     protected $io;
 
     /**
-     * @var EventDispatcherInterface
+     * @var ContainerInterface
      */
-    private $eventDispatcher;
-    /**
-     * @var string
-     */
-    private $projectDir;
+    private $container;
 
-    public function __construct(EventDispatcherInterface $eventDispatcher, string $projectDir)
+    public function __construct(ContainerInterface $container)
     {
         parent::__construct();
-        $this->eventDispatcher = $eventDispatcher;
-        $this->projectDir = $projectDir;
+        $this->container = $container;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->io = new ShopwareStyle($input, $output);
+        $output = new ShopwareStyle($input, $output);
 
-        // TODO: dont require .env file but DATABASE_URL
-        $envFile = $this->projectDir . '/.env';
-        if (!is_readable($envFile) || is_dir($envFile)) {
-            $this->io->error("No .env found. \nPlease create one or run 'bin/console system:setup'");
-            return -1;
+        $dsn = trim((string)($_SERVER['DATABASE_URL'] ?? getenv('DATABASE_URL')));
+        if ($dsn === '' || $dsn === Kernel::PLACEHOLDER_DATABASE_URL)  {
+            $output->note("Environment variable 'DATABASE_URL' not defined. Skipping " . $this->getName() . '...');
+            return 0;
         }
 
-        $this->io = new ShopwareStyle($input, $output);
-        $this->io->writeln('Run Post Update');
-        $this->io->writeln('');
+        $output->writeln('Run Post Update');
+        $output->writeln('');
 
-        $this->runMigrations($input, $this->io);
+        $containerWithoutPlugins = $this->rebootKernelWithoutPlugins();
 
-        // TODO: activate all plugins and reboot kernel
-        // TODO: fix versions
-        $updateEvent = new UpdatePostFinishEvent(Context::createDefaultContext(), '', '');
-        $this->eventDispatcher->dispatch($updateEvent);
+        $context = Context::createDefaultContext();
+        $oldVersion = (string)$this->container->get(SystemConfigService::class)
+            ->get(UpdateController::UPDATE_PREVIOUS_VERSION_KEY);
 
-        // TODO: delete update assets
+        $newVersion = $containerWithoutPlugins->getParameter('kernel.shopware_version');
+        $containerWithoutPlugins->get('event_dispatcher')
+            ->dispatch(new UpdatePreFinishEvent($context, $oldVersion, $newVersion));
 
-        $this->installAssets($input, $this->io);
+        $this->runMigrations($input, $output);
+
+        $updateEvent = new UpdatePostFinishEvent($context, $oldVersion, $newVersion);
+        $this->container->get('event_dispatcher')->dispatch($updateEvent);
+
+        $this->installAssets($input, $output);
 
         $output->writeln('');
 
@@ -85,6 +89,17 @@ class SystemUpdateFinishCommand extends Command
     private function installAssets(InputInterface $input, OutputInterface $output): int
     {
         $command = $this->getApplication()->find('assets:install');
-        return $command->run(new ArrayInput(['no-cleanup' => true], $command->getDefinition()), $output);
+        return $command->run(new ArrayInput(['--no-cleanup' => true], $command->getDefinition()), $output);
+    }
+
+    private function rebootKernelWithoutPlugins(): ContainerInterface
+    {
+        /** @var Kernel $kernel */
+        $kernel = $this->container->get('kernel');
+
+        $classLoad = $kernel->getPluginLoader()->getClassLoader();
+        $kernel->reboot(null, new StaticKernelPluginLoader($classLoad));
+
+        return $kernel->getContainer();
     }
 }
