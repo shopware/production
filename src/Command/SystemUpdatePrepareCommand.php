@@ -5,74 +5,73 @@ declare(strict_types=1);
 namespace Shopware\Production\Command;
 
 use Shopware\Core\Framework\Adapter\Console\ShopwareStyle;
+use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Plugin\KernelPluginLoader\StaticKernelPluginLoader;
+use Shopware\Core\Framework\Update\Event\UpdatePostPrepareEvent;
+use Shopware\Core\Framework\Update\Event\UpdatePrePrepareEvent;
 use Shopware\Production\Kernel;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class SystemUpdatePrepareCommand extends Command
 {
     static public $defaultName = 'system:update:prepare';
 
-    public function __construct()
+    /**
+     * @var ContainerInterface
+     */
+    private $container;
+
+    public function __construct(ContainerInterface $container)
     {
         parent::__construct();
-    }
-
-    protected function configure(): void
-    {
-        $this
-            ->addOption('maintenance', null, InputOption::VALUE_NONE, 'Put shop into maintenance mode.')
-            ->addOption('deactivate-plugins', null, InputOption::VALUE_NONE, 'Deactivate all plugins.');
+        $this->container = $container;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $output = new ShopwareStyle($input, $output);
 
-        $params = parse_url($_SERVER['DATABASE_URL']);
-
-        if ($params['host'] === Kernel::PLACEHOLDER_DATABASE_URL) {
-            $output->error("Environment variable 'DATABASE_URL' not defined. \nPlease create an .env by running 'bin/console system:setup' or pass it manually");
-            return 1;
+        $dsn = trim((string)($_SERVER['DATABASE_URL'] ?? getenv('DATABASE_URL')));
+        if ($dsn === '' || $dsn === Kernel::PLACEHOLDER_DATABASE_URL)  {
+            $output->note("Environment variable 'DATABASE_URL' not defined. Skipping " . $this->getName() . '...');
+            return 0;
         }
 
         $output->writeln('Run Update preparations');
 
-        if ($input->getOption('deactivate-plugins')) {
-            // TODO: implement
-//            $commands[] = [
-//                'command' => 'system:maintenance',
-//                'action' => 'start',
-//            ];
-        }
+        $context = Context::createDefaultContext();
+        $currentVersion = $this->container->getParameter('kernel.shopware_version');
+        // TODO: get new version (from composer.lock?)
+        $newVersion = '';
 
-        try {
-            //$updateEvent = new UpdatePreparationEvent(Context::createDefaultContext());
-            //$this->eventDispatcher->dispatch($updateEvent);
-        } catch(\Throwable $e) {
-            $result = 1;
-        }
+        $eventDispatcher = $this->container->get('event_dispatcher');
+        $eventDispatcher->dispatch(new UpdatePrePrepareEvent($context, $currentVersion, $newVersion));
+
+        $containerWithoutPlugins = $this->rebootKernelWithoutPlugins();
+
+        /** @var EventDispatcherInterface $eventDispatcher */
+        $eventDispatcher = $containerWithoutPlugins->get('event_dispatcher');
+
+        // @internal plugins are deactivated
+        $eventDispatcher->dispatch(new UpdatePostPrepareEvent($context, $currentVersion, $newVersion));
 
         return 0;
     }
 
-    private function runCommands(array $commands, OutputInterface $output): int
+    private function rebootKernelWithoutPlugins(): ContainerInterface
     {
-        foreach($commands as $parameters) {
-            $output->writeln('');
+        /** @var Kernel $kernel */
+        $kernel = $this->container->get('kernel');
 
-            $command = $this->getApplication()->find($parameters['command']);
+        $classLoad = $kernel->getPluginLoader()->getClassLoader();
+        $kernel->reboot(null, new StaticKernelPluginLoader($classLoad));
 
-            unset($parameters['command']);
-            $returnCode = $command->run(new ArrayInput($parameters, $command->getDefinition()), $output);
-            if ($returnCode !== 0) {
-                return $returnCode;
-            }
-        }
-
-        return 0;
+        return $kernel->getContainer();
     }
 }

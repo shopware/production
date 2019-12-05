@@ -74,8 +74,6 @@ class SystemSetupCommand extends Command
 
         $key = Key::createNewRandomKey();
         $env['APP_SECRET'] = $key->saveToAsciiSafeString();
-
-        // TODO: generate
         $env['INSTANCE_ID'] = $this->generateInstanceId();
 
         $io->section('Database information');

@@ -41,7 +41,7 @@ USER sw6
 
 ADD --chown=sw6 . .
 
-RUN SHOPWARE_ES_HOSTS="" SHOPWARE_ES_ENABLED="" SHOPWARE_ES_INDEXING_ENABLED="" SHOPWARE_ES_INDEX_PREFIX="" bin/console assets:install && rm -Rf var/cache
+RUN bin/console assets:install && rm -Rf var/cache
 
 # Expose the port nginx is reachable on
 EXPOSE 8080
