@@ -10,9 +10,7 @@
         <ini name="error_reporting" value="-1" />
         <env name="SHELL_VERBOSITY" value="-1" />
 
-        <!--To see the full stackTrace of a Deprecation set the value to a regex matching the deprecation warning-->
-        <!--https://symfony.com/doc/current/components/phpunit_bridge.html#display-the-full-stack-trace-->
-        <!--<env name="SYMFONY_DEPRECATIONS_HELPER" value="/.*QueueConsumerInterface.*/" />-->
+        <env name="SYMFONY_DEPRECATIONS_HELPER" value="weak" />
     </php>
 
     <testsuites>
