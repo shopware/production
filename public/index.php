@@ -2,11 +2,11 @@
 
 use Doctrine\DBAL\Exception\ConnectionException;
 use PackageVersions\Versions;
+use Shopware\Core\Framework\Event\BeforeSendResponseEvent;
 use Shopware\Core\Framework\Plugin\KernelPluginLoader\DbalKernelPluginLoader;
 use Shopware\Core\Framework\Routing\RequestTransformerInterface;
 use Shopware\Production\Kernel;
 use Shopware\Storefront\Framework\Cache\CacheStore;
-use Shopware\Storefront\Framework\Csrf\CsrfPlaceholderHandler;
 use Symfony\Component\Debug\Debug;
 use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\HttpFoundation\Request;
@@ -84,23 +84,28 @@ try {
     $kernel = new Kernel($appEnv, $debug, $pluginLoader, $_SERVER['SW_CACHE_ID'] ?? null, $shopwareVersion);
     $kernel->boot();
 
+    $container = $kernel->getContainer();
+
     // resolves seo urls and detects storefront sales channels
-    $request = $kernel->getContainer()
+    $request = $container
         ->get(RequestTransformerInterface::class)
         ->transform($request);
 
-    $csrfTokenHelper = $kernel->getContainer()->get(CsrfPlaceholderHandler::class);
-    $enabled = $kernel->getContainer()->getParameter('shopware.http.cache.enabled');
+    $enabled = $container->getParameter('shopware.http.cache.enabled');
     if ($enabled) {
-        $store = $kernel->getContainer()->get(CacheStore::class);
+        $store = $container->get(CacheStore::class);
 
         $kernel = new HttpCache($kernel, $store, null, ['debug' => $debug]);
     }
 
     $response = $kernel->handle($request);
 
-    // replace csrf placeholder with fresh tokens
-    $response = $csrfTokenHelper->replaceCsrfToken($response);
+    $event = new BeforeSendResponseEvent($request, $response);
+    $container->get('event_dispatcher')
+        ->dispatch($event);
+
+    $response = $event->getResponse();
+
 } catch (ConnectionException $e) {
     throw new RuntimeException($e->getMessage());
 }
