@@ -29,7 +29,7 @@ rm -rf var/cache/* \
     vendor/monolog/monolog/tests \
     vendor/phenx/php-font-lib/sample-fonts
 
-mkdir -p var/log var/cache var/queue
+mkdir -p var/log var/cache var/queue custom/plugins
 
 echo "${SBP_VERSION}" > public/recovery/install/data/version
 
