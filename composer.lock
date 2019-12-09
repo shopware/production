@@ -3923,12 +3923,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/administration.git",
-                "reference": "ec8905a2d25e2f32af083e11191c5b48ba5f7fc6"
+                "reference": "9ab901cc672e430363adc0d76ffd92256fec12d1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/administration/zipball/ec8905a2d25e2f32af083e11191c5b48ba5f7fc6",
-                "reference": "ec8905a2d25e2f32af083e11191c5b48ba5f7fc6",
+                "url": "https://api.github.com/repos/shopware/administration/zipball/9ab901cc672e430363adc0d76ffd92256fec12d1",
+                "reference": "9ab901cc672e430363adc0d76ffd92256fec12d1",
                 "shasum": ""
             },
             "require": {
@@ -3949,7 +3949,7 @@
                 "MIT"
             ],
             "description": "Administration frontend for the Shopware Core",
-            "time": "2019-12-05T14:04:55+00:00"
+            "time": "2019-12-09T07:10:42+00:00"
         },
         {
             "name": "shopware/core",
@@ -3957,12 +3957,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/core.git",
-                "reference": "9d6bd5820678c0745fff95bb06b6391e29e79bdf"
+                "reference": "3d87e92ef8d63108a9105b6be988d7c464874915"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/core/zipball/9d6bd5820678c0745fff95bb06b6391e29e79bdf",
-                "reference": "9d6bd5820678c0745fff95bb06b6391e29e79bdf",
+                "url": "https://api.github.com/repos/shopware/core/zipball/3d87e92ef8d63108a9105b6be988d7c464874915",
+                "reference": "3d87e92ef8d63108a9105b6be988d7c464874915",
                 "shasum": ""
             },
             "require": {
@@ -4096,7 +4096,7 @@
                 "shop",
                 "shopware"
             ],
-            "time": "2019-12-06T13:17:24+00:00"
+            "time": "2019-12-09T12:56:37+00:00"
         },
         {
             "name": "shopware/elasticsearch",
@@ -4147,12 +4147,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/recovery.git",
-                "reference": "d3f566cc6c1d64d9786995d212e4d9cb5d9bfd67"
+                "reference": "cc71bdc92675bec6829f61a70b0b59321e712f91"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/recovery/zipball/d3f566cc6c1d64d9786995d212e4d9cb5d9bfd67",
-                "reference": "d3f566cc6c1d64d9786995d212e4d9cb5d9bfd67",
+                "url": "https://api.github.com/repos/shopware/recovery/zipball/cc71bdc92675bec6829f61a70b0b59321e712f91",
+                "reference": "cc71bdc92675bec6829f61a70b0b59321e712f91",
                 "shasum": ""
             },
             "require": {
@@ -4164,7 +4164,7 @@
                 "MIT"
             ],
             "description": "Recovery for Shopware",
-            "time": "2019-12-06T13:17:24+00:00"
+            "time": "2019-12-09T12:26:12+00:00"
         },
         {
             "name": "shopware/storefront",
@@ -4172,12 +4172,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/storefront.git",
-                "reference": "48d39c04be776abe5856a5bc8a2d86122eec1562"
+                "reference": "18ab58c50f47a3d49b589d1082b15d24edc85a9f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/storefront/zipball/48d39c04be776abe5856a5bc8a2d86122eec1562",
-                "reference": "48d39c04be776abe5856a5bc8a2d86122eec1562",
+                "url": "https://api.github.com/repos/shopware/storefront/zipball/18ab58c50f47a3d49b589d1082b15d24edc85a9f",
+                "reference": "18ab58c50f47a3d49b589d1082b15d24edc85a9f",
                 "shasum": ""
             },
             "require": {
@@ -4225,7 +4225,7 @@
                 "MIT"
             ],
             "description": "Storefront for Shopware",
-            "time": "2019-12-06T13:14:14+00:00"
+            "time": "2019-12-06T15:56:33+00:00"
         },
         {
             "name": "sroze/messenger-enqueue-transport",
