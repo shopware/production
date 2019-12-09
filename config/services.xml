@@ -14,6 +14,10 @@
         <parameter key="elasticsearch.hosts">%env(default:default_whitespace:SHOPWARE_ES_HOSTS)%</parameter>
         <parameter key="elasticsearch.index_prefix">%env(default:default_elasticsearch_prefix:SHOPWARE_ES_INDEX_PREFIX)%</parameter>
 
+        <parameter key="shopware.store.frw">true</parameter>
+
+        <parameter key="default_cdn_strategy">physical_filename</parameter>
+        <parameter key="shopware.cdn.strategy">%env(default:default_cdn_strategy:SHOPWARE_CDN_STRATEGY_DEFAULT)%</parameter>
     </parameters>
 
     <services>

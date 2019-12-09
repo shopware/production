@@ -20,6 +20,7 @@ services:
       - SHOPWARE_ES_INDEX_PREFIX=sw
       - SHOPWARE_HTTP_CACHE_ENABLED=1
       - SHOPWARE_HTTP_DEFAULT_TTL=7200
+      - SHOPWARE_CDN_STRATEGY_DEFAULT=id
     volumes:
       - "./config/jwt:/sw6/config/jwt"
       - "./artifacts:/artifacts"
