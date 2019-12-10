@@ -18,33 +18,18 @@
             "test ! -r vendor/autoload.php || bin/console system:update:prepare"
         ],
         "post-install-cmd": [
-            "bin/build-js.sh",
             "bin/console system:update:finish || true"
         ]
     },
-    "repositories": [
-        {
-            "type":"package",
-            "package": {
-                "name": "shopware/recovery",
-                "version":"master",
-                "source": {
-                    "url": "https://github.com/shopware/recovery.git",
-                    "type": "git",
-                    "reference":"master"
-                }
-            }
-        }
-    ],
 
     "require": {
         "php": "~7.2",
         "ocramius/package-versions": "1.4.0",
-        "shopware/core": "dev-master#6ef05579fe9a90b0121da3a39af78c363b9d38da",
-        "shopware/administration": "dev-master#2a8b872622c49d826a8858098a8ea340791a89a6",
-        "shopware/storefront": "dev-master#9232550f729f33a2d74415748863584e1fb66624",
-        "shopware/elasticsearch": "dev-master#95976d28a064b0257269e00c9ac076c9f4229465",
-        "shopware/recovery": "dev-master#90fa97aac102eb6cf367c2a1526bf346044ed4e7"
+        "shopware/core": "v6.1.0-rc1",
+        "shopware/administration": "v6.1.0-rc1",
+        "shopware/storefront": "v6.1.0-rc1",
+        "shopware/elasticsearch": "v6.1.0-rc1",
+        "shopware/recovery": "v6.1.0-rc1"
     },
     "require-dev": {
         "ext-tokenizer": "*",

@@ -37,7 +37,8 @@ class SystemSetupCommand extends Command
             'SHOPWARE_ES_INDEXING_ENABLED' => '0',
             'SHOPWARE_ES_INDEX_PREFIX' => 'sw',
             'SHOPWARE_HTTP_CACHE_ENABLED' => '1',
-            'SHOPWARE_HTTP_DEFAULT_TTL' => '7200'
+            'SHOPWARE_HTTP_DEFAULT_TTL' => '7200',
+            'SHOPWARE_CDN_STRATEGY_DEFAULT' => 'id'
         ];
 
         $io = new SymfonyStyle($input, $output);

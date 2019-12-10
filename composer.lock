@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a4e7d28a53791b488fde36a3fe638aff",
+    "content-hash": "3bb990602c76ff7b8def2b0a8009cec2",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -3919,16 +3919,16 @@
         },
         {
             "name": "shopware/administration",
-            "version": "dev-master",
+            "version": "v6.1.0-rc1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/administration.git",
-                "reference": "2a8b872622c49d826a8858098a8ea340791a89a6"
+                "reference": "9ab901cc672e430363adc0d76ffd92256fec12d1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/administration/zipball/2a8b872622c49d826a8858098a8ea340791a89a6",
-                "reference": "2a8b872622c49d826a8858098a8ea340791a89a6",
+                "url": "https://api.github.com/repos/shopware/administration/zipball/9ab901cc672e430363adc0d76ffd92256fec12d1",
+                "reference": "9ab901cc672e430363adc0d76ffd92256fec12d1",
                 "shasum": ""
             },
             "require": {
@@ -3949,20 +3949,20 @@
                 "MIT"
             ],
             "description": "Administration frontend for the Shopware Core",
-            "time": "2019-12-03T21:10:33+00:00"
+            "time": "2019-12-09T07:10:42+00:00"
         },
         {
             "name": "shopware/core",
-            "version": "dev-master",
+            "version": "v6.1.0-rc1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/core.git",
-                "reference": "6ef05579fe9a90b0121da3a39af78c363b9d38da"
+                "reference": "3d87e92ef8d63108a9105b6be988d7c464874915"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/core/zipball/6ef05579fe9a90b0121da3a39af78c363b9d38da",
-                "reference": "6ef05579fe9a90b0121da3a39af78c363b9d38da",
+                "url": "https://api.github.com/repos/shopware/core/zipball/3d87e92ef8d63108a9105b6be988d7c464874915",
+                "reference": "3d87e92ef8d63108a9105b6be988d7c464874915",
                 "shasum": ""
             },
             "require": {
@@ -4096,11 +4096,11 @@
                 "shop",
                 "shopware"
             ],
-            "time": "2019-12-03T21:10:33+00:00"
+            "time": "2019-12-09T12:56:37+00:00"
         },
         {
             "name": "shopware/elasticsearch",
-            "version": "dev-master",
+            "version": "v6.1.0-rc1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/elasticsearch.git",
@@ -4143,27 +4143,41 @@
         },
         {
             "name": "shopware/recovery",
-            "version": "master",
+            "version": "v6.1.0-rc1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/recovery.git",
-                "reference": "90fa97aac102eb6cf367c2a1526bf346044ed4e7"
-            },
-            "type": "library",
-            "time": "2019-12-03T21:10:37+00:00"
-        },
-        {
-            "name": "shopware/storefront",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/shopware/storefront.git",
-                "reference": "9232550f729f33a2d74415748863584e1fb66624"
+                "reference": "cc71bdc92675bec6829f61a70b0b59321e712f91"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/storefront/zipball/9232550f729f33a2d74415748863584e1fb66624",
-                "reference": "9232550f729f33a2d74415748863584e1fb66624",
+                "url": "https://api.github.com/repos/shopware/recovery/zipball/cc71bdc92675bec6829f61a70b0b59321e712f91",
+                "reference": "cc71bdc92675bec6829f61a70b0b59321e712f91",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.2"
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Recovery for Shopware",
+            "time": "2019-12-09T12:26:12+00:00"
+        },
+        {
+            "name": "shopware/storefront",
+            "version": "v6.1.0-rc1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/shopware/storefront.git",
+                "reference": "18ab58c50f47a3d49b589d1082b15d24edc85a9f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/shopware/storefront/zipball/18ab58c50f47a3d49b589d1082b15d24edc85a9f",
+                "reference": "18ab58c50f47a3d49b589d1082b15d24edc85a9f",
                 "shasum": ""
             },
             "require": {
@@ -4211,7 +4225,7 @@
                 "MIT"
             ],
             "description": "Storefront for Shopware",
-            "time": "2019-12-03T14:49:37+00:00"
+            "time": "2019-12-06T15:56:33+00:00"
         },
         {
             "name": "sroze/messenger-enqueue-transport",
@@ -10247,13 +10261,7 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {
-        "shopware/core": 20,
-        "shopware/administration": 20,
-        "shopware/storefront": 20,
-        "shopware/elasticsearch": 20,
-        "shopware/recovery": 20
-    },
+    "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
