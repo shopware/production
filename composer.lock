@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "23fa4aadb02657f497e757788a7fdf16",
+    "content-hash": "2558c3eef4500c730edbb59f67e54628",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -156,16 +156,16 @@
         },
         {
             "name": "composer/ca-bundle",
-            "version": "1.2.4",
+            "version": "1.2.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/ca-bundle.git",
-                "reference": "10bb96592168a0f8e8f6dcde3532d9fa50b0b527"
+                "reference": "62e8fc2dc550e5d6d8c9360c7721662670f58149"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/ca-bundle/zipball/10bb96592168a0f8e8f6dcde3532d9fa50b0b527",
-                "reference": "10bb96592168a0f8e8f6dcde3532d9fa50b0b527",
+                "url": "https://api.github.com/repos/composer/ca-bundle/zipball/62e8fc2dc550e5d6d8c9360c7721662670f58149",
+                "reference": "62e8fc2dc550e5d6d8c9360c7721662670f58149",
                 "shasum": ""
             },
             "require": {
@@ -176,7 +176,7 @@
             "require-dev": {
                 "phpunit/phpunit": "^4.8.35 || ^5.7 || 6.5 - 8",
                 "psr/log": "^1.0",
-                "symfony/process": "^2.5 || ^3.0 || ^4.0"
+                "symfony/process": "^2.5 || ^3.0 || ^4.0 || ^5.0"
             },
             "type": "library",
             "extra": {
@@ -208,7 +208,7 @@
                 "ssl",
                 "tls"
             ],
-            "time": "2019-08-30T08:44:50+00:00"
+            "time": "2019-12-11T14:44:42+00:00"
         },
         {
             "name": "composer/composer",
@@ -3919,16 +3919,16 @@
         },
         {
             "name": "shopware/administration",
-            "version": "v6.1.0-rc2",
+            "version": "v6.1.0-rc3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/administration.git",
-                "reference": "9ab901cc672e430363adc0d76ffd92256fec12d1"
+                "reference": "a68fe8d3c573358ee623d9f86886e174cd196e8a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/administration/zipball/9ab901cc672e430363adc0d76ffd92256fec12d1",
-                "reference": "9ab901cc672e430363adc0d76ffd92256fec12d1",
+                "url": "https://api.github.com/repos/shopware/administration/zipball/a68fe8d3c573358ee623d9f86886e174cd196e8a",
+                "reference": "a68fe8d3c573358ee623d9f86886e174cd196e8a",
                 "shasum": ""
             },
             "require": {
@@ -3949,20 +3949,20 @@
                 "MIT"
             ],
             "description": "Administration frontend for the Shopware Core",
-            "time": "2019-12-09T07:10:42+00:00"
+            "time": "2019-12-13T13:54:54+00:00"
         },
         {
             "name": "shopware/core",
-            "version": "v6.1.0-rc2",
+            "version": "v6.1.0-rc3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/core.git",
-                "reference": "6df3cde70b9880e65b093024f4d6e75db809b7d2"
+                "reference": "a3698c7d8e500b9dbceb17ade628b7d76fc99f1f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/core/zipball/6df3cde70b9880e65b093024f4d6e75db809b7d2",
-                "reference": "6df3cde70b9880e65b093024f4d6e75db809b7d2",
+                "url": "https://api.github.com/repos/shopware/core/zipball/a3698c7d8e500b9dbceb17ade628b7d76fc99f1f",
+                "reference": "a3698c7d8e500b9dbceb17ade628b7d76fc99f1f",
                 "shasum": ""
             },
             "require": {
@@ -4096,11 +4096,11 @@
                 "shop",
                 "shopware"
             ],
-            "time": "2019-12-10T13:41:41+00:00"
+            "time": "2019-12-16T13:31:41+00:00"
         },
         {
             "name": "shopware/elasticsearch",
-            "version": "v6.1.0-rc2",
+            "version": "v6.1.0-rc3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/elasticsearch.git",
@@ -4143,7 +4143,7 @@
         },
         {
             "name": "shopware/recovery",
-            "version": "v6.1.0-rc2",
+            "version": "v6.1.0-rc3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/recovery.git",
@@ -4168,16 +4168,16 @@
         },
         {
             "name": "shopware/storefront",
-            "version": "v6.1.0-rc2",
+            "version": "v6.1.0-rc3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/storefront.git",
-                "reference": "a9d33e4ff56853240d45dd0e3ec23611fa284767"
+                "reference": "2c5f4229d57f64bafee05fb9d67f908cafc08b90"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/storefront/zipball/a9d33e4ff56853240d45dd0e3ec23611fa284767",
-                "reference": "a9d33e4ff56853240d45dd0e3ec23611fa284767",
+                "url": "https://api.github.com/repos/shopware/storefront/zipball/2c5f4229d57f64bafee05fb9d67f908cafc08b90",
+                "reference": "2c5f4229d57f64bafee05fb9d67f908cafc08b90",
                 "shasum": ""
             },
             "require": {
@@ -4225,7 +4225,7 @@
                 "MIT"
             ],
             "description": "Storefront for Shopware",
-            "time": "2019-12-10T13:07:25+00:00"
+            "time": "2019-12-16T13:31:41+00:00"
         },
         {
             "name": "sroze/messenger-enqueue-transport",
@@ -9870,16 +9870,16 @@
         },
         {
             "name": "symfony/dom-crawler",
-            "version": "v4.3.9",
+            "version": "v4.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/dom-crawler.git",
-                "reference": "4b9efd5708c3a38593e19b6a33e40867f4f89d72"
+                "reference": "36bbcab9369fc2f583220890efd43bf262d563fd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/dom-crawler/zipball/4b9efd5708c3a38593e19b6a33e40867f4f89d72",
-                "reference": "4b9efd5708c3a38593e19b6a33e40867f4f89d72",
+                "url": "https://api.github.com/repos/symfony/dom-crawler/zipball/36bbcab9369fc2f583220890efd43bf262d563fd",
+                "reference": "36bbcab9369fc2f583220890efd43bf262d563fd",
                 "shasum": ""
             },
             "require": {
@@ -9892,7 +9892,7 @@
             },
             "require-dev": {
                 "masterminds/html5": "^2.6",
-                "symfony/css-selector": "~3.4|~4.0"
+                "symfony/css-selector": "^3.4|^4.0|^5.0"
             },
             "suggest": {
                 "symfony/css-selector": ""
@@ -9900,7 +9900,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "4.3-dev"
+                    "dev-master": "4.4-dev"
                 }
             },
             "autoload": {
@@ -9927,7 +9927,7 @@
             ],
             "description": "Symfony DomCrawler Component",
             "homepage": "https://symfony.com",
-            "time": "2019-10-28T17:07:32+00:00"
+            "time": "2019-10-29T11:38:30+00:00"
         },
         {
             "name": "symfony/phpunit-bridge",
@@ -10260,7 +10260,7 @@
         }
     ],
     "aliases": [],
-    "minimum-stability": "dev",
+    "minimum-stability": "RC",
     "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
