@@ -1,6 +1,6 @@
 <?php
 
-use Doctrine\DBAL\Exception\ConnectionException;
+use Doctrine\DBAL\DBALException;
 use PackageVersions\Versions;
 use Shopware\Core\Framework\Adapter\Cache\CacheIdLoader;
 use Shopware\Core\Framework\Event\BeforeSendResponseEvent;
@@ -120,8 +120,10 @@ try {
 
     $response = $event->getResponse();
 
-} catch (ConnectionException $e) {
-    throw new RuntimeException($e->getMessage());
+} catch (DBALException $e) {
+    $message = str_replace([$connection->getParams()['password'], $connection->getParams()['user']], '******', $e->getMessage());
+
+    throw new RuntimeException(sprintf('Could not connect to database. Message from SQL Server: %s', $message));
 }
 
 $response->send();
