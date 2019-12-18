@@ -28,5 +28,10 @@
 /files/*
 
 /platform/
+/repos/
 
 .env
+
+.cache/
+
+var/build-cache

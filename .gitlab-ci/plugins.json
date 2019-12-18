@@ -1,6 +1,6 @@
 {
     "Framework": {
-        "basePath": "vendor\/shopware\/core\/Framework\/",
+        "basePath": "repos\/core\/Framework\/",
         "views": [
             "Resources\/views"
         ],
@@ -17,7 +17,7 @@
         }
     },
     "System": {
-        "basePath": "vendor\/shopware\/core\/System\/",
+        "basePath": "repos\/core\/System\/",
         "views": [
             "Resources\/views"
         ],
@@ -34,7 +34,7 @@
         }
     },
     "Content": {
-        "basePath": "vendor\/shopware\/core\/Content\/",
+        "basePath": "repos\/core\/Content\/",
         "views": [
             "Resources\/views"
         ],
@@ -51,7 +51,7 @@
         }
     },
     "Checkout": {
-        "basePath": "vendor\/shopware\/core\/Checkout\/",
+        "basePath": "repos\/core\/Checkout\/",
         "views": [
             "Resources\/views"
         ],
@@ -68,7 +68,7 @@
         }
     },
     "Administration": {
-        "basePath": "vendor\/shopware\/administration\/",
+        "basePath": "repos\/administration\/",
         "views": [
             "Resources\/views"
         ],
@@ -85,7 +85,7 @@
         }
     },
     "Storefront": {
-        "basePath": "vendor\/shopware\/storefront\/",
+        "basePath": "repos\/storefront\/",
         "views": [
             "Resources\/views"
         ],
@@ -99,13 +99,13 @@
             "entryFilePath": "Resources\/app\/storefront\/src\/main.js",
             "webpack": null,
             "styleFiles": [
-                "vendor\/shopware\/storefront\/Resources\/app\/storefront\/src\/scss\/base.scss",
+                "repos\/storefront\/Resources\/app\/storefront\/src\/scss\/base.scss",
                 "@Plugins"
             ]
         }
     },
     "Elasticsearch": {
-        "basePath": "vendor\/shopware\/elasticsearch\/",
+        "basePath": "repos\/elasticsearch\/",
         "views": [
             "Resources\/views"
         ],

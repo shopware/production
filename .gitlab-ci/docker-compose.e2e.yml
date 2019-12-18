@@ -1,0 +1,16 @@
+#override defaults for dev
+version: "3.7"
+
+services:
+  app_cypress:
+    image: cypress/browsers:node10.11.0-chrome75
+    tty: true
+    links:
+      - app_server:docker.vm
+    environment:
+      - CYPRESS_baseUrl=http://docker.vm:8000
+      - npm_config_cache=/cache/npm
+      - CYPRESS_CACHE_FOLDER=/cache/Cypress
+    volumes:
+      - ./vendor/shopware/recovery/Test/e2e:/e2e-Installer
+      - ./var/build-cache/:/cache

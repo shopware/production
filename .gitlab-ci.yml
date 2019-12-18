@@ -1,48 +1,120 @@
 variables:
   DOCKER_DRIVER: overlay2
-  DOCKER_HOST: "tcp://docker:2375"
   DOCKER_TLS_CERTDIR: "/certs"
+  DOCKER_HOST: "tcp://docker:2375"
   COMPOSE_PROJECT_NAME: "sw6_ci"
-  BUILD_VERSION: "6.1.0"
-  BUILD_VERSION_TEXT: "rc1"
+  SPLIT_REPOS: "Administration Storefront Core Elasticsearch Recovery"
+  REPOSITORY_HOST: "gitlab.shopware.com:5005"
+  npm_config_cache: "var/build-cache/npm"
+  GIT_USER: "shopwareBot"
+  GIT_EMAIL: "shopwareBot@shopware.com"
+  IMAGE_NAME: "gitlab.shopware.com:5005/shopware/6/product/production"
+  PACKAGE_BASE_URL: "https://releases.shopware.com/sw6/"
+  PLATFORM_BRANCH: "6.1"
 
 stages:
+  - prepare-build
   - build
-  - test
   - package
+  - test
+  - prepare-release
+ # - release
 
-
-image:
-  name: docker/compose:1.24.1
-  entrypoint: [""]
-services:
-  - name: docker:18.09.7-dind
-    alias: docker
-
-build:
-  stage: build
-  script:
-    - docker info
-    - docker-compose build
-    - docker save -o artifacts/app_server.tar ${COMPOSE_PROJECT_NAME}_app_server
-  artifacts:
-    expire_in: 1 day
-    paths:
-      - artifacts/app_server.tar
-
-test:
-  stage: test
-  dependencies:
-    - build
+Split-Repos:on-nightly:
+  stage: prepare-build
+  only:
+    - schedules
+  image: debian:9-slim
   variables:
-    # TODO: fix framework tests
-    TEST_SUITES: "administration storefront checkout content system elasticsearch docs migration"
+    SPLITSH: /usr/bin/splitsh-lite
+  before_script:
+    - apt-get update && apt-get install -y wget git
+    - wget https://github.com/splitsh/lite/releases/download/v1.0.1/lite_linux_amd64.tar.gz
+    - tar -xf lite_linux_amd64.tar.gz ./splitsh-lite
+    - chmod +x splitsh-lite
+    - mv splitsh-lite $SPLITSH
+    - HASH_CHECK_LINE="ec46c5a409422bf55b26f7de1faab67c2320362934947f984872b3aedc4a9d99  $SPLITSH"
   script:
+    - "[ -e platform ] || git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/platform.git -b ${PLATFORM_BRANCH} --bare platform"
+    - git -C platform remote set-url origin https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/platform.git
+    - git -C platform fetch origin
+    - >
+      for pkg in $SPLIT_REPOS ; do
+        bin/split_repo.sh platform src/${pkg}
+        git -C platform/ rev-parse HEAD > repos/${pkg,,}/PLATFORM_COMMIT_SHA
+      done
+  #cache:
+  #  key: ${PLATFORM_BRANCH}_split
+  #  paths:
+  #    - platform/
+  #  policy: pull-push
+  artifacts:
+    expire_in: 1 week
+    paths:
+      - repos/*
+
+Build:on-nightly:
+  stage: build
+  only:
+    - schedules
+  image: docker
+  services:
+    - name: docker:18.09.7-dind
+      alias: docker
+  dependencies:
+    - Split-Repos:on-nightly
+  variables:
+    COMMIT_MSG: "Release $TAG"
+  before_script:
+    - apk add git bash jq composer npm
+    - git config --global user.email $GIT_EMAIL
+    - git config --global user.name $GIT_USER
+    - docker login gitlab.shopware.com:5005 -u $REGISTRY_USERNAME --password-stdin < $REGISTRY_PASSWORD_FILE
+  script:
+    - export TAG=${TAG:-v6.1.0-alpha.${CI_PIPELINE_IID}}
+    - export PLATFORM_COMMIT_SHA=$(cat repos/core/PLATFORM_COMMIT_SHA)
+    - ./bin/build-nightly.sh
+  artifacts:
+    expire_in: 1 week
+    paths:
+      - repos/*
+  cache:
+    key: ${CI_COMMIT_REF_NAME}_build
+    paths:
+      - var/build-cache/
+      - vendor/
+    policy: pull-push
+
+.test_template:on-nightly: &test_definition_nightly
+  stage: test
+  only:
+    - schedules
+  image:
+    name: docker/compose:1.24.1
+    entrypoint: [""]
+  services:
+    - name: docker:18.09.7-dind
+      alias: docker
+  dependencies:
+    - Build:on-nightly
+  before_script:
+    - mkdir -p var/build-cache || true
+    - export TAG=${TAG:-v6.1.0-alpha.${CI_PIPELINE_IID}}
     - docker-compose up -d mysql
-    - docker load -i artifacts/app_server.tar
+    - docker login $REPOSITORY_HOST -u $REGISTRY_USERNAME --password-stdin < $REGISTRY_PASSWORD_FILE
+    - docker pull ${IMAGE_NAME}:${TAG}
+    - docker tag ${IMAGE_NAME}:${TAG} ${COMPOSE_PROJECT_NAME}_app_server
+
+unit-tests:on-nightly:
+  <<: *test_definition_nightly
+  variables:
+    TEST_SUITES: "administration framework storefront checkout content system elasticsearch docs migration"
+  script:
+    - cp .gitlab-ci/docker-compose.unit.yml docker-compose.override.yml
     - docker-compose up -d
     - sleep 3
-    - docker-compose exec -T app_server bin/console system:install --drop-database --create-database --basic-setup
+    - export VERSION=${BUILD_VERSION}
+    - docker-compose exec -T app_server bin/console system:install --drop-database --create-database --basic-setup --force
     - mkdir -p artifacts/
     - echo -e
       "<?xml version="1.0" encoding="UTF-8"?>
@@ -52,26 +124,156 @@ test:
       for TEST_SUITE in $TEST_SUITES; do
           log_unit_file=/artifacts/$TEST_SUITE.junit.xml
           set -x
-          docker-compose exec -T app_server php vendor/bin/phpunit --configuration phpunit.xml.dist --log-junit "$log_unit_file" --colors=never --testsuite "$TEST_SUITE"
+          docker-compose exec -T app_server php -d memory_limit=1024M vendor/bin/phpunit --configuration phpunit.xml.dist --log-junit "$log_unit_file" --colors=never --testsuite "$TEST_SUITE"
           set +x
           tail -n +3 artifacts/$TEST_SUITE.junit.xml | head -n -1 >> artifacts/phpunit.junit.xml
       done
     - echo -e "</testsuites>" >> "artifacts/phpunit.junit.xml"
-
   artifacts:
     paths:
       - artifacts/
     reports:
       junit: artifacts/phpunit.junit.xml
 
-package:
-  stage: package
-  dependencies:
-    - test
-    - build
+e2e-tests:on-nightly:
+  <<: *test_definition_nightly
+  allow_failure: true
   script:
-    - docker load -i artifacts/app_server.tar
-    - docker-compose run --entrypoint=bin/package.sh app_server
+    - mkdir -p vendor/shopware/recovery/Test/e2e
+    - cp .gitlab-ci/docker-compose.e2e.yml docker-compose.override.yml
+    - docker-compose up -d app_server
+    - sleep 3
+    - docker cp $(docker-compose ps -q app_server):/sw6/vendor/shopware/recovery/Test/e2e/ vendor/shopware/recovery/Test/
+    - docker-compose up -d
+    - sleep 3
+    - docker-compose exec -T app_server rm install.lock
+    - docker-compose exec -T app_cypress npm clean-install --prefix /e2e-Installer
+    - docker-compose exec -T app_cypress /e2e-Installer/node_modules/.bin/cypress run --project /e2e-Installer --browser chrome --config baseUrl=http://docker.vm:8000 --config numTestsKeptInMemory=0
+  artifacts:
+    expire_in: 1 week
+    when: always
+    paths:
+      - vendor/shopware/recovery/Test/e2e/artifacts/
+
+Build:
+  stage: build
+  except:
+    refs:
+      - schedules
+  image: docker
+  services:
+    - name: docker:18.09.7-dind
+      alias: docker
+  before_script:
+    - apk add git bash jq composer npm
+    - docker login gitlab.shopware.com:5005 -u $REGISTRY_USERNAME --password-stdin < $REGISTRY_PASSWORD_FILE
+  script:
+    - export PLATFORM_COMMIT_SHA=$(cat PLATFORM_COMMIT_SHA)
+    - composer install --ignore-platform-reqs --no-interaction
+    - docker build . -t "${IMAGE_NAME}:${PLATFORM_COMMIT_SHA}"
+    - docker push "${IMAGE_NAME}:${PLATFORM_COMMIT_SHA}"
+    - '[[ -z ${TAG} ]] || docker tag "${IMAGE_NAME}:${PLATFORM_COMMIT_SHA}" "${IMAGE_NAME}:${TAG}"'
+    - '[[ -z ${TAG} ]] || docker push "${IMAGE_NAME}:${TAG}"'
+    #- TODO: tag as v6.1 if stable
+#  cache:
+#    key: ${PLATFORM_BRANCH}_build
+#    paths:
+#      - var/build-cache/
+#      - vendor/
+#    policy: pull-push
+
+Package:
+  stage: package
+  image:
+    name: docker/compose:1.24.1
+    entrypoint: [""]
+  services:
+    - name: docker:18.09.7-dind
+      alias: docker
+  before_script:
+    - docker login $REPOSITORY_HOST -u $REGISTRY_USERNAME --password-stdin < $REGISTRY_PASSWORD_FILE
+  script:
+    - export TAG=${TAG:-v6.1.0-alpha.${CI_PIPELINE_IID}}
+    - docker pull ${IMAGE_NAME}:${TAG}
+    - docker run -v $PWD/artifacts:/artifacts --entrypoint=bin/package.sh ${IMAGE_NAME}:${TAG}
   artifacts:
     paths:
       - artifacts/
+
+Insert-Release-Data:
+  #environment:
+  #  name: production
+  stage: prepare-release
+  image: debian:9-slim
+  when: manual
+  only:
+    refs:
+      - master
+      - "6.1"
+      - schedules
+  before_script:
+    - apt-get update && apt-get install -y git openssh-client s3cmd
+    - eval $(ssh-agent -s)
+    - chmod 600 $SSH_PRIVATE_KEY_FILE && ssh-add $SSH_PRIVATE_KEY_FILE
+    - '[[ -f /.dockerenv ]] && mkdir -p ~/.ssh/ && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+  script:
+    - 'set -e'
+    - '[[ -e artifacts/install.zip && -e artifacts/update.zip ]]'
+    - export TAG=${TAG:-v6.1.0-alpha.${CI_PIPELINE_IID}}
+    - >
+      case $TAG in
+        *-rc*) BUILD_CHANNEL=80;;
+        *-beta*) BUILD_CHANNEL=60;;
+        *-alpha*) BUILD_CHANNEL=40;;
+        *-dev*) BUILD_CHANNEL=20;;
+        *) BUILD_CHANNEL=100;;
+      esac
+    - 'IFS="-" read -ra VERSION_PARTS <<< "$TAG"'
+    - export BUILD_VERSION=${VERSION_PARTS[0]}
+    - export BUILD_VERSION_TEXT=${VERSION_PARTS[1]}
+    - '[[ -n $BUILD_VERSION ]]'
+    - TSTAMP=$(date +%s)
+    - INSTALL_FILE=artifacts/install_${TAG#"v"}_${TSTAMP}.zip
+    - UPDATE_FILE=artifacts/update_${TAG#"v"}_${TSTAMP}.zip
+    - mv artifacts/install.zip $INSTALL_FILE
+    - mv artifacts/update.zip $UPDATE_FILE
+    - s3cmd put artifacts/*.zip s3://releases.s3.shopware.com/sw6/ --acl-public
+    - >
+      ssh shopware@${UPDATE_API_HOST} php /var/www/shopware-update-api/bin/console \
+        insert:release:data \
+        --release-version=${BUILD_VERSION} \
+        --version-text=${BUILD_VERSION_TEXT} \
+        --channel=${BUILD_CHANNEL}
+        --min-version=6.0.0 \
+        --install-uri=${PACKAGE_BASE_URL}$(basename $INSTALL_FILE) \
+        --install-size=$(stat -c %s $INSTALL_FILE) \
+        --install-sha1=$(sha1sum $INSTALL_FILE | cut -d ' ' -f 1) \
+        --install-sha256=$(sha256sum $INSTALL_FILE | cut -d ' ' -f 1) \
+        --update-uri=${PACKAGE_BASE_URL}$(basename $UPDATE_FILE) \
+        --update-size=$(stat -c %s $UPDATE_FILE) \
+        --update-sha1=$(sha1sum $UPDATE_FILE | cut -d ' ' -f 1) \
+        --update-sha256=$(sha256sum $UPDATE_FILE | cut -d ' ' -f 1)
+
+
+Create-Release-Branch:
+  stage: prepare-release
+  image:
+    name: alpine/git
+    entrypoint: [""]
+  when: manual
+  only:
+    refs:
+      - schedules
+  before_script:
+    - apk --no-cache add openssh-client curl jq composer
+    - mkdir -p ~/.ssh/
+    - echo -e "$SHOPWAREBOT_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - eval `ssh-agent -s`
+    - ssh-add ~/.ssh/id_rsa
+    - ssh-keyscan github.com >> ~/.ssh/known_hosts
+    - '[[ -f /.dockerenv ]] && mkdir -p ~/.ssh/ && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+    - git config --global user.email $GIT_EMAIL
+    - git config --global user.name $GIT_USER
+  script:
+    - .gitlab-ci/create-release-branch.sh

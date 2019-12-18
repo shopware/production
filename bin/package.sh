@@ -1,12 +1,8 @@
 #!/bin/sh
 
-BIN_DIR="$(dirname $(readlink -f "$0"))"
+BIN_DIR="$(cd -P -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 export PROJECT_ROOT="${PROJECT_ROOT:-"$(dirname "$BIN_DIR")"}"
 export ARTIFACTS_DIR="${ARTIFACTS_DIR:-"$PROJECT_ROOT/artifacts"}"
-
-export BUILD_VERSION=${BUILD_VERSION:-"6.1.0"}
-export BUILD_VERSION_TEXT=${BUILD_VERSION_TEXT:-"rc3"}
-export SBP_VERSION=$(echo "$BUILD_VERSION-$BUILD_VERSION_TEXT")
 
 set -o errexit
 
@@ -27,11 +23,14 @@ rm -rf var/cache/* \
     vendor/swiftmailer/swiftmailer/tests \
     vendor/google/auth/tests \
     vendor/monolog/monolog/tests \
-    vendor/phenx/php-font-lib/sample-fonts
+    vendor/phenx/php-font-lib/sample-fonts \
+    install.lock
 
-mkdir -p var/log var/cache var/queue custom/plugins
+mkdir -p var/log var/cache var/queue custom/plugins config/jwt
 
-echo "${SBP_VERSION}" > public/recovery/install/data/version
+CORE_TAG=$(php -r 'include_once "vendor/autoload.php"; echo ltrim(explode("@", PackageVersions\Versions::getVersion("shopware/core"))[0], "v");')
+
+echo "$CORE_TAG" > public/recovery/install/data/version
 
 REFERENCE_INSTALLER_URL="https://releases.shopware.com/sw6/install_6.0.0_ea1_1563354247.zip"
 REFERENCE_INSTALLER_SHA256="eea7508800e95fbdd4cc89ada1a29aba429db82b41a94ae32bf9e34ea27a3697"
@@ -58,7 +57,7 @@ if [ -n "$REFERENCE_INSTALLER_URL" ]; then
 
     # add update meta information
     mkdir update-assets
-    echo "${BUILD_VERSION} ${BUILD_VERSION_TEXT}" > update-assets/version
+    echo "$CORE_TAG" > update-assets/version
 
     ${PROJECT_ROOT}/bin/deleted_files_vendor.sh -o"$REFERENCE_TEMP_DIR/vendor" -n"$PROJECT_ROOT/vendor" > update-assets/cleanup.txt
 

@@ -1,8 +1,8 @@
-/vendor
 /var
 !/var/plugins.json
 /.*
 **/*.git
+**/node_modules
 
 /config/jwt
 
@@ -12,3 +12,8 @@ docker-compose.yml
 docker-compose.override.yml
 
 /platform
+
+/repos
+
+/var/build-cache
+/public/theme

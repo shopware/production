@@ -130,7 +130,7 @@ class SystemInstallCommand extends Command
                 'command' => 'user:create',
                 'username' => 'admin',
                 '--admin' => true,
-                '--password' => 'admin',
+                '--password' => 'shopware',
             ];
 
             $commands[] = [
@@ -151,6 +151,9 @@ class SystemInstallCommand extends Command
                     'command' => 'assets:install',
                     '--no-cleanup' => true,
                 ],
+                [
+                    'command' => 'cache:clear'
+                ]
         ]);
 
         $this->runCommands($commands, $output);

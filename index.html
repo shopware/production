@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Installation | Shopware 6</title>
+
+    <link rel="icon" type="image/png" sizes="16x16" href="public/recovery/common/assets/images/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="public/recovery/common/assets/images/favicon/favicon-32x32.png">
+    <meta name="msapplication-TileColor" content="#189eff">
+    <meta name="theme-color" content="#189eff">
+
+    <link rel="stylesheet" type="text/css" href="public/recovery/common/assets/styles/reset.css" media="all"/>
+    <link rel="stylesheet" type="text/css" href="public/recovery/common/assets/styles/fonts.css" media="all"/>
+    <link rel="stylesheet" type="text/css" href="public/recovery/common/assets/styles/icons.css" media="all"/>
+    <link rel="stylesheet" type="text/css" href="public/recovery/common/assets/styles/style.css" media="all"/>
+
+    <style>
+        span.code {
+            display: inline;
+            font-size: 12px;
+            font-family: Courier, Monaco, monospace;
+            background-color: #f1f1f1;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+
+        .content--wrapper {
+            grid-template-columns: 1fr;
+        }
+
+        .card__title--logo {
+            margin-top: 5px;
+        }
+    </style>
+
+</head>
+<body>
+    <div class="page--wrap">
+        <div class="content--wrapper">
+            <section class="content--main">
+                <div class="card__title">
+                    <img class="card__title--logo" src="public/recovery/common/assets/images/sw-logo-blue.svg" width="148" alt="Shopware">
+                </div>
+
+                <div class="card__body is--align-center">
+                    <div class="welcome-container">
+
+                        <div class="alert-hero error">
+                            <div class="alert-hero-icon">
+                                <i class="icon-warning"></i>
+                            </div>
+                        </div>
+
+                        <h1 class="welcome-title">Shopware Root Directory</h1>
+
+                        <p>
+                            <strong>You should not be able to see this page.</strong> <br>
+                            If yes you are missing some important server configuration. For security reasons, all accessible files are located in the <span class="code">/public</span> directory of your Shopware installation.
+                        </p>
+
+                        <p>
+                            Please configure your web server to root your domain to the <span class="code">/public</span> directory of this installation.
+                        </p>
+
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</body>
+</html>

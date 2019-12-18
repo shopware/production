@@ -13,7 +13,8 @@ $testEnv = [
     'KERNEL_CLASS' => \Shopware\Production\Kernel::class,
     'SHOPWARE_ES_ENABLED' => '',
     'SHOPWARE_ES_INDEXING_ENABLED' => '',
-    'JWT_PRIVATE_KEY_PASSPHRASE' => 'shopware'
+    'JWT_PRIVATE_KEY_PASSPHRASE' => 'shopware',
+    'VERSION' => $_SERVER['VERSION'] ?? $_SERVER['BUILD_VERSION'] ?? 'v6.1.0'
 ];
 
 foreach ($testEnv as $key => $value) {

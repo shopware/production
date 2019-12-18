@@ -69,73 +69,11 @@ if ($trustedHosts = $_SERVER['TRUSTED_HOSTS'] ?? $_ENV['TRUSTED_HOSTS'] ?? false
     Request::setTrustedHosts(explode(',', $trustedHosts));
 }
 
-if (class_exists('Shopware\Core\HttpKernel')) {
-    $request = Request::createFromGlobals();
-
-    $kernel = new HttpKernel($appEnv, $debug, $classLoader);
-    $response = $kernel->handle($request);
-
-    $response->send();
-    return;
-}
-
-// resolve SEO urls
 $request = Request::createFromGlobals();
-$connection = Kernel::getConnection();
 
-if ($appEnv === 'dev') {
-    $connection->getConfiguration()->setSQLLogger(
-        new \Shopware\Core\Profiling\Doctrine\DebugStack()
-    );
-}
+$kernel = new HttpKernel($appEnv, $debug, $classLoader);
+$result = $kernel->handle($request);
 
-function getCacheId(Connection $connection): ?string
-{
-    if (class_exists('Shopware\Core\Framework\Adapter\Cache\CacheIdLoader')) {
-        return (new CacheIdLoader($connection))
-            ->load();
-    }
+$result->getResponse()->send();
 
-    return $_SERVER['SW_CACHE_ID'] ?? null;
-}
-
-try {
-    $shopwareVersion = Versions::getVersion('shopware/core');
-
-    $pluginLoader = new DbalKernelPluginLoader($classLoader, null, $connection);
-
-    $cacheId = getCacheId($connection);
-
-    $kernel = new Kernel($appEnv, $debug, $pluginLoader, $cacheId, $shopwareVersion);
-    $kernel->boot();
-
-    $container = $kernel->getContainer();
-
-    // resolves seo urls and detects storefront sales channels
-    $request = $container
-        ->get(RequestTransformerInterface::class)
-        ->transform($request);
-
-    $enabled = $container->getParameter('shopware.http.cache.enabled');
-    if ($enabled) {
-        $store = $container->get(CacheStore::class);
-
-        $kernel = new HttpCache($kernel, $store, null, ['debug' => $debug]);
-    }
-
-    $response = $kernel->handle($request);
-
-    $event = new BeforeSendResponseEvent($request, $response);
-    $container->get('event_dispatcher')
-        ->dispatch($event);
-
-    $response = $event->getResponse();
-
-} catch (DBALException $e) {
-    $message = str_replace([$connection->getParams()['password'], $connection->getParams()['user']], '******', $e->getMessage());
-
-    throw new RuntimeException(sprintf('Could not connect to database. Message from SQL Server: %s', $message));
-}
-
-$response->send();
-$kernel->terminate($request, $response);
+$kernel->terminate($result->getRequest(), $result->getResponse());

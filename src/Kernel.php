@@ -10,6 +10,7 @@ use Shopware\Core\Framework\Migration\MigrationStep;
 use Shopware\Core\Framework\Plugin\KernelPluginLoader\KernelPluginLoader;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
+use Symfony\Component\Routing\RouteCollectionBuilder;
 
 class Kernel extends \Shopware\Core\Kernel
 {
@@ -28,8 +29,18 @@ class Kernel extends \Shopware\Core\Kernel
 
     protected function initializeDatabaseConnectionVariables(): void
     {
-        if (isset($_SERVER['INSTALL']) || $_SERVER['DATABASE_URL'] === self::PLACEHOLDER_DATABASE_URL) {
+        $url = $_ENV['DATABASE_URL']
+            ?? $_SERVER['DATABASE_URL']
+            ?? getenv('DATABASE_URL');
+
+        if (isset($_SERVER['INSTALL']) || $url === self::PLACEHOLDER_DATABASE_URL) {
             return;
+        }
+
+        if ($this->getEnvironment() === 'dev') {
+            self::getConnection()->getConfiguration()->setSQLLogger(
+                new \Shopware\Core\Profiling\Doctrine\DebugStack()
+            );
         }
 
         $reflection = new \ReflectionMethod(\Shopware\Core\Kernel::class, 'initializeDatabaseConnectionVariables');

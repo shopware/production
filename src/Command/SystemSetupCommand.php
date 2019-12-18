@@ -63,7 +63,7 @@ class SystemSetupCommand extends Command
         }
 
         $io->section('Application information');
-        $env['APP_ENV'] = $io->choice('Application environment', ['prod', 'dev'], 'dev');
+        $env['APP_ENV'] = $io->choice('Application environment', ['prod', 'dev'], 'prod');
 
         // TODO: optionally check http connection (create test file in public and request)
         $env['APP_URL'] = $io->ask('URL to your /public folder', 'http://shopware.local', static function ($value) {
