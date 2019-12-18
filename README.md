@@ -2,7 +2,7 @@
 
 This repository contains the production template that enables you to build,
 package and deploy Shopware 6 to production shops. This template is also used
-to build the official packages distributed by shopware at [https://www.shopware.com/en/download].
+to build the official packages distributed by shopware at [https://www.shopware.com/en/download](https://www.shopware.com/en/download).
 
 ## Branches and stability
 
@@ -21,7 +21,7 @@ That may result in plugins being incompatible, so be careful.
 
 ## Requirements
 
-See [https://docs.shopware.com/en/shopware-platform-dev-en/getting-started/requirements]
+See [https://docs.shopware.com/en/shopware-platform-dev-en/getting-started/requirements](https://docs.shopware.com/en/shopware-platform-dev-en/getting-started/requirements)
 
 NPM and Node won't be required in the future. Expect for building the 
 javascript applications.
@@ -136,7 +136,7 @@ This directory tree should give an overview of the template structure.
 
 ### Configuration
 
-See [config/README.md]
+See [config/README.md](config/README.md)
 
 ### Composer
 
