@@ -18,6 +18,17 @@ class SystemSetupCommand extends Command
 {
     static public $defaultName = 'system:setup';
 
+    /**
+     * @var string
+     */
+    private $projectDir;
+
+    public function __construct(string $projectDir)
+    {
+        parent::__construct();
+        $this->projectDir = $projectDir;
+    }
+
     protected function configure(): void
     {
         $this->addOption('force', 'f', InputOption::VALUE_NONE, 'Force setup and recreate everything')
@@ -46,7 +57,7 @@ class SystemSetupCommand extends Command
         $io->title('Shopware setup process');
         $io->text('This tool will setup your instance.');
 
-        if (!$input->getOption('force') && file_exists($_SERVER['PROJECT_ROOT'] . '/.env')) {
+        if (!$input->getOption('force') && file_exists($this->projectDir . '/.env')) {
             $io->comment('Instance has already been set-up. To start over, please delete your .env file.');
             return 0;
         }
@@ -153,7 +164,7 @@ class SystemSetupCommand extends Command
         $output->note('Preparing .env');
 
         $envVars = '';
-        $envFile = $_SERVER['PROJECT_ROOT'] . '/.env';
+        $envFile = $this->projectDir . '/.env';
 
 
         foreach ($configuration as $key => $value) {
@@ -176,7 +187,7 @@ class SystemSetupCommand extends Command
     // TODO: refactor into separate command
     private function generateJwt(InputInterface $input, OutputStyle $io): int
     {
-        $jwtDir = $_SERVER['PROJECT_ROOT'] . '/config/jwt';
+        $jwtDir = $this->projectDir . '/config/jwt';
 
         if (!file_exists($jwtDir) && !mkdir($jwtDir, 0700, true) && !is_dir($jwtDir)) {
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $jwtDir));
