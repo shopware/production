@@ -2,6 +2,7 @@
 
 use Doctrine\DBAL\Exception\ConnectionException;
 use PackageVersions\Versions;
+use Shopware\Core\Framework\Adapter\Cache\CacheIdLoader;
 use Shopware\Core\Framework\Event\BeforeSendResponseEvent;
 use Shopware\Core\Framework\Plugin\KernelPluginLoader\DbalKernelPluginLoader;
 use Shopware\Core\Framework\Routing\RequestTransformerInterface;
@@ -11,6 +12,7 @@ use Symfony\Component\Debug\Debug;
 use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\HttpCache\HttpCache;
+use Doctrine\DBAL\Connection;
 
 $classLoader = require __DIR__.'/../vendor/autoload.php';
 
@@ -76,12 +78,24 @@ if ($appEnv === 'dev') {
     );
 }
 
+function getCacheId(Connection $connection): ?string
+{
+    if (class_exists('Shopware\Core\Framework\Adapter\Cache\CacheIdLoader')) {
+        return (new CacheIdLoader($connection))
+            ->load();
+    }
+
+    return $_SERVER['SW_CACHE_ID'] ?? null;
+}
+
 try {
     $shopwareVersion = Versions::getVersion('shopware/core');
 
     $pluginLoader = new DbalKernelPluginLoader($classLoader, null, $connection);
 
-    $kernel = new Kernel($appEnv, $debug, $pluginLoader, $_SERVER['SW_CACHE_ID'] ?? null, $shopwareVersion);
+    $cacheId = getCacheId($connection);
+
+    $kernel = new Kernel($appEnv, $debug, $pluginLoader, $cacheId, $shopwareVersion);
     $kernel->boot();
 
     $container = $kernel->getContainer();
