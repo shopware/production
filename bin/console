@@ -40,9 +40,9 @@ if ($debug) {
     }
 }
 
-$shopwareVersion = Versions::getVersion('shopware/core');
-
 $pluginLoader = new StaticKernelPluginLoader($classLoader, null);
+
+$shopwareVersion = Versions::getVersion('shopware/core');
 
 if ($input->getFirstArgument() === 'system:install') {
     $_SERVER['INSTALL'] = true;
@@ -53,6 +53,16 @@ if (!isset($_SERVER['DATABASE_URL'])) {
     $_SERVER['DATABASE_URL'] = Kernel::PLACEHOLDER_DATABASE_URL;
 } else if (!isset($_SERVER['INSTALL'])) {
     $pluginLoader = new DbalKernelPluginLoader($classLoader, null, \Shopware\Core\Kernel::getConnection());
+}
+
+if (class_exists('Shopware\Core\HttpKernel')) {
+    $kernel = new \Shopware\Production\HttpKernel($env, $debug, $classLoader);
+    $kernel->setPluginLoader($pluginLoader);
+
+    $application = new Application($kernel->getKernel());
+    $application->run($input);
+
+    return;
 }
 
 $kernel = new Kernel($env, $debug, $pluginLoader, $_SERVER['SW_CACHE_ID'] ?? null, $shopwareVersion);
