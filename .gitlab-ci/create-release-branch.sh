@@ -2,8 +2,7 @@
 
 #TAG=
 #CI_PIPELINE_IID=
-NIGHTLY_TAG="v6.1.0-alpha.${CI_PIPELINE_IID}"
-RELEASE_BRANCH="release/${NIGHTLY_TAG}-as-${TAG}"
+RELEASE_BRANCH="release/${TAG}"
 RELEASE_REMOTE=git@gitlab.shopware.com:shopware/6/product/many-repositories
 #BOT_API_TOKEN=
 
@@ -27,8 +26,9 @@ done
 sleep 30
 git checkout -b $RELEASE_BRANCH
 
-case $TAG in
-  *-rc*) STABILITY=rc;;
+case ${TAG} in
+  *-rc*) STABILITY=RC;;
+  *-RC*) STABILITY=RC;;
   *-beta*) STABILITY=beta;;
   *-alpha*) STABILITY=alpha;;
   *-dev*) STABILITY=dev;;
@@ -39,8 +39,13 @@ sed -i -e 's/"minimum-stability"\s*:\s*"[^"]*"/"minimum-stability": "'$STABILITY
 
 git add composer.json
 
-rm -Rf vendor/shopware/* composer.lock || true
-composer install --ignore-platform-reqs --no-interaction --no-scripts
+# TODO: get vendor from image
+docker cp $(docker-compose ps -q app_server):/sw6/vendor/ .
+
+# TODO: get composer.lock that was used
+docker cp $(docker-compose ps -q app_server):/sw6/composer.lock composer.lock
+
+rm -Rf vendor/shopware || true
 
 VALID=1
 i=0;
@@ -49,11 +54,27 @@ max=10;
 while [ $i -lt $max ]; do
     i=$((i+1));
 
+    composer update shopware/* --ignore-platform-reqs --no-interaction --no-scripts
+
     VALID=1
     for repo in $SPLIT_REPOS ; do
       repo=$(echo "${repo}" | tr '[:upper:]' '[:lower:]')
+
+      DIST_TYPE=$(jq -c '.packages[] | select(.name | contains("shopware/'${repo}'")) | .dist.type' composer.lock)
+      if [ $DIST_TYPE == "path" ]; then
+        echo "dist.type should not be path"
+        exit 1
+      fi
+
+      REFERENCE=$(jq -c '.packages[] | select(.name | contains("shopware/'${repo}'")) | .dist.reference' composer.lock)
+      COMMIT_SHA=$(git -C repos/${repo}/  rev-parse HEAD)
+      if [ $REFERENCE != "\"${COMMIT_SHA}\"" ]; then
+        echo "commit sha of repos/${repo} ${COMMIT_SHA} should be the sames as shopware/$repo.dist.reference ${REFERENCE}"
+        exit 1
+      fi
+
       REPO_VERSION=$(jq -c '.packages[] | select(.name | contains("shopware/'${repo}'")) | .version' composer.lock)
-      # TODO: better check sha/reference
+
       if [ "${REPO_VERSION}" != "\"${TAG}\"" ]; then
         echo "invalid version in $repo/composer.lock '${REPO_VERSION}' != '${TAG}'";
         VALID=
@@ -64,8 +85,6 @@ while [ $i -lt $max ]; do
     if [ -n "$VALID" ]; then break; fi
 
     sleep 15
-
-    composer update shopware/* --ignore-platform-reqs --no-interaction --no-scripts
 done
 
 if [ -z "$VALID" ]; then

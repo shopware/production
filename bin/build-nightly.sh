@@ -19,11 +19,17 @@ $(dirname ${BASH_SOURCE[0]})/build-js.sh
 find ${ADMIN_ROOT} -name 'node_modules' -type d -prune -print -exec rm -rf '{}' \;
 find ${STOREFRONT_ROOT} -name 'node_modules' -type d -prune -print -exec rm -rf '{}' \;
 
-COMMIT_MSG=${COMMIT_MSG:-"Nightly Release $TAG"}
+COMMIT_MSG=${COMMIT_MSG:-"Release $TAG"}
 
 prepare_repo() {
+    APP_PATH=repos/${1}/Resources/app/${1}
+    if [[ -f "$APP_PATH/package.json" ]]; then
+        npm --prefix ${APP_PATH} version --no-git-tag-version ${TAG}
+    fi
+
     git -C repos/${1} add .
     git -C repos/${1} commit -m  "${COMMIT_MSG}" || true
+
     git -C repos/${1} tag -d ${TAG} || true
     git -C repos/${1} tag ${TAG} -a -m "${COMMIT_MSG}"
     git -C repos/${1} checkout ${TAG}
@@ -48,10 +54,3 @@ mv composer.json.new composer.json
 rm -Rf composer.lock vendor/shopware/* vendor/autoload.php
 composer install --ignore-platform-reqs --no-interaction
 
-PLATFORM_COMMIT_SHA=${PLATFORM_COMMIT_SHA:-$(cat vendor/shopware/core/PLATFORM_COMMIT_SHA)}
-
-docker build . -t "${IMAGE_NAME}:${PLATFORM_COMMIT_SHA}"
-docker push "${IMAGE_NAME}:${PLATFORM_COMMIT_SHA}"
-
-docker tag "${IMAGE_NAME}:${PLATFORM_COMMIT_SHA}" "${IMAGE_NAME}:${TAG}"
-docker push "${IMAGE_NAME}:${TAG}"
