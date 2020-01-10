@@ -11,6 +11,9 @@ set -o errexit
 cd ${PROJECT_ROOT}
 
 rm -rf var/cache/* \
+    var/log/* \
+    var/queue/* \
+    var/test/* \
     vendor/shopware/administration/Resources/nuxt-component-library \
     vendor/shopware/core/Framework/Test \
     vendor/shopware/core/Content/Test \
@@ -25,8 +28,6 @@ rm -rf var/cache/* \
     vendor/monolog/monolog/tests \
     vendor/phenx/php-font-lib/sample-fonts \
     install.lock
-
-mkdir -p var/log var/cache var/queue custom/plugins config/jwt
 
 CORE_TAG=$(php -r 'include_once "vendor/autoload.php"; echo ltrim(explode("@", PackageVersions\Versions::getVersion("shopware/core"))[0], "v");')
 

@@ -172,6 +172,7 @@ Build:
     - composer install --ignore-platform-reqs --no-interaction
     - docker build . -t "${IMAGE_NAME}:${PLATFORM_COMMIT_SHA}"
     - docker push "${IMAGE_NAME}:${PLATFORM_COMMIT_SHA}"
+    - export TAG=${TAG:-v6.1.0-alpha.${CI_PIPELINE_IID}}
     - '[[ -z ${TAG} ]] || docker tag "${IMAGE_NAME}:${PLATFORM_COMMIT_SHA}" "${IMAGE_NAME}:${TAG}"'
     - '[[ -z ${TAG} ]] || docker push "${IMAGE_NAME}:${TAG}"'
     #- TODO: tag as v6.1 if stable
