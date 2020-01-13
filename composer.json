@@ -6,7 +6,7 @@
         "optimize-autoloader": true
     },
     "prefer-stable": true,
-    "minimum-stability": "rc",
+    "minimum-stability": "stable",
     "scripts": {
       "pre-install-cmd": [
         "[ ! -f vendor/autoload.php ] || bin/console system:update:prepare"
