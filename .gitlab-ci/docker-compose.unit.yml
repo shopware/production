@@ -1,0 +1,10 @@
+#override defaults for dev
+version: "3.7"
+
+services:
+  app_server:
+    environment:
+      - DATABASE_URL=mysql://root:root@mysql:3306/sw6_test
+      - APP_ENV=prod
+    volumes:
+      - "./artifacts:/artifacts"

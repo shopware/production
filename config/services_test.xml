@@ -3,14 +3,7 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
-    <services>
-        <service class="League\OAuth2\Server\CryptKey" id="shopware.private_key" public="true">
-            <argument>%kernel.project_dir%/var/test/jwt/private.pem</argument>
-            <argument>%env(string:default:jwt_private_key_passphrase_default:JWT_PRIVATE_KEY_PASSPHRASE)%</argument>
-        </service>
-
-        <service class="League\OAuth2\Server\CryptKey" id="shopware.public_key" public="true">
-            <argument>%kernel.project_dir%/var/test/jwt/public.pem</argument>
-        </service>
-    </services>
+    <imports>
+        <import resource="services/defaults_test.xml" />
+    </imports>
 </container>

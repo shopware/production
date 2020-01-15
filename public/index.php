@@ -1,16 +1,19 @@
 <?php
 
-use Doctrine\DBAL\Exception\ConnectionException;
+use Doctrine\DBAL\DBALException;
 use PackageVersions\Versions;
+use Shopware\Core\Framework\Adapter\Cache\CacheIdLoader;
 use Shopware\Core\Framework\Event\BeforeSendResponseEvent;
 use Shopware\Core\Framework\Plugin\KernelPluginLoader\DbalKernelPluginLoader;
 use Shopware\Core\Framework\Routing\RequestTransformerInterface;
+use Shopware\Production\HttpKernel;
 use Shopware\Production\Kernel;
 use Shopware\Storefront\Framework\Cache\CacheStore;
 use Symfony\Component\Debug\Debug;
 use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\HttpCache\HttpCache;
+use Doctrine\DBAL\Connection;
 
 $classLoader = require __DIR__.'/../vendor/autoload.php';
 
@@ -66,49 +69,11 @@ if ($trustedHosts = $_SERVER['TRUSTED_HOSTS'] ?? $_ENV['TRUSTED_HOSTS'] ?? false
     Request::setTrustedHosts(explode(',', $trustedHosts));
 }
 
-// resolve SEO urls
 $request = Request::createFromGlobals();
-$connection = Kernel::getConnection();
 
-if ($appEnv === 'dev') {
-    $connection->getConfiguration()->setSQLLogger(
-        new \Shopware\Core\Profiling\Doctrine\DebugStack()
-    );
-}
+$kernel = new HttpKernel($appEnv, $debug, $classLoader);
+$result = $kernel->handle($request);
 
-try {
-    $shopwareVersion = Versions::getVersion('shopware/core');
+$result->getResponse()->send();
 
-    $pluginLoader = new DbalKernelPluginLoader($classLoader, null, $connection);
-
-    $kernel = new Kernel($appEnv, $debug, $pluginLoader, $_SERVER['SW_CACHE_ID'] ?? null, $shopwareVersion);
-    $kernel->boot();
-
-    $container = $kernel->getContainer();
-
-    // resolves seo urls and detects storefront sales channels
-    $request = $container
-        ->get(RequestTransformerInterface::class)
-        ->transform($request);
-
-    $enabled = $container->getParameter('shopware.http.cache.enabled');
-    if ($enabled) {
-        $store = $container->get(CacheStore::class);
-
-        $kernel = new HttpCache($kernel, $store, null, ['debug' => $debug]);
-    }
-
-    $response = $kernel->handle($request);
-
-    $event = new BeforeSendResponseEvent($request, $response);
-    $container->get('event_dispatcher')
-        ->dispatch($event);
-
-    $response = $event->getResponse();
-
-} catch (ConnectionException $e) {
-    throw new RuntimeException($e->getMessage());
-}
-
-$response->send();
-$kernel->terminate($request, $response);
+$kernel->terminate($result->getRequest(), $result->getResponse());

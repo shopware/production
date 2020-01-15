@@ -40,16 +40,22 @@ class SystemInstallCommand extends Command
     {
         $this->addOption('create-database', null, InputOption::VALUE_NONE, "Create database if it doesn't exist.")
             ->addOption('drop-database', null, InputOption::VALUE_NONE, 'Drop existing database')
-            ->addOption('basic-setup', null, InputOption::VALUE_NONE, 'Create storefront sales channel and admin user');
+            ->addOption('basic-setup', null, InputOption::VALUE_NONE, 'Create storefront sales channel and admin user')
+            ->addOption('force', 'f', InputOption::VALUE_NONE, 'Force install even if install.lock exists');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $output = new ShopwareStyle($input, $output);
 
-        $dsn = trim((string)($_SERVER['DATABASE_URL'] ?? getenv('DATABASE_URL')));
+        $dsn = trim((string)($_ENV['DATABASE_URL'] ?? $_SERVER['DATABASE_URL'] ?? getenv('DATABASE_URL')));
         if ($dsn === '' || $dsn === Kernel::PLACEHOLDER_DATABASE_URL)  {
             $output->error("Environment variable 'DATABASE_URL' not defined.");
+            return 1;
+        }
+
+        if (!$input->getOption('force') && file_exists($this->projectDir . '/install.lock')) {
+            $output->comment('install.lock already exists. Delete it or pass --force to do it anyway.');
             return 1;
         }
 
@@ -124,7 +130,7 @@ class SystemInstallCommand extends Command
                 'command' => 'user:create',
                 'username' => 'admin',
                 '--admin' => true,
-                '--password' => 'admin',
+                '--password' => 'shopware',
             ];
 
             $commands[] = [
@@ -145,9 +151,14 @@ class SystemInstallCommand extends Command
                     'command' => 'assets:install',
                     '--no-cleanup' => true,
                 ],
+                [
+                    'command' => 'cache:clear'
+                ]
         ]);
 
         $this->runCommands($commands, $output);
+
+        touch($this->projectDir . '/install.lock');
 
         return 0;
     }

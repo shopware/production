@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2558c3eef4500c730edbb59f67e54628",
+    "content-hash": "2a5a619a9a2942a2c314bfd044785afd",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -1034,27 +1034,26 @@
         },
         {
             "name": "egulias/email-validator",
-            "version": "2.1.11",
+            "version": "2.1.14",
             "source": {
                 "type": "git",
                 "url": "https://github.com/egulias/EmailValidator.git",
-                "reference": "92dd169c32f6f55ba570c309d83f5209cefb5e23"
+                "reference": "c4b8d12921999d8a561004371701dbc2e05b5ece"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/egulias/EmailValidator/zipball/92dd169c32f6f55ba570c309d83f5209cefb5e23",
-                "reference": "92dd169c32f6f55ba570c309d83f5209cefb5e23",
+                "url": "https://api.github.com/repos/egulias/EmailValidator/zipball/c4b8d12921999d8a561004371701dbc2e05b5ece",
+                "reference": "c4b8d12921999d8a561004371701dbc2e05b5ece",
                 "shasum": ""
             },
             "require": {
                 "doctrine/lexer": "^1.0.1",
-                "php": ">= 5.5"
+                "php": ">=5.5"
             },
             "require-dev": {
-                "dominicsayers/isemail": "dev-master",
-                "phpunit/phpunit": "^4.8.35||^5.7||^6.0",
-                "satooshi/php-coveralls": "^1.0.1",
-                "symfony/phpunit-bridge": "^4.4@dev"
+                "dominicsayers/isemail": "^3.0.7",
+                "phpunit/phpunit": "^4.8.36|^7.5.15",
+                "satooshi/php-coveralls": "^1.0.1"
             },
             "suggest": {
                 "ext-intl": "PHP Internationalization Libraries are required to use the SpoofChecking validation"
@@ -1088,7 +1087,7 @@
                 "validation",
                 "validator"
             ],
-            "time": "2019-08-13T17:33:27+00:00"
+            "time": "2020-01-05T14:11:20+00:00"
         },
         {
             "name": "elasticsearch/elasticsearch",
@@ -2591,16 +2590,16 @@
         },
         {
             "name": "monolog/monolog",
-            "version": "1.25.2",
+            "version": "1.25.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Seldaek/monolog.git",
-                "reference": "d5e2fb341cb44f7e2ab639d12a1e5901091ec287"
+                "reference": "fa82921994db851a8becaf3787a9e73c5976b6f1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/d5e2fb341cb44f7e2ab639d12a1e5901091ec287",
-                "reference": "d5e2fb341cb44f7e2ab639d12a1e5901091ec287",
+                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/fa82921994db851a8becaf3787a9e73c5976b6f1",
+                "reference": "fa82921994db851a8becaf3787a9e73c5976b6f1",
                 "shasum": ""
             },
             "require": {
@@ -2665,27 +2664,29 @@
                 "logging",
                 "psr-3"
             ],
-            "time": "2019-11-13T10:00:05+00:00"
+            "time": "2019-12-20T14:15:16+00:00"
         },
         {
             "name": "mtdowling/jmespath.php",
-            "version": "2.4.0",
+            "version": "2.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jmespath/jmespath.php.git",
-                "reference": "adcc9531682cf87dfda21e1fd5d0e7a41d292fac"
+                "reference": "52168cb9472de06979613d365c7f1ab8798be895"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jmespath/jmespath.php/zipball/adcc9531682cf87dfda21e1fd5d0e7a41d292fac",
-                "reference": "adcc9531682cf87dfda21e1fd5d0e7a41d292fac",
+                "url": "https://api.github.com/repos/jmespath/jmespath.php/zipball/52168cb9472de06979613d365c7f1ab8798be895",
+                "reference": "52168cb9472de06979613d365c7f1ab8798be895",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.4.0"
+                "php": ">=5.4.0",
+                "symfony/polyfill-mbstring": "^1.4"
             },
             "require-dev": {
-                "phpunit/phpunit": "~4.0"
+                "composer/xdebug-handler": "^1.2",
+                "phpunit/phpunit": "^4.8.36|^7.5.15"
             },
             "bin": [
                 "bin/jp.php"
@@ -2693,7 +2694,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.0-dev"
+                    "dev-master": "2.5-dev"
                 }
             },
             "autoload": {
@@ -2720,7 +2721,7 @@
                 "json",
                 "jsonpath"
             ],
-            "time": "2016-12-03T22:08:25+00:00"
+            "time": "2019-12-30T18:03:34+00:00"
         },
         {
             "name": "nyholm/psr7",
@@ -3465,22 +3466,22 @@
         },
         {
             "name": "ramsey/uuid",
-            "version": "3.9.1",
+            "version": "3.9.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ramsey/uuid.git",
-                "reference": "5ac2740e0c8c599d2bbe7f113a939f2b5b216c67"
+                "reference": "7779489a47d443f845271badbdcedfe4df8e06fb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ramsey/uuid/zipball/5ac2740e0c8c599d2bbe7f113a939f2b5b216c67",
-                "reference": "5ac2740e0c8c599d2bbe7f113a939f2b5b216c67",
+                "url": "https://api.github.com/repos/ramsey/uuid/zipball/7779489a47d443f845271badbdcedfe4df8e06fb",
+                "reference": "7779489a47d443f845271badbdcedfe4df8e06fb",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
                 "paragonie/random_compat": "^1 | ^2 | 9.99.99",
-                "php": "^5.4 | ^7",
+                "php": "^5.4 | ^7 | ^8",
                 "symfony/polyfill-ctype": "^1.8"
             },
             "replace": {
@@ -3490,13 +3491,13 @@
                 "codeception/aspect-mock": "^1 | ^2",
                 "doctrine/annotations": "^1.2",
                 "goaop/framework": "1.0.0-alpha.2 | ^1 | ^2.1",
-                "jakub-onderka/php-parallel-lint": "^0.9.0",
-                "mockery/mockery": "^0.9.9",
+                "jakub-onderka/php-parallel-lint": "^1",
+                "mockery/mockery": "^0.9.11 | ^1",
                 "moontoast/math": "^1.1",
                 "paragonie/random-lib": "^2",
                 "php-mock/php-mock-phpunit": "^0.3 | ^1.1",
                 "phpunit/phpunit": "^4.8 | ^5.4 | ^6.5",
-                "squizlabs/php_codesniffer": "^2.3"
+                "squizlabs/php_codesniffer": "^3.5"
             },
             "suggest": {
                 "ext-ctype": "Provides support for PHP Ctype functions",
@@ -3548,7 +3549,7 @@
                 "identifier",
                 "uuid"
             ],
-            "time": "2019-12-01T04:55:27+00:00"
+            "time": "2019-12-17T08:18:51+00:00"
         },
         {
             "name": "react/promise",
@@ -3919,16 +3920,16 @@
         },
         {
             "name": "shopware/administration",
-            "version": "v6.1.0-rc3",
+            "version": "v6.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/administration.git",
-                "reference": "a68fe8d3c573358ee623d9f86886e174cd196e8a"
+                "reference": "9ca329954f066f6d2d695230baf77a8ca43ee3d2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/administration/zipball/a68fe8d3c573358ee623d9f86886e174cd196e8a",
-                "reference": "a68fe8d3c573358ee623d9f86886e174cd196e8a",
+                "url": "https://api.github.com/repos/shopware/administration/zipball/9ca329954f066f6d2d695230baf77a8ca43ee3d2",
+                "reference": "9ca329954f066f6d2d695230baf77a8ca43ee3d2",
                 "shasum": ""
             },
             "require": {
@@ -3949,20 +3950,20 @@
                 "MIT"
             ],
             "description": "Administration frontend for the Shopware Core",
-            "time": "2019-12-13T13:54:54+00:00"
+            "time": "2020-01-13T04:29:36+00:00"
         },
         {
             "name": "shopware/core",
-            "version": "v6.1.0-rc3",
+            "version": "v6.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/core.git",
-                "reference": "a3698c7d8e500b9dbceb17ade628b7d76fc99f1f"
+                "reference": "9c8b12277ee9d2464f95908d46a5971bcbfa2cc5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/core/zipball/a3698c7d8e500b9dbceb17ade628b7d76fc99f1f",
-                "reference": "a3698c7d8e500b9dbceb17ade628b7d76fc99f1f",
+                "url": "https://api.github.com/repos/shopware/core/zipball/9c8b12277ee9d2464f95908d46a5971bcbfa2cc5",
+                "reference": "9c8b12277ee9d2464f95908d46a5971bcbfa2cc5",
                 "shasum": ""
             },
             "require": {
@@ -3975,6 +3976,7 @@
                 "doctrine/inflector": "1.3.1",
                 "dompdf/dompdf": "0.8.3",
                 "enqueue/dbal": "0.9.13",
+                "ext-curl": "*",
                 "ext-dom": "*",
                 "ext-fileinfo": "*",
                 "ext-gd": "*",
@@ -4096,20 +4098,20 @@
                 "shop",
                 "shopware"
             ],
-            "time": "2019-12-16T13:31:41+00:00"
+            "time": "2020-01-13T04:29:35+00:00"
         },
         {
             "name": "shopware/elasticsearch",
-            "version": "v6.1.0-rc3",
+            "version": "v6.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/elasticsearch.git",
-                "reference": "95976d28a064b0257269e00c9ac076c9f4229465"
+                "reference": "3e951b51e87bd2b969ef5f7a71064d582d720d83"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/elasticsearch/zipball/95976d28a064b0257269e00c9ac076c9f4229465",
-                "reference": "95976d28a064b0257269e00c9ac076c9f4229465",
+                "url": "https://api.github.com/repos/shopware/elasticsearch/zipball/3e951b51e87bd2b969ef5f7a71064d582d720d83",
+                "reference": "3e951b51e87bd2b969ef5f7a71064d582d720d83",
                 "shasum": ""
             },
             "require": {
@@ -4139,20 +4141,20 @@
                 "MIT"
             ],
             "description": "Elasticsearch for Shopware",
-            "time": "2019-12-02T12:30:54+00:00"
+            "time": "2020-01-13T04:29:35+00:00"
         },
         {
             "name": "shopware/recovery",
-            "version": "v6.1.0-rc3",
+            "version": "v6.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/recovery.git",
-                "reference": "cc71bdc92675bec6829f61a70b0b59321e712f91"
+                "reference": "0b0e5ac9dd110b31d2a0948b985b2d6fc29bbc56"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/recovery/zipball/cc71bdc92675bec6829f61a70b0b59321e712f91",
-                "reference": "cc71bdc92675bec6829f61a70b0b59321e712f91",
+                "url": "https://api.github.com/repos/shopware/recovery/zipball/0b0e5ac9dd110b31d2a0948b985b2d6fc29bbc56",
+                "reference": "0b0e5ac9dd110b31d2a0948b985b2d6fc29bbc56",
                 "shasum": ""
             },
             "require": {
@@ -4164,20 +4166,20 @@
                 "MIT"
             ],
             "description": "Recovery for Shopware",
-            "time": "2019-12-09T12:26:12+00:00"
+            "time": "2020-01-13T04:29:35+00:00"
         },
         {
             "name": "shopware/storefront",
-            "version": "v6.1.0-rc3",
+            "version": "v6.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/storefront.git",
-                "reference": "2c5f4229d57f64bafee05fb9d67f908cafc08b90"
+                "reference": "dad8cbd28b83b84b26e5cee3ef4aa09e824c65c7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/storefront/zipball/2c5f4229d57f64bafee05fb9d67f908cafc08b90",
-                "reference": "2c5f4229d57f64bafee05fb9d67f908cafc08b90",
+                "url": "https://api.github.com/repos/shopware/storefront/zipball/dad8cbd28b83b84b26e5cee3ef4aa09e824c65c7",
+                "reference": "dad8cbd28b83b84b26e5cee3ef4aa09e824c65c7",
                 "shasum": ""
             },
             "require": {
@@ -4225,7 +4227,7 @@
                 "MIT"
             ],
             "description": "Storefront for Shopware",
-            "time": "2019-12-16T13:31:41+00:00"
+            "time": "2020-01-13T04:29:36+00:00"
         },
         {
             "name": "sroze/messenger-enqueue-transport",
@@ -5603,7 +5605,7 @@
         },
         {
             "name": "symfony/intl",
-            "version": "v5.0.1",
+            "version": "v5.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/intl.git",
@@ -7133,16 +7135,16 @@
         },
         {
             "name": "symfony/string",
-            "version": "v5.0.1",
+            "version": "v5.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/string.git",
-                "reference": "abab74551c7b6754046690d02b742154ed42e3a5"
+                "reference": "96868dd86d12de86236cb46f774f9a127477bd99"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/string/zipball/abab74551c7b6754046690d02b742154ed42e3a5",
-                "reference": "abab74551c7b6754046690d02b742154ed42e3a5",
+                "url": "https://api.github.com/repos/symfony/string/zipball/96868dd86d12de86236cb46f774f9a127477bd99",
+                "reference": "96868dd86d12de86236cb46f774f9a127477bd99",
                 "shasum": ""
             },
             "require": {
@@ -7193,7 +7195,7 @@
                 "utf-8",
                 "utf8"
             ],
-            "time": "2019-11-18T17:27:11+00:00"
+            "time": "2019-12-07T13:35:22+00:00"
         },
         {
             "name": "symfony/swiftmailer-bundle",
@@ -7665,16 +7667,16 @@
         },
         {
             "name": "symfony/var-dumper",
-            "version": "v4.4.1",
+            "version": "v4.4.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/var-dumper.git",
-                "reference": "0a89a1dbbedd9fb2cfb2336556dec8305273c19a"
+                "reference": "be330f919bdb395d1e0c3f2bfb8948512d6bdd99"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/var-dumper/zipball/0a89a1dbbedd9fb2cfb2336556dec8305273c19a",
-                "reference": "0a89a1dbbedd9fb2cfb2336556dec8305273c19a",
+                "url": "https://api.github.com/repos/symfony/var-dumper/zipball/be330f919bdb395d1e0c3f2bfb8948512d6bdd99",
+                "reference": "be330f919bdb395d1e0c3f2bfb8948512d6bdd99",
                 "shasum": ""
             },
             "require": {
@@ -7737,7 +7739,7 @@
                 "debug",
                 "dump"
             ],
-            "time": "2019-11-28T13:33:56+00:00"
+            "time": "2019-12-18T13:41:29+00:00"
         },
         {
             "name": "symfony/var-exporter",
@@ -8448,16 +8450,16 @@
         },
         {
             "name": "myclabs/deep-copy",
-            "version": "1.9.3",
+            "version": "1.9.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/myclabs/DeepCopy.git",
-                "reference": "007c053ae6f31bba39dfa19a7726f56e9763bbea"
+                "reference": "579bb7356d91f9456ccd505f24ca8b667966a0a7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/myclabs/DeepCopy/zipball/007c053ae6f31bba39dfa19a7726f56e9763bbea",
-                "reference": "007c053ae6f31bba39dfa19a7726f56e9763bbea",
+                "url": "https://api.github.com/repos/myclabs/DeepCopy/zipball/579bb7356d91f9456ccd505f24ca8b667966a0a7",
+                "reference": "579bb7356d91f9456ccd505f24ca8b667966a0a7",
                 "shasum": ""
             },
             "require": {
@@ -8492,7 +8494,7 @@
                 "object",
                 "object graph"
             ],
-            "time": "2019-08-09T12:45:53+00:00"
+            "time": "2019-12-15T19:12:40+00:00"
         },
         {
             "name": "phar-io/manifest",
@@ -8650,16 +8652,16 @@
         },
         {
             "name": "phpdocumentor/reflection-docblock",
-            "version": "4.3.2",
+            "version": "4.3.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpDocumentor/ReflectionDocBlock.git",
-                "reference": "b83ff7cfcfee7827e1e78b637a5904fe6a96698e"
+                "reference": "da3fd972d6bafd628114f7e7e036f45944b62e9c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpDocumentor/ReflectionDocBlock/zipball/b83ff7cfcfee7827e1e78b637a5904fe6a96698e",
-                "reference": "b83ff7cfcfee7827e1e78b637a5904fe6a96698e",
+                "url": "https://api.github.com/repos/phpDocumentor/ReflectionDocBlock/zipball/da3fd972d6bafd628114f7e7e036f45944b62e9c",
+                "reference": "da3fd972d6bafd628114f7e7e036f45944b62e9c",
                 "shasum": ""
             },
             "require": {
@@ -8671,6 +8673,7 @@
             "require-dev": {
                 "doctrine/instantiator": "^1.0.5",
                 "mockery/mockery": "^1.0",
+                "phpdocumentor/type-resolver": "0.4.*",
                 "phpunit/phpunit": "^6.4"
             },
             "type": "library",
@@ -8697,7 +8700,7 @@
                 }
             ],
             "description": "With this component, a library can provide support for annotations via DocBlocks or otherwise retrieve information that is embedded in a DocBlock.",
-            "time": "2019-09-12T14:27:41+00:00"
+            "time": "2019-12-28T18:55:12+00:00"
         },
         {
             "name": "phpdocumentor/type-resolver",
@@ -8748,33 +8751,33 @@
         },
         {
             "name": "phpspec/prophecy",
-            "version": "1.9.0",
+            "version": "1.10.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpspec/prophecy.git",
-                "reference": "f6811d96d97bdf400077a0cc100ae56aa32b9203"
+                "reference": "cbe1df668b3fe136bcc909126a0f529a78d4cbbc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpspec/prophecy/zipball/f6811d96d97bdf400077a0cc100ae56aa32b9203",
-                "reference": "f6811d96d97bdf400077a0cc100ae56aa32b9203",
+                "url": "https://api.github.com/repos/phpspec/prophecy/zipball/cbe1df668b3fe136bcc909126a0f529a78d4cbbc",
+                "reference": "cbe1df668b3fe136bcc909126a0f529a78d4cbbc",
                 "shasum": ""
             },
             "require": {
                 "doctrine/instantiator": "^1.0.2",
                 "php": "^5.3|^7.0",
                 "phpdocumentor/reflection-docblock": "^2.0|^3.0.2|^4.0|^5.0",
-                "sebastian/comparator": "^1.1|^2.0|^3.0",
+                "sebastian/comparator": "^1.2.3|^2.0|^3.0",
                 "sebastian/recursion-context": "^1.0|^2.0|^3.0"
             },
             "require-dev": {
-                "phpspec/phpspec": "^2.5|^3.2",
+                "phpspec/phpspec": "^2.5 || ^3.2",
                 "phpunit/phpunit": "^4.8.35 || ^5.7 || ^6.5 || ^7.1"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.8.x-dev"
+                    "dev-master": "1.10.x-dev"
                 }
             },
             "autoload": {
@@ -8807,7 +8810,7 @@
                 "spy",
                 "stub"
             ],
-            "time": "2019-10-03T11:07:50+00:00"
+            "time": "2019-12-22T21:05:45+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
@@ -9811,7 +9814,7 @@
         },
         {
             "name": "symfony/browser-kit",
-            "version": "v4.4.1",
+            "version": "v4.4.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/browser-kit.git",
@@ -9870,7 +9873,7 @@
         },
         {
             "name": "symfony/dom-crawler",
-            "version": "v4.4.1",
+            "version": "v4.4.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/dom-crawler.git",
@@ -9931,7 +9934,7 @@
         },
         {
             "name": "symfony/phpunit-bridge",
-            "version": "v4.4.1",
+            "version": "v4.4.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/phpunit-bridge.git",
@@ -9996,7 +9999,7 @@
         },
         {
             "name": "symfony/stopwatch",
-            "version": "v4.4.1",
+            "version": "v4.4.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/stopwatch.git",
@@ -10046,7 +10049,7 @@
         },
         {
             "name": "symfony/web-profiler-bundle",
-            "version": "v4.4.1",
+            "version": "v4.4.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/web-profiler-bundle.git",
@@ -10260,7 +10263,7 @@
         }
     ],
     "aliases": [],
-    "minimum-stability": "RC",
+    "minimum-stability": "stable",
     "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,

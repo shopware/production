@@ -10,9 +10,10 @@ config/
 ├── etc               # contains the configuration of the docker image
 ├── jwt               # secrets for generating jwt tokens - DO NOT COMMIT these secrets
 ├── packages/         # package configuration
+├── services/         # additional service configuration files
 ├── README.md         # this file
-├── services.xml      # service definition overrides
-└── services_test.xml # overrides for test env
+├── services.xml      # just imports the defaults
+└── services_test.xml # just imports the test defaults
 ```
 
 ## `config/bundles.php`
@@ -50,5 +51,5 @@ shopware:
 
 ## `config/services.xml`
 
-Defines some default parameters and services available in the di container.
+Imports defaults from `config/services/defaults.xml` and can be used to override and add service definitions and parameters.
 

@@ -6,34 +6,26 @@ services:
     build: .
     links:
       - mysql
+    depends_on:
+      - mysql
+      - elasticsearch
     ports:
       - 8000:8000
+      - 8005:8000
+    extra_hosts:
+      - "docker.vm:127.0.0.1"
     environment:
-      - DATABASE_URL=mysql://root:root@mysql:3306/sw6
-      - APP_URL=http://localhost:8000
       # define yourself
-      - APP_SECRET=
-      - APP_ENV=prod
+      #- DATABASE_URL
+      - APP_URL=http://docker.vm:8000
       - INSTANCE_ID=
       - SHOPWARE_ES_ENABLED=1
       - SHOPWARE_ES_HOSTS=elasticsearch:9200
       - SHOPWARE_ES_INDEXING_ENABLED=1
       - SHOPWARE_ES_INDEX_PREFIX=sw
-      - SHOPWARE_HTTP_CACHE_ENABLED=1
-      - SHOPWARE_HTTP_DEFAULT_TTL=7200
       - SHOPWARE_CDN_STRATEGY_DEFAULT=id
     volumes:
       - "./config/jwt:/sw6/config/jwt"
-      - "./artifacts:/artifacts"
-      #- "./public:/sw6/public"
-      #- "./var:/sw6/var"
-      #- "./bin:/sw6/bin"
-      #- "./src:/sw6/src"
-      #- "./vendor:/sw6/vendor"
-      #- "./platform/src/Core:/sw6/vendor/shopware/core"
-      #- "./platform/src/Administration:/sw6/vendor/shopware/administration"
-      #- "./platform/src/Elasticsearch:/sw6/vendor/shopware/elasticsearch"
-      #- "./platform/src/Recovery:/sw6/vendor/shopware/recovery"
 
   mysql:
     image: mysql:5.7

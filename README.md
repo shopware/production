@@ -2,7 +2,7 @@
 
 This repository contains the production template that enables you to build,
 package and deploy Shopware 6 to production shops. This template is also used
-to build the official packages distributed by shopware at [https://www.shopware.com/en/download].
+to build the official packages distributed by shopware at [https://www.shopware.com/en/download](https://www.shopware.com/en/download).
 
 ## Branches and stability
 
@@ -21,7 +21,7 @@ That may result in plugins being incompatible, so be careful.
 
 ## Requirements
 
-See [https://docs.shopware.com/en/shopware-platform-dev-en/getting-started/requirements]
+See [https://docs.shopware.com/en/shopware-platform-dev-en/getting-started/requirements](https://docs.shopware.com/en/shopware-platform-dev-en/getting-started/requirements)
 
 NPM and Node won't be required in the future. Expect for building the 
 javascript applications.
@@ -38,9 +38,6 @@ cd shopware
 # install shopware and dependencies according to the composer.lock 
 composer install
 
-# build administration and storefront. Should not be necessary in the future 
-bin/build-js.sh
-
 # setup the environment
 bin/console system:setup
 # create database with a basic setup (admin user and storefront sales channel)
@@ -51,32 +48,10 @@ bin/console system:install --create-database --basic-setup
 
 ## Update
 
-To update Shopware 6 we currently require npm and node to build the js applications.
+To update Shopware 6 just run this:
 
 ```bash
 # pull newest changes from origin
-git pull origin
-
-# dispatch `Update(Pre/Post)PrepareEvent` - you should abort the update if this command returns a non-zero return code 
-bin/console system:update:prepare
-
-# install newest versions according to the composer.lock
-composer install
-
-# build administration and storefront 
-bin/build-js.sh
-
-# execute migrations, dispatch `Update(Pre/Post)FinishEvent`, copy assets 
-bin/console system:update:finish
-```
-
-### Coming soon
-
-We'll simplify this further by using composer scripts. Additionally npm and node 
-wont be required, because tagged versions of `shopware/storefront` and
-`shopware/administration` are going to contain pre-build javascript apps. 
-
-```bash
 git pull origin
 
 # the (pre|post)-(install|update)-cmd will execute all steps automatically
@@ -114,8 +89,10 @@ This directory tree should give an overview of the template structure.
 │   ├── etc/              # contains the configuration of the docker image
 │   ├── jwt/              # secrets for generating jwt tokens - DO NOT COMMIT these secrets
 │   ├── packages/         # configure packages - see: config/README.md
-│   ├── services.xml      # service definition overrides
-│   └── services_test.xml # overrides for test env
+│   ├── secrets/          # symfony secrets store - DO NOT COMMIT these secrets
+│   ├── services/         # contains some default overrides
+│   ├── services.xml      # just imports the default overrides - this file should not change
+│   └── services_test.xml # just imports the default overrides for tests
 ├── custom                # contains custom files
 │   ├── plugins           # custom plugins
 ├── docker-compose.yml    # example docker-compose
@@ -136,7 +113,7 @@ This directory tree should give an overview of the template structure.
 
 ### Configuration
 
-See [config/README.md]
+See [config/README.md](config/README.md)
 
 ### Composer
 

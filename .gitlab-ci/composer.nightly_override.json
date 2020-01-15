@@ -1,0 +1,40 @@
+{
+  "minimum-stability": "alpha",
+  "repositories": [
+    {
+      "type": "path",
+      "url": "repos/core",
+      "options": {
+        "symlink": false
+      }
+    },
+    {
+      "type": "path",
+      "url": "repos/administration",
+      "options": {
+        "symlink": false
+      }
+    },
+    {
+      "type": "path",
+      "url": "repos/storefront",
+      "options": {
+        "symlink": false
+      }
+    },
+    {
+      "type": "path",
+      "url": "repos/elasticsearch",
+      "options": {
+        "symlink": false
+      }
+    },
+    {
+      "type": "path",
+      "url": "repos/recovery",
+      "options": {
+        "symlink": false
+      }
+    }
+  ]
+}
