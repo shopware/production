@@ -5,13 +5,13 @@ namespace Shopware\CI\Service;
 
 
 use Composer\Semver\VersionParser;
-use GuzzleHttp\Client;
+use GuzzleHttp\ClientInterface;
 use GuzzleHttp\RequestOptions;
 
 class ReleaseService
 {
     /**
-     * @var Client
+     * @var ClientInterface
      */
     private $gitlabApiClient;
 
@@ -20,41 +20,10 @@ class ReleaseService
      */
     private $config;
 
-    public function __construct(array $config = null)
+    public function __construct(array $config, ClientInterface $gitlabApiClient)
     {
-        $this->config = $this->getConfig() ?? $config;
-
-        $this->gitlabApiClient = new Client([
-            'base_uri' => $this->config['gitlabBaseUri'],
-            'headers' => [
-                'Private-Token' => $this->config['gitlabApiToken'],
-                'Content-TYpe' => 'application/json'
-            ]
-        ]);
-    }
-
-    public static function getDefaultConfig(): array
-    {
-        $config = [
-            'projectId' => $_SERVER['CI_PROJECT_ID'] ?? 184,
-            'gitlabBaseUri' => $_SERVER['CI_API_V4_URL'] ?? 'https://gitlab.shopware.com/api/v4',
-            'gitlabApiToken' => $_SERVER['BOT_API_TOKEN'],
-            'gitlabRemoteUrl' => $_SERVER['CI_REPOSITORY_URL'],
-            'tag' => $_SERVER['TAG'] ?? 'v6.2.0-alpha1',
-            'targetBranch' => $_SERVER['TARGET_BRANCH'] ?? '6.2',
-            'manyReposBaseUrl' => $_SERVER['MANY_REPO_BASE_URL'] ?? 'git@gitlab.shopware.com:shopware/6/product/many-repositories',
-            'projectRoot' => $_SERVER['PROJECT_ROOT'],
-        ];
-
-        $config['stability'] = $_SERVER['STABILITY'] ?? VersionParser::parseStability($config['tag']);
-        $config['repos'] = [
-            'core' => [
-                'path' => $config['projectRoot'] . '/repos/core',
-                'remoteUrl' => $config['manyReposBaseUrl'] . '/core'
-            ]
-        ];
-
-        return $config;
+        $this->config = $config ?? self::getDefaultConfig();
+        $this->gitlabApiClient = $gitlabApiClient;
     }
 
     /**
@@ -65,7 +34,7 @@ class ReleaseService
         $tag = $this->config['tag'];
 
         copy(
-            $this->config['repos']['path'] . '/PLATFORM_COMMIT_SHA',
+            $this->config['repos']['core']['path'] . '/PLATFORM_COMMIT_SHA',
             $this->config['projectRoot'] . '/PLATFORM_COMMIT_SHA'
         );
 
@@ -83,7 +52,7 @@ class ReleaseService
         );
 
         $this->createReleaseBranch(
-            $this->config['repository'],
+            $this->config['projectRoot'],
             $tag,
             $this->config['gitlabRemoteUrl']
         );
@@ -98,18 +67,21 @@ class ReleaseService
 
     private function tagAndPushRepos(string $tag, array $repos): void
     {
+        $ref = escapeshellarg("refs/tags/$tag");
+        $tag = escapeshellarg($tag);
+        $commitMsg = escapeshellarg('Release ' . $tag);
+
         foreach ($repos as $repo => $repoData) {
             $path = escapeshellarg($repoData['path']);
-            $commitMsg = escapeshellarg('Release ' . $tag);
             $remote = escapeshellarg($repoData['remoteUrl']);
-            $tag = escapeshellarg($tag);
 
             $shellCode = <<<CODE
-    git -C $path tag -a -m $commitMsg || true
+    git -C $path tag $tag -a -m $commitMsg || true
     git -C $path remote add release  $remote
-    git -C $path push release refs/tags/$tag
-    
+    git -C $path push release $ref
 CODE;
+
+            echo 'exec: ' . $shellCode . PHP_EOL;
 
             system($shellCode, $retCode);
 
@@ -124,29 +96,33 @@ CODE;
         $composerJson = json_decode(file_get_contents($composerJsonPath), true);
         $composerJson['minimum-stability'] = VersionParser::normalizeStability($stability);
 
-        file_put_contents($composerJsonPath, \json_encode($composerJson));
+        file_put_contents($composerJsonPath, \json_encode($composerJson, JSON_PRETTY_PRINT));
     }
 
     private function updateComposerLock(string $composerLockPath, string $tag, array $repos): void
     {
+        $dir = escapeshellarg($this->config['projectRoot']);
+
         $max = 10;
         for($i = 0; $i < $max; ++$i) {
             sleep(15);
 
-            system('composer update shopware/* --ignore-platform-reqs --no-interaction --no-scripts');
+            $cmd = 'composer update --working-dir=' . $dir . ' shopware/* --ignore-platform-reqs --no-interaction --no-scripts';
+            system($cmd);
 
-            $composerLock = json_decode(file_get_contents($composerLockPath));
+            $composerLock = json_decode(file_get_contents($composerLockPath), true);
 
             foreach ($repos as $repo => $repoData) {
                 $package = $this->getPackageFromComposerLock($composerLock, 'shopware/' . $repo);
 
-                // retry top loop
-                if ($package['version'] !== $tag) {
+                $repoData['reference'] = exec('git -C ' . escapeshellarg($repoData['path']) . ' rev-parse HEAD');
+
+                if (!$this->validatePackage($package, $tag, $repoData)) {
                     continue 2;
                 }
-
-                $this->validatePackage($package, $tag, $repoData);
             }
+
+            break; // is valid
         }
 
         if ($i >= $max) {
@@ -165,20 +141,34 @@ CODE;
         return null;
     }
 
-    private function validatePackage(array $packageData, string $tag, array $repoData): void
+    public function validatePackage(array $packageData, string $tag, array $repoData): bool
     {
         $packageName = $packageData['name'];
-        if ($packageData['dist']['type'] === 'path') {
-            throw new \LogicException('dist type path should not be possible for ' . $packageName);
+
+        if ($packageData['version'] !== $tag) {
+            return false;
         }
 
-        $reference = $packageData['dist']['reference'];
         $repoPath = $repoData['path'];
-        $commitSha = exec('git -C ' . escapeshellarg($repoPath) . ' rev-parse HEAD');
+        $commitSha = $repoData['reference'];
 
-        if (strtolower($reference) !== $commitSha) {
-            throw new \LogicException("commit sha of $repoPath $commitSha should be the sames as $packageName.dist.reference $reference");
+        if (isset($packageData['dist'])) {
+            if ($packageData['dist']['type'] === 'path') {
+                throw new \LogicException('dist type path should not be possible for ' . $packageName);
+            }
+
+            $distReference = $packageData['dist']['reference'];
+            if (strtolower($distReference) !== $commitSha) {
+                throw new \LogicException("commit sha of $repoPath $commitSha should be the sames as $packageName.dist.reference $distReference");
+            }
         }
+
+        $sourceRef = $packageData['source']['reference'];
+        if (strtolower($sourceRef) !== $commitSha) {
+            throw new \LogicException("commit sha of $repoPath $commitSha should be the sames as $packageName.source.reference $sourceRef");
+        }
+
+        return true;
     }
 
     private function createReleaseBranch(string $repository, string $tag, string $gitRemoteUrl): void
@@ -189,12 +179,12 @@ CODE;
         $gitRemoteUrl = escapeshellarg($gitRemoteUrl);
 
         $shellCode = <<<CODE
-set -e
-git -C $repository add PLATFORM_COMMIT_SHA composer.json composer.lock
-git -C $repository commit -m $commitMsg
-#git -C $repository tag $tag -a -m $commitMsg
-git -C $repository remote add release $gitRemoteUrl
-git -C $repository push release # --tags 
+            set -e
+            git -C $repository add PLATFORM_COMMIT_SHA composer.json composer.lock
+            git -C $repository commit -m $commitMsg
+            git -C $repository tag $tag -a -m $commitMsg
+            git -C $repository remote add release $gitRemoteUrl
+            git -C $repository push release --tags 
 CODE;
 
         system($shellCode, $returnCode);
@@ -215,6 +205,6 @@ CODE;
             ]
         ];
 
-        $this->gitlabApiClient->post('/projects/' . $projectId . '/merge_requests', $requestOptions);
+        $this->gitlabApiClient->request('POST', '/projects/' . $projectId . '/merge_requests', $requestOptions);
     }
 }

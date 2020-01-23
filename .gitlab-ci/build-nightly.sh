@@ -7,14 +7,18 @@ set -x
 
 [[ -n ${TAG} ]]
 
-cp .gitlab-ci/plugins.json var/plugins.json
-
 IMAGE_NAME=${IMAGE_NAME:-"gitlab.shopware.com:5005/shopware/6/product/production"}
+
+CWD="$(cd -P -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
+export PROJECT_ROOT="${PROJECT_ROOT:-"$(dirname $CWD)"}"
 
 export ADMIN_ROOT=repos/administration/
 export STOREFRONT_ROOT=repos/storefront/
 
-$(dirname ${BASH_SOURCE[0]})/build-js.sh
+cd $PROJECT_ROOT
+cp ${CWD}/plugins.json var/plugins.json
+
+${PROJECT_ROOT}/bin/build-js.sh
 
 find ${ADMIN_ROOT} -name 'node_modules' -type d -prune -print -exec rm -rf '{}' \;
 find ${STOREFRONT_ROOT} -name 'node_modules' -type d -prune -print -exec rm -rf '{}' \;
@@ -35,6 +39,8 @@ prepare_repo() {
     git -C repos/${1} checkout ${TAG}
 }
 
+cd ${PROJECT_ROOT}
+
 prepare_repo "core"
 prepare_repo "recovery"
 prepare_repo "elasticsearch"
@@ -48,7 +54,7 @@ sed -i -E '/[/]?public([/]?|.*)/d' ${STOREFRONT_ROOT}/Resources/.gitignore
 prepare_repo "storefront"
 
 
-jq -s add composer.json .gitlab-ci/composer.nightly_override.json > composer.json.new
+jq -s add composer.json ${CWD}/composer.nightly_override.json > composer.json.new
 mv composer.json.new composer.json
 
 rm -Rf composer.lock vendor/shopware/* vendor/autoload.php

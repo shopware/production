@@ -11,25 +11,22 @@ variables:
   GIT_EMAIL: "shopwareBot@shopware.com"
   IMAGE_NAME: "gitlab.shopware.com:5005/shopware/6/product/production"
   PACKAGE_BASE_URL: "https://releases.shopware.com/sw6/"
-  PLATFORM_BRANCH: "ntr/6.1.1-integration"
+  PLATFORM_BRANCH: "6.1"
 
 stages:
-  #- prepare-build
+  - prepare-build
   - build
   - package
   - test
   - prepare-release
   - release
 
-# TODO: re-enable
-.Split-Repos:on-nightly:
+Split-Repos:on-nightly:
   stage: prepare-build
   only:
     refs:
       - schedules
-    variables:
-      - $TAG
-  image: debian:9-slim
+  image: debian:buster-slim
   variables:
     SPLITSH: /usr/bin/splitsh-lite
   before_script:
@@ -46,7 +43,7 @@ stages:
     - git -C platform fetch origin
     - >
       for pkg in $SPLIT_REPOS ; do
-        bin/split_repo.sh platform src/${pkg}
+        .gitlab-ci/split_repo.sh platform src/${pkg}
         git -C platform/ rev-parse HEAD > repos/${pkg,,}/PLATFORM_COMMIT_SHA
       done
   artifacts:
@@ -54,28 +51,27 @@ stages:
     paths:
       - repos/*
 
-.Build:on-nightly:
+Build:on-nightly:
   stage: build
   only:
     refs:
       - schedules
-    variables:
-      - $TAG
   image: docker
   services:
     - name: docker:18.09.7-dind
       alias: docker
   dependencies:
     - Split-Repos:on-nightly
-  variables:
-    IMAGE_TAG: "${TAG}-dev"
   before_script:
-    - apk add git bash jq composer npm
+    - apk --no-cache add openssh-client git bash jq composer php-dom php-tokenizer php-xmlwriter php-xml curl curl-dev npm
     - git config --global user.email $GIT_EMAIL
     - git config --global user.name $GIT_USER
     - docker login gitlab.shopware.com:5005 -u $REGISTRY_USERNAME --password-stdin < $REGISTRY_PASSWORD_FILE
+    - '[ -n "$TAG" ] || composer install --working-dir=.gitlab-ci/tools'
   script:
-    - ./bin/build-nightly.sh
+    - export TAG=${TAG:-$(.gitlab-ci/tools/console show-next-tag)}
+    - export IMAGE_TAG="${TAG}-dev"
+    - .gitlab-ci/build-nightly.sh
     - docker build . -t "${IMAGE_NAME}:${IMAGE_TAG}"
     - docker push "${IMAGE_NAME}:${IMAGE_TAG}"
   artifacts:
@@ -115,12 +111,12 @@ Package:
     refs:
       - tags
       - schedules
-    variables:
-      - $CI_COMMIT_TAG
-      - $TAG
   before_script:
+    - '[ -n "$TAG" ] || apk --no-cache add openssh-client git bash jq composer php-dom php-tokenizer php-xmlwriter php-xml curl curl-dev'
+    - '[ -n "$TAG" ] || composer install --working-dir=.gitlab-ci/tools'
     - docker login $REPOSITORY_HOST -u $REGISTRY_USERNAME --password-stdin < $REGISTRY_PASSWORD_FILE
   script:
+    - TAG=${TAG:-$(.gitlab-ci/tools/console show-next-tag)}
     - IMAGE_TAG="${CI_COMMIT_TAG:-${TAG}-dev}"
     - docker pull ${IMAGE_NAME}:${IMAGE_TAG}
     - docker run -v $PWD/artifacts:/artifacts --entrypoint=bin/package.sh ${IMAGE_NAME}:${IMAGE_TAG}
@@ -130,23 +126,23 @@ Package:
 
 Insert-Release-Data:
   stage: prepare-release
-  image: debian:9-slim
+  image: debian:buster-slim
   when: manual
   only:
     refs:
       - tags
       - schedules
-    variables:
-      - $CI_COMMIT_TAG
-      - $TAG
   before_script:
-    - apt-get update && apt-get install -y git openssh-client s3cmd
+    - apt-get update && apt-get install -y git openssh-client composer php-dom python3-pip
+    - pip3 install s3cmd
+    - composer install --working-dir=.gitlab-ci/tools
     - eval $(ssh-agent -s)
     - chmod 600 $SSH_PRIVATE_KEY_FILE && ssh-add $SSH_PRIVATE_KEY_FILE
     - '[[ -f /.dockerenv ]] && mkdir -p ~/.ssh/ && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
   script:
-    - 'set -e'
+    - 'set -x'
     - '[[ -e artifacts/install.zip && -e artifacts/update.zip ]]'
+    - export TAG=${CI_COMMIT_TAG:-{TAG:-$(.gitlab-ci/tools/console show-next-tag)}}
     - >
       case $TAG in
         *-rc*) BUILD_CHANNEL=80;;
@@ -156,7 +152,6 @@ Insert-Release-Data:
         *) BUILD_CHANNEL=100;;
       esac
     - 'IFS="-" read -ra VERSION_PARTS <<< "$TAG"'
-    - 'if [[ -z CI_COMMIT_TAG ]]; then BUILD_CHANNEL=20; fi'
     - export BUILD_VERSION=${VERSION_PARTS[0]}
     - export BUILD_VERSION_TEXT=${VERSION_PARTS[1]}
     - '[[ -n $BUILD_VERSION ]]'
@@ -194,8 +189,6 @@ Insert-Release-Data:
   only:
     refs:
       - schedules
-    variables:
-      - $TAG
   image:
     name: docker/compose:1.24.1
     entrypoint: [""]
@@ -204,6 +197,9 @@ Insert-Release-Data:
       alias: docker
   script:
     - set -x
+    - apk --no-cache add composer php-dom php-tokenizer php-xmlwriter php-xml curl curl-dev git
+    - composer install --working-dir=.gitlab-ci/tools
+    - export TAG=${TAG:-$(.gitlab-ci/tools/console show-next-tag)}
     - export VERSION=${TAG}
     - export IMAGE_TAG=${TAG}-dev
     - export COMPOSE_FILE=docker-compose.yml:.gitlab-ci/conf/docker-compose.unit.yml
@@ -269,8 +265,6 @@ e2e-tests:on-nightly:
   only:
     refs:
       - schedules
-    variables:
-      - $TAG
   image:
     name: docker/compose:1.24.1
     entrypoint: [""]
@@ -278,10 +272,13 @@ e2e-tests:on-nightly:
     - name: docker:18.09.7-dind
       alias: docker
   variables:
-    IMAGE_TAG: "${TAG}-dev"
     COMPOSE_FILE: "docker-compose.yml:.gitlab-ci/conf/docker-compose.e2e.yml"
   script:
     - set -x
+    - apk --no-cache add composer php-dom php-tokenizer php-xmlwriter php-xml curl curl-dev git
+    - composer install --working-dir=.gitlab-ci/tools
+    - export TAG=${TAG:-$(.gitlab-ci/tools/console show-next-tag)}
+    - export IMAGE_TAG="${TAG}-dev"
     - docker login $REPOSITORY_HOST -u $REGISTRY_USERNAME --password-stdin < $REGISTRY_PASSWORD_FILE
     - docker pull ${IMAGE_NAME}:${IMAGE_TAG}
     - chmod 755 .gitlab-ci/conf/mysql || true
@@ -304,11 +301,12 @@ e2e-tests:on-nightly:
     paths:
       - vendor/shopware/recovery/Test/e2e/artifacts/
 
+
 Create-Release-Branch:
   stage: prepare-release
   image:
-    name: docker/compose:1.24.1
-    entrypoint: [""]
+      name: docker/compose:1.24.1
+      entrypoint: [""]
   services:
       - name: docker:18.09.7-dind
         alias: docker
@@ -316,12 +314,12 @@ Create-Release-Branch:
   only:
     refs:
       - schedules
-    variables:
-      - $TAG
   variables:
-    IMAGE_TAG: "${TAG}-dev"
+    MANY_REPO_BASE_URL: "git@gitlab.shopware.com:shopware/6/product/many-repositories"
+    TARGET_BRANCH: $PLATFORM_BRANCH
+    CI_REPOSITORY_URL: "git@gitlab.shopware.com:/shopware/6/product/production"
   before_script:
-    - apk --no-cache add openssh-client curl curl-dev jq composer git
+    - apk --no-cache add openssh-client git bash jq composer php-dom php-tokenizer php-xmlwriter php-xml curl curl-dev
     - mkdir -p ~/.ssh/
     - echo -e "$SHOPWAREBOT_PRIVATE_KEY" > ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
@@ -331,10 +329,16 @@ Create-Release-Branch:
     - '[[ -f /.dockerenv ]] && mkdir -p ~/.ssh/ && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
     - git config --global user.email $GIT_EMAIL
     - git config --global user.name $GIT_USER
+    - composer install --working-dir=.gitlab-ci/tools
+    - export TAG=${TAG:-$(.gitlab-ci/tools/console show-next-tag)}
+    - export IMAGE_TAG="${TAG}-dev"
     - docker login $REPOSITORY_HOST -u $REGISTRY_USERNAME --password-stdin < $REGISTRY_PASSWORD_FILE
     - docker pull ${IMAGE_NAME}:${IMAGE_TAG}
     - docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${COMPOSE_PROJECT_NAME}_app_server
     - docker tag ${IMAGE_NAME}:${IMAGE_TAG} shopware-production:local
     - docker-compose up -d app_server
   script:
-    - .gitlab-ci/create-release-branch.sh
+    - export PROJECT_ROOT=$(pwd)
+    - docker cp $(docker-compose ps -q app_server):/sw6/vendor/ .
+    - docker cp $(docker-compose ps -q app_server):/sw6/composer.lock composer.lock
+    - .gitlab-ci/tools/console create-release-branch $TAG

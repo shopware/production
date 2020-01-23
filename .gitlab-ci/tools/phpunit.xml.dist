@@ -17,6 +17,7 @@
 
     <testsuite name="all">
         <directory>./tests/</directory>
+        <exclude>./tests/Service/fixtures/</exclude>
     </testsuite>
     <filter>
         <whitelist>
