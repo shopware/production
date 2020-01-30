@@ -146,6 +146,6 @@ You only need to require the things you want. If you only want to run shopware 6
 
 Run the following command, to update all shopware dependencies:
 ```bash
-composer update shopware/*
+composer update "shopware/*"
 ```
 
