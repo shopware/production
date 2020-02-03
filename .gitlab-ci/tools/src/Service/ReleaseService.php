@@ -107,7 +107,7 @@ CODE;
         for($i = 0; $i < $max; ++$i) {
             sleep(15);
 
-            $cmd = 'composer update --working-dir=' . $dir . ' shopware/* --ignore-platform-reqs --no-interaction --no-scripts';
+            $cmd = 'composer update --working-dir=' . $dir . ' "shopware/*" --ignore-platform-reqs --no-interaction --no-scripts';
             system($cmd);
 
             $composerLock = json_decode(file_get_contents($composerLockPath), true);

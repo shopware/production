@@ -71,6 +71,24 @@
             "styleFiles": []
         }
     },
+    "Profiling": {
+        "basePath": "vendor\/shopware\/core\/Profiling\/",
+        "views": [
+            "Resources\/views"
+        ],
+        "technicalName": "profiling",
+        "administration": {
+            "path": "Resources\/app\/administration\/src",
+            "entryFilePath": null,
+            "webpack": null
+        },
+        "storefront": {
+            "path": "Resources\/app\/storefront\/src",
+            "entryFilePath": null,
+            "webpack": null,
+            "styleFiles": []
+        }
+    },
     "Administration": {
         "basePath": "vendor\/shopware\/administration\/",
         "views": [
