@@ -4,6 +4,7 @@
         "views": [
             "Resources\/views"
         ],
+        "technicalName": "framework",
         "administration": {
             "path": "Resources\/app\/administration\/src",
             "entryFilePath": null,
@@ -21,6 +22,7 @@
         "views": [
             "Resources\/views"
         ],
+        "technicalName": "system",
         "administration": {
             "path": "Resources\/app\/administration\/src",
             "entryFilePath": null,
@@ -38,6 +40,7 @@
         "views": [
             "Resources\/views"
         ],
+        "technicalName": "content",
         "administration": {
             "path": "Resources\/app\/administration\/src",
             "entryFilePath": null,
@@ -55,6 +58,25 @@
         "views": [
             "Resources\/views"
         ],
+        "technicalName": "checkout",
+        "administration": {
+            "path": "Resources\/app\/administration\/src",
+            "entryFilePath": null,
+            "webpack": null
+        },
+        "storefront": {
+            "path": "Resources\/app\/storefront\/src",
+            "entryFilePath": null,
+            "webpack": null,
+            "styleFiles": []
+        }
+    },
+    "Profiling": {
+        "basePath": "vendor\/shopware\/core\/Profiling\/",
+        "views": [
+            "Resources\/views"
+        ],
+        "technicalName": "profiling",
         "administration": {
             "path": "Resources\/app\/administration\/src",
             "entryFilePath": null,
@@ -72,6 +94,7 @@
         "views": [
             "Resources\/views"
         ],
+        "technicalName": "administration",
         "administration": {
             "path": "Resources\/app\/administration\/src",
             "entryFilePath": null,
@@ -89,6 +112,7 @@
         "views": [
             "Resources\/views"
         ],
+        "technicalName": "storefront",
         "administration": {
             "path": "Resources\/app\/administration\/src",
             "entryFilePath": "Resources\/app\/administration\/src\/main.js",
@@ -109,6 +133,7 @@
         "views": [
             "Resources\/views"
         ],
+        "technicalName": "elasticsearch",
         "administration": {
             "path": "Resources\/app\/administration\/src",
             "entryFilePath": null,

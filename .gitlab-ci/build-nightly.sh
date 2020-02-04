@@ -7,27 +7,39 @@ set -x
 
 [[ -n ${TAG} ]]
 
-cp .gitlab-ci/plugins.json var/plugins.json
-
 IMAGE_NAME=${IMAGE_NAME:-"gitlab.shopware.com:5005/shopware/6/product/production"}
+
+CWD="$(cd -P -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
+export PROJECT_ROOT="${PROJECT_ROOT:-"$(dirname $CWD)"}"
 
 export ADMIN_ROOT=repos/administration/
 export STOREFRONT_ROOT=repos/storefront/
 
-$(dirname ${BASH_SOURCE[0]})/build-js.sh
+cd $PROJECT_ROOT
+cp ${CWD}/plugins.json var/plugins.json
+
+${PROJECT_ROOT}/bin/build-js.sh
 
 find ${ADMIN_ROOT} -name 'node_modules' -type d -prune -print -exec rm -rf '{}' \;
 find ${STOREFRONT_ROOT} -name 'node_modules' -type d -prune -print -exec rm -rf '{}' \;
 
-COMMIT_MSG=${COMMIT_MSG:-"Nightly Release $TAG"}
+COMMIT_MSG=${COMMIT_MSG:-"Release $TAG"}
 
 prepare_repo() {
+    APP_PATH=repos/${1}/Resources/app/${1}
+    if [[ -f "$APP_PATH/package.json" ]]; then
+        npm --prefix ${APP_PATH} version --no-git-tag-version ${TAG}
+    fi
+
     git -C repos/${1} add .
     git -C repos/${1} commit -m  "${COMMIT_MSG}" || true
+
     git -C repos/${1} tag -d ${TAG} || true
     git -C repos/${1} tag ${TAG} -a -m "${COMMIT_MSG}"
     git -C repos/${1} checkout ${TAG}
 }
+
+cd ${PROJECT_ROOT}
 
 prepare_repo "core"
 prepare_repo "recovery"
@@ -42,16 +54,9 @@ sed -i -E '/[/]?public([/]?|.*)/d' ${STOREFRONT_ROOT}/Resources/.gitignore
 prepare_repo "storefront"
 
 
-jq -s add composer.json .gitlab-ci/composer.nightly_override.json > composer.json.new
+jq -s add composer.json ${CWD}/composer.nightly_override.json > composer.json.new
 mv composer.json.new composer.json
 
 rm -Rf composer.lock vendor/shopware/* vendor/autoload.php
 composer install --ignore-platform-reqs --no-interaction
 
-PLATFORM_COMMIT_SHA=${PLATFORM_COMMIT_SHA:-$(cat vendor/shopware/core/PLATFORM_COMMIT_SHA)}
-
-docker build . -t "${IMAGE_NAME}:${PLATFORM_COMMIT_SHA}"
-docker push "${IMAGE_NAME}:${PLATFORM_COMMIT_SHA}"
-
-docker tag "${IMAGE_NAME}:${PLATFORM_COMMIT_SHA}" "${IMAGE_NAME}:${TAG}"
-docker push "${IMAGE_NAME}:${TAG}"

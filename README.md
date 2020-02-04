@@ -4,6 +4,10 @@ This repository contains the production template that enables you to build,
 package and deploy Shopware 6 to production shops. This template is also used
 to build the official packages distributed by shopware at [https://www.shopware.com/en/download](https://www.shopware.com/en/download).
 
+This template is optimized for production usage and only contains minimal development tooling.
+Please use the [development template](https://github.com/shopware/development),
+if you want a more sophisticated dev setup.
+
 ## Branches and stability
 
 In each commit a composer.lock is contained to ensure that the version being
@@ -12,12 +16,9 @@ branches:
 - `6.1`: stable patch releases (`v6.1.0-rc2`, `v6.1.0`, `v6.1.19`, `v6.1.*`, but not `v6.2.0`)
 - `master`: stable minor+patch releases (`v6.1.0-rc2`, `v6.1.3`, `v6.1.15`, `v6.2.0`, `v6.3.0`...)
 
-The `6.1` branch contains all the 6.1 releases. Because it's not released yet,
-it only contains RC releases for now. But after that final release, this branch will
-be stable and only get non-breaking bug fixes. (security issues are an exception).
+The `6.1` branch contains all the 6.1 releases. It's stable now and only gets non-breaking bug fixes. (security issues are an exception).
 
-The `master` branch contains the newest stable minor release (after the first final 6.1 release).
-That may result in plugins being incompatible, so be careful.
+The `master` branch contains the newest stable minor release. That may result in plugins being incompatible, so be careful.
 
 ## Requirements
 
@@ -72,7 +73,9 @@ the workflow could look like this:
 * Fork template
 * Make customization
 * Add dependencies
-* Add plugins
+* Add project specific plugins
+* Update var/plugins.json
+* Build administration/storefront
 * Update composer.json and composer.lock
 * Commit changes
 
@@ -94,7 +97,8 @@ This directory tree should give an overview of the template structure.
 │   ├── services.xml      # just imports the default overrides - this file should not change
 │   └── services_test.xml # just imports the default overrides for tests
 ├── custom                # contains custom files
-│   ├── plugins           # custom plugins
+│   ├── plugins           # store plugins
+│   ├── static-plugins    # static project specific plugins
 ├── docker-compose.yml    # example docker-compose
 ├── Dockerfile            # minimal docker image
 ├── phpunit.xml.dist      # phpunit config
@@ -108,7 +112,7 @@ This directory tree should give an overview of the template structure.
 └── var
     ├── log/              # log dir
     |── cache/            # cache directory for symfony
-    └── plugins.json
+    └── plugins.json      # javascript build configuration
 ```
 
 ### Configuration
@@ -142,10 +146,30 @@ You only need to require the things you want. If you only want to run shopware 6
 }
 ```
 
+If you have project specific plugins, place them under `custom/static-plugins/{YourPlugin}` and require them in your `composer.json`.
+
 ### Update shopware packages
 
 Run the following command, to update all shopware dependencies:
 ```bash
-composer update shopware/*
+composer update "shopware/*"
 ```
 
+### Development
+
+Add your plugins to var/plugins.json or run `bin/console bundle:dump`.
+
+To build the administration parts run 
+```bash
+bin/build-administration.js
+```
+
+To build the storefront parts run
+```bash
+bin/build-storefront.js
+```
+
+After the first build you can also run a watcher for the administration:
+```bash
+bin/watch-administration.sh
+```

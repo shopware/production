@@ -30,6 +30,15 @@
             "Shopware\\Production\\": "src/"
         }
     },
+    "repositories": [
+      {
+        "type": "path",
+        "url": "custom/static-plugins/*",
+        "options": {
+          "symlink": true
+        }
+      }
+    ],
     "require": {
         "php": "~7.2",
         "ocramius/package-versions": "1.4.0",

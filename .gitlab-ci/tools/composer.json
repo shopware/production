@@ -1,0 +1,32 @@
+{
+    "name": "shopware/ci",
+    "description": "Internal Shopware ci tools",
+    "type": "project",
+    "require": {
+        "composer/semver": "^1.5",
+        "symfony/console": "^5.0",
+        "guzzlehttp/guzzle": "^6.5",
+        "ext-json": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "8.5.2"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Patrick Weyck",
+            "email": "p.weyck@shopware.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "autoload": {
+        "psr-4": {
+            "Shopware\\CI\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Shopware\\CI\\Test\\": "tests/"
+        }
+    }
+}

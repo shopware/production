@@ -1,0 +1,30 @@
+#override defaults for dev
+version: "3.7"
+
+services:
+  app_server:
+    environment:
+      - DATABASE_URL=mysql://root:root@mysql:3306/sw6_test
+      - APP_ENV=prod
+      - APP_SECRET=secret
+    volumes:
+      - "./public:/sw6/public"
+
+  unit:
+    image: shopware-production:local
+    entrypoint: php
+    links:
+      - app_server:docker.vm
+    environment:
+      - DATABASE_URL=mysql://root:root@mysql:3306/sw6_test
+      - APP_ENV=prod
+      - INSTANCE_ID=
+      - APP_URL=http://docker.vm:8000
+      - SHOPWARE_ES_ENABLED=1
+      - SHOPWARE_ES_HOSTS=elasticsearch:9200
+      - SHOPWARE_ES_INDEXING_ENABLED=1
+      - SHOPWARE_ES_INDEX_PREFIX=sw
+      - SHOPWARE_CDN_STRATEGY_DEFAULT=id
+    volumes:
+      - ".:/sw6"
+      - "./artifacts:/artifacts"
