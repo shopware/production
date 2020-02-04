@@ -161,12 +161,12 @@ Add your plugins to var/plugins.json or run `bin/console bundle:dump`.
 
 To build the administration parts run 
 ```bash
-bin/build-administration.js
+bin/build-administration.sh
 ```
 
 To build the storefront parts run
 ```bash
-bin/build-storefront.js
+bin/build-storefront.sh
 ```
 
 After the first build you can also run a watcher for the administration:
