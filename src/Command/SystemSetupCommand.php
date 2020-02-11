@@ -63,10 +63,10 @@ class SystemSetupCommand extends Command
         }
 
         $io->section('Application information');
-        $env['APP_ENV'] = $io->choice('Application environment', ['prod', 'dev'], 'prod');
+        $env['APP_ENV'] = $_SERVER['APP_ENV'] ?? $_ENV['APP_ENV'] ?? $io->choice('Application environment', ['prod', 'dev'], 'prod');
 
         // TODO: optionally check http connection (create test file in public and request)
-        $env['APP_URL'] = $io->ask('URL to your /public folder', 'http://shopware.local', static function ($value) {
+        $env['APP_URL'] = $_SERVER['APP_URL'] ?? $_ENV['APP_URL'] ?? $io->ask('URL to your /public folder', 'http://shopware.local', static function ($value) {
             $value = trim($value);
 
             if ($value === '') {
@@ -121,7 +121,10 @@ class SystemSetupCommand extends Command
             return $value;
         };
 
-        $dsn = $input->getOption('database-url');
+        $dsn = trim((string)($_ENV['DATABASE_URL'] ?? $_SERVER['DATABASE_URL'] ?? getenv('DATABASE_URL')));
+        if (empty($dsn)) {
+            $dsn = $input->getOption('database-url');
+        }
         if ($dsn) {
             $params = parse_url($dsn);
             $dsnWithoutDb = sprintf(
