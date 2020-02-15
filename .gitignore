@@ -27,6 +27,7 @@ custom/*
 /public/plugins/*
 /public/assets/*
 /public/sitemap/*
+/public/bundles/*
 
 /files/*
 
