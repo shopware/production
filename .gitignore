@@ -26,6 +26,7 @@ custom/*
 !/public/thumbnail/.gitkeep
 /public/plugins/*
 /public/assets/*
+/public/sitemap/*
 
 /files/*
 
