@@ -3924,16 +3924,16 @@
         },
         {
             "name": "shopware/administration",
-            "version": "v6.1.1",
+            "version": "v6.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/administration.git",
-                "reference": "c63fe9b3575cc00ef585625ec2d4618cf04f5def"
+                "reference": "a96aee26b7727bff85a3a8e940e983f0b17d0212"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/administration/zipball/c63fe9b3575cc00ef585625ec2d4618cf04f5def",
-                "reference": "c63fe9b3575cc00ef585625ec2d4618cf04f5def",
+                "url": "https://api.github.com/repos/shopware/administration/zipball/a96aee26b7727bff85a3a8e940e983f0b17d0212",
+                "reference": "a96aee26b7727bff85a3a8e940e983f0b17d0212",
                 "shasum": ""
             },
             "require": {
@@ -3949,23 +3949,25 @@
                     "Shopware\\Administration\\": ""
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
-            "description": "Administration frontend for the Shopware Core"
+            "description": "Administration frontend for the Shopware Core",
+            "time": "2020-02-17T14:11:05+00:00"
         },
         {
             "name": "shopware/core",
-            "version": "v6.1.1",
+            "version": "v6.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/core.git",
-                "reference": "7bc632a3e5d6b4d24b306fce1a319160a57f59f7"
+                "reference": "d57ac2963e82c638baeb6289aed3e64860268cde"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/core/zipball/7bc632a3e5d6b4d24b306fce1a319160a57f59f7",
-                "reference": "7bc632a3e5d6b4d24b306fce1a319160a57f59f7",
+                "url": "https://api.github.com/repos/shopware/core/zipball/d57ac2963e82c638baeb6289aed3e64860268cde",
+                "reference": "d57ac2963e82c638baeb6289aed3e64860268cde",
                 "shasum": ""
             },
             "require": {
@@ -4090,6 +4092,7 @@
                     "Flag/feature_next3722.php"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -4098,20 +4101,21 @@
             "keywords": [
                 "shop",
                 "shopware"
-            ]
+            ],
+            "time": "2020-02-17T14:11:04+00:00"
         },
         {
             "name": "shopware/elasticsearch",
-            "version": "v6.1.1",
+            "version": "v6.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/elasticsearch.git",
-                "reference": "0ab9f9fa42278907deed3a71f903fcddde387207"
+                "reference": "7fd446b9f403a18807dd62af098511f92212bfe4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/elasticsearch/zipball/0ab9f9fa42278907deed3a71f903fcddde387207",
-                "reference": "0ab9f9fa42278907deed3a71f903fcddde387207",
+                "url": "https://api.github.com/repos/shopware/elasticsearch/zipball/7fd446b9f403a18807dd62af098511f92212bfe4",
+                "reference": "7fd446b9f403a18807dd62af098511f92212bfe4",
                 "shasum": ""
             },
             "require": {
@@ -4136,51 +4140,50 @@
                     "/Test/"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
-            "description": "Elasticsearch for Shopware"
+            "description": "Elasticsearch for Shopware",
+            "time": "2020-02-17T14:11:04+00:00"
         },
         {
             "name": "shopware/recovery",
-            "version": "v6.1.1",
+            "version": "v6.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/recovery.git",
-                "reference": "fcfb677fecb0e64b7d2ab5b21523c873e77594f0"
+                "reference": "e6bce4312b5abb61fc874b5ab617a2bd15a65c6b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/recovery/zipball/fcfb677fecb0e64b7d2ab5b21523c873e77594f0",
-                "reference": "fcfb677fecb0e64b7d2ab5b21523c873e77594f0",
+                "url": "https://api.github.com/repos/shopware/recovery/zipball/e6bce4312b5abb61fc874b5ab617a2bd15a65c6b",
+                "reference": "e6bce4312b5abb61fc874b5ab617a2bd15a65c6b",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.2"
             },
             "type": "library",
-            "scripts": {
-                "pre-install-cmd": [
-                    "composer install -d Common --no-interaction --optimize-autoloader --no-suggest"
-                ]
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
-            "description": "Recovery for Shopware"
+            "description": "Recovery for Shopware",
+            "time": "2020-02-17T14:11:04+00:00"
         },
         {
             "name": "shopware/storefront",
-            "version": "v6.1.1",
+            "version": "v6.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/storefront.git",
-                "reference": "cace77797eecd160eb7991c1f8f34dd8fa471a15"
+                "reference": "1b67ead224e2acc654af76111614fd00724717c6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/storefront/zipball/cace77797eecd160eb7991c1f8f34dd8fa471a15",
-                "reference": "cace77797eecd160eb7991c1f8f34dd8fa471a15",
+                "url": "https://api.github.com/repos/shopware/storefront/zipball/1b67ead224e2acc654af76111614fd00724717c6",
+                "reference": "1b67ead224e2acc654af76111614fd00724717c6",
                 "shasum": ""
             },
             "require": {
@@ -4223,10 +4226,12 @@
                     "*/Test/"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
-            "description": "Storefront for Shopware"
+            "description": "Storefront for Shopware",
+            "time": "2020-02-17T14:11:06+00:00"
         },
         {
             "name": "sroze/messenger-enqueue-transport",
