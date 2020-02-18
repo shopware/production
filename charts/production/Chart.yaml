@@ -1,4 +1,5 @@
 apiVersion: v1
 description: A Helm chart for Kubernetes
+icon: https://www.php.net/images/logos/new-php-logo.png
 name: production
 version: v0.1.0
