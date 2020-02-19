@@ -95,8 +95,8 @@ Build:
     - composer install --ignore-platform-reqs --no-interaction
     - docker build . -t "${IMAGE_NAME}:${PLATFORM_COMMIT_SHA}"
     - docker push "${IMAGE_NAME}:${PLATFORM_COMMIT_SHA}"
-    - docker tag "${IMAGE_NAME}:${PLATFORM_COMMIT_SHA}" "${IMAGE_NAME}:${CI_COMMIT_TAG}"'
-    - docker push "${IMAGE_NAME}:${CI_COMMIT_TAG}"'
+    - docker tag "${IMAGE_NAME}:${PLATFORM_COMMIT_SHA}" "${IMAGE_NAME}:${CI_COMMIT_TAG}"
+    - docker push "${IMAGE_NAME}:${CI_COMMIT_TAG}"
     - 'echo TODO: tag as v6.1 if stable'
 
 Package:
@@ -156,8 +156,8 @@ Insert-Release-Data:
     - export BUILD_VERSION_TEXT=${VERSION_PARTS[1]}
     - '[[ -n $BUILD_VERSION ]]'
     - TSTAMP=$(date +%s)
-    - INSTALL_FILE=artifacts/install_${TAG#"v"}_${TSTAMP}.zip
-    - UPDATE_FILE=artifacts/update_${TAG#"v"}_${TSTAMP}.zip
+    - 'INSTALL_FILE=artifacts/install_${TAG#"v"}_${TSTAMP}.zip'
+    - 'UPDATE_FILE=artifacts/update_${TAG#"v"}_${TSTAMP}.zip'
     - mv artifacts/install.zip $INSTALL_FILE
     - mv artifacts/update.zip $UPDATE_FILE
     - s3cmd put artifacts/*.zip s3://releases.s3.shopware.com/sw6/ --acl-public
