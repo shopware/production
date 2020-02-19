@@ -154,7 +154,7 @@ CODE;
 
         if (isset($packageData['dist'])) {
             if ($packageData['dist']['type'] === 'path') {
-                throw new \LogicException('dist type path should not be possible for ' . $packageName);
+                return false; // retry
             }
 
             $distReference = $packageData['dist']['reference'];
