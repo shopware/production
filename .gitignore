@@ -22,12 +22,15 @@ custom/*
 /public/media/*
 !/public/media/.gitkeep
 /public/theme/*
+!/public/theme/.gitkeep
 /public/thumbnail/*
 !/public/thumbnail/.gitkeep
 /public/plugins/*
 /public/assets/*
 /public/sitemap/*
+!/public/sitemap/.gitkeep
 /public/bundles/*
+!/public/bundles/.gitkeep
 
 /files/*
 
