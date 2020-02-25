@@ -51,6 +51,8 @@ class ReleaseService
             $this->config['repos']
         );
 
+        $this->createInstallerVersionFile($this->config['projectRoot'], $tag);
+
         $this->createReleaseBranch(
             $this->config['projectRoot'],
             $tag,
@@ -97,6 +99,13 @@ CODE;
         $composerJson['minimum-stability'] = VersionParser::normalizeStability($stability);
 
         file_put_contents($composerJsonPath, \json_encode($composerJson, JSON_PRETTY_PRINT));
+    }
+
+    private function createInstallerVersionFile(string $projectRoot, string $tag): void
+    {
+        $dir = $projectRoot . '/public/recovery/install/data';
+        @mkdir($dir, 0770, true);
+        file_put_contents($dir . '/version', $tag);
     }
 
     private function updateComposerLock(string $composerLockPath, string $tag, array $repos): void
@@ -180,7 +189,7 @@ CODE;
 
         $shellCode = <<<CODE
             set -e
-            git -C $repository add PLATFORM_COMMIT_SHA composer.json composer.lock
+            git -C $repository add PLATFORM_COMMIT_SHA composer.json composer.lock public/recovery/install/data/version
             git -C $repository commit -m $commitMsg
             git -C $repository tag $tag -a -m $commitMsg
             git -C $repository remote add release $gitRemoteUrl
