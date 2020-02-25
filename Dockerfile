@@ -35,8 +35,7 @@ ADD --chown=sw6 . .
 RUN bin/console assets:install \
     && rm -Rf var/cache \
     && touch install.lock \
-    && mkdir -p var/cache var/queue \
-    && php -r 'include_once "vendor/autoload.php"; echo (explode("@", PackageVersions\Versions::getVersion("shopware/core"))[0]);' > public/recovery/install/data/version
+    && mkdir -p var/cache
 
 # Expose the port nginx is reachable on
 EXPOSE 8000
