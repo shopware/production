@@ -275,7 +275,7 @@ e2e-tests:on-nightly:
     COMPOSE_FILE: "docker-compose.yml:.gitlab-ci/conf/docker-compose.e2e.yml"
   script:
     - set -x
-    - apk --no-cache add composer php-dom php-tokenizer php-xmlwriter php-xml curl curl-dev git
+    - apk --no-cache add composer php-dom php-tokenizer php-xmlwriter php-xml php-pdo_mysql curl curl-dev git
     - composer install --working-dir=.gitlab-ci/tools
     - export TAG=${TAG:-$(.gitlab-ci/tools/console show-next-tag)}
     - export IMAGE_TAG="${TAG}-dev"
@@ -288,7 +288,8 @@ e2e-tests:on-nightly:
     - docker tag ${IMAGE_NAME}:${IMAGE_TAG} shopware-production:local
     - mkdir -p vendor/shopware/recovery/Test/e2e
     - docker-compose up -d app_server
-    - sleep 3
+    - sleep 10
+    - docker-compose exec -T app_server bin/console assets:install
     - docker cp $(docker-compose ps -q app_server):/sw6/vendor/shopware/recovery/Test/e2e/ vendor/shopware/recovery/Test/
     - docker-compose up -d
     - sleep 3

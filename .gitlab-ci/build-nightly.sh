@@ -7,8 +7,6 @@ set -x
 
 [[ -n ${TAG} ]]
 
-IMAGE_NAME=${IMAGE_NAME:-"gitlab.shopware.com:5005/shopware/6/product/production"}
-
 CWD="$(cd -P -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 export PROJECT_ROOT="${PROJECT_ROOT:-"$(dirname $CWD)"}"
 
@@ -17,6 +15,8 @@ export STOREFRONT_ROOT=repos/storefront/
 
 cd $PROJECT_ROOT
 cp ${CWD}/plugins.json var/plugins.json
+
+composer install --ignore-platform-reqs --no-interaction
 
 ${PROJECT_ROOT}/bin/build-js.sh
 
