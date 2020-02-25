@@ -8,6 +8,7 @@ use Defuse\Crypto\Key;
 use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\DriverManager;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -203,28 +204,24 @@ class SystemSetupCommand extends Command
             return 0;
         }
 
-        $passphrase = $input->getOption('jwt-passphrase');
+        $command = $this->getApplication()->find('system:generate-jwt-secret');
+        $parameters = [
+            '--private-key-path' => $jwtDir . '/private.pem',
+            '--public-key-path' => $jwtDir . '/public.pem',
+        ];
 
-        $io->confirm('Generate jwt keys?');
+        if ($input->getOption('force')) {
+            $parameters['--force'] = true;
+        }
+        if ($input->getOption('jwt-passphrase')) {
+            $parameters['--jwt-passphrase'] = $input->getOption('jwt-passphrase');
+        }
 
-        $key = openssl_pkey_new([
-            'digest_alg' => 'aes256',
-            'private_key_type' => OPENSSL_KEYTYPE_RSA,
-            'encrypt_key' => $passphrase,
-            'encrypt_key_cipher' => OPENSSL_CIPHER_AES_256_CBC
-        ]);
+        $ret = $command->run(new ArrayInput($parameters, $command->getDefinition()), $io);
 
-        // export private key
-        openssl_pkey_export_to_file($key, $jwtDir . '/private.pem', $passphrase);
 
-        // export public key
-        $keyData = openssl_pkey_get_details($key);
-        file_put_contents($jwtDir . '/public.pem', $keyData['key']);
 
-        chmod($jwtDir . '/private.pem', 0660);
-        chmod($jwtDir . '/public.pem', 0660);
-
-        return 0;
+        return $ret;
     }
 
     private function generateInstanceId(): string
