@@ -40,6 +40,22 @@
             <tag name="console.command"/>
         </service>
 
+        <service id="Shopware\Production\Command\StoreDownloadCommand">
+            <argument type="service" id="Shopware\Core\Framework\Store\Services\StoreClient" />
+            <argument type="service" id="plugin.repository" />
+            <argument type="service" id="Shopware\Core\Framework\Plugin\PluginManagementService" />
+            <argument type="service" id="Shopware\Core\Framework\Plugin\PluginLifecycleService" />
+            <argument type="service" id="user.repository" />
+            <tag name="console.command"/>
+        </service>
+
+        <service id="Shopware\Production\Command\StoreLoginCommand">
+            <argument type="service" id="Shopware\Core\Framework\Store\Services\StoreClient" />
+            <argument type="service" id="user.repository" />
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <tag name="console.command"/>
+        </service>
+
         <service class="League\OAuth2\Server\CryptKey" id="shopware.private_key">
             <argument>%kernel.project_dir%/config/jwt/private.pem</argument>
             <argument>%env(string:default:jwt_private_key_passphrase_default:JWT_PRIVATE_KEY_PASSPHRASE)%</argument>
