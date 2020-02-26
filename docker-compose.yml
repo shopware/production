@@ -30,8 +30,7 @@ services:
       - "./public/sitemap:/sw6/public/sitemap"
       - "./public/theme:/sw6/public/theme"
       - "./public/thumbnail:/sw6/public/thumbnail"
-      - "./var/cache:/sw6/var/cache"
-      - "./var/log:/sw6/var/log"
+      - "./var:/sw6/var"
 
   mysql:
     image: mysql:5.7
