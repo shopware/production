@@ -56,6 +56,7 @@ class StoreLoginCommand extends Command
         $this->addOption('shopwareId', 'i', InputOption::VALUE_REQUIRED, 'Shopware ID')
             ->addOption('password', 'p', InputOption::VALUE_REQUIRED, 'Password')
             ->addOption('user', 'u', InputOption::VALUE_REQUIRED, 'User')
+            ->addOption('host', 'g', InputOption::VALUE_OPTIONAL, 'User')
             ->addOption('language', 'l', InputOption::VALUE_OPTIONAL, 'Language', '')
         ;
     }
@@ -63,6 +64,11 @@ class StoreLoginCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $context = Context::createDefaultContext();
+
+        $host = $input->getOption('host');
+        if (!empty($host)) {
+            $this->configService->set('core.store.licenseHost', $host);
+        }
 
         $shopwareId = $input->getOption('shopwareId');
         $password = $input->getOption('password');
