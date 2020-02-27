@@ -97,7 +97,7 @@ class ReleaseServiceTest extends TestCase
                 'commit sha of repos/core 36f9ca136c87f4d3f860cd6b2516f02f2516f02a should be the sames as shopware/core.source.reference 36f9ca136c87f4d3f860cd6b2516f02bdeadbeef'
             ],
             [
-                true,
+                false,
                 [
                     'name' => 'shopware/core',
                     'version' => 'v6.2.0',
@@ -114,8 +114,6 @@ class ReleaseServiceTest extends TestCase
                     'path' => 'repos/core',
                     'reference' => $validSha
                 ],
-                \LogicException::class,
-                'dist type path should not be possible for shopware/core'
             ],
             [
                 true,
@@ -165,9 +163,9 @@ class ReleaseServiceTest extends TestCase
         $this->setUpRepos();
 
         $config = $this->getBaseConfig();
-        $tag = $config['tag'] = 'v6.1.2';
+        $tag = $config['tag'] = 'v6.1.999';
 
-        $this->makeFakeRelease($config, 'v6.1.1');
+        $this->makeFakeRelease($config, 'v6.1.998');
 
         $releaseService = new ReleaseService($config, $client);
 
@@ -179,6 +177,8 @@ class ReleaseServiceTest extends TestCase
 
         static::assertSame($composerJson['minimum-stability'], 'stable');
 
+        static::assertFileExists($config['projectRoot'] . '/public/recovery/install/data/version');
+        static::assertSame($tag, file_get_contents($config['projectRoot'] . '/public/recovery/install/data/version'));
 
         $localProdSha = $this->execGit(['rev-parse', $tag], $this->fakeProd);
         $prodSha = $this->execGit(['rev-parse', $tag], $this->fakeRemoteRepos . '/prod');
@@ -213,8 +213,13 @@ class ReleaseServiceTest extends TestCase
     {
         $this->stopGitServer();
 
-        exec('rm -Rf ' . escapeshellarg($this->fakeProd));
-        exec('rm -Rf ' . escapeshellarg($this->fakeRemoteRepos) . '/*');
+        if ($this->fakeProd && trim($this->fakeProd) !== '/') {
+            exec('rm -Rf ' . escapeshellarg($this->fakeProd));
+        }
+
+        if ($this->fakeRemoteRepos && trim($this->fakeRemoteRepos) !== '/') {
+            exec('rm -Rf ' . escapeshellarg($this->fakeRemoteRepos) . '/*');
+        }
     }
 
     private function startGitServer(): void

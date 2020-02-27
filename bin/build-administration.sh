@@ -6,8 +6,8 @@ export PROJECT_ROOT="${PROJECT_ROOT:-"$(dirname $CWD)"}"
 ADMIN_ROOT="${ADMIN_ROOT:-"${PROJECT_ROOT}/vendor/shopware/administration"}"
 
 # build admin
-"${CWD}/console" bundle:dump
+[[ ${CI} ]] || "${CWD}/console" bundle:dump
 npm clean-install --prefix ${ADMIN_ROOT}/Resources
 npm run --prefix ${ADMIN_ROOT}/Resources lerna -- bootstrap
 npm run --prefix ${ADMIN_ROOT}/Resources/app/administration/ build
-"${CWD}/console" asset:install
+[[ ${CI} ]] || "${CWD}/console" asset:install
