@@ -23,6 +23,7 @@
     <services>
         <service id="Shopware\Production\Command\SystemInstallCommand">
             <argument type="string">%kernel.project_dir%</argument>
+            <argument type="string">%kernel.cache_dir%</argument>
             <tag name="console.command"/>
         </service>
 

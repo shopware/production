@@ -9,6 +9,7 @@ use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\FetchMode;
 use Shopware\Core\Framework\Adapter\Console\ShopwareStyle;
 use Shopware\Production\Kernel;
+use Symfony\Bundle\FrameworkBundle\Command\CacheClearCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
@@ -30,10 +31,16 @@ class SystemInstallCommand extends Command
      */
     protected $io;
 
-    public function __construct(string $projectDir)
+    /**
+     * @var string
+     */
+    private $cacheDir;
+
+    public function __construct(string $projectDir, string $cacheDir)
     {
         parent::__construct();
         $this->projectDir = $projectDir;
+        $this->cacheDir = $cacheDir;
     }
 
     protected function configure(): void
@@ -185,6 +192,11 @@ class SystemInstallCommand extends Command
             $returnCode = $command->run(new ArrayInput($parameters, $command->getDefinition()), $output);
             if ($returnCode !== 0) {
                 return $returnCode;
+            }
+
+            // recreate cache dir after clearing cache
+            if (($command instanceof CacheClearCommand) && !is_dir($this->cacheDir)) {
+                @mkdir($this->cacheDir, 0777, true);
             }
         }
 
