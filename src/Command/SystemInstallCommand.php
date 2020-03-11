@@ -169,11 +169,19 @@ class SystemInstallCommand extends Command
      */
     private function runCommands(array $commands, OutputInterface $output): int
     {
-        foreach($commands as $parameters) {
+        $executedCommands = [];
+
+        foreach ($commands as $parameters) {
             $output->writeln('');
 
             $command = $this->getApplication()->find($parameters['command']);
-            unset($parameters['command']);
+
+            // keep command parameter as it is needed when a command is executed twice
+            if (!in_array($command->getName(), $executedCommands)) {
+                $executedCommands[] = $command->getName();
+                unset($parameters['command']);
+            }
+
             $returnCode = $command->run(new ArrayInput($parameters, $command->getDefinition()), $output);
             if ($returnCode !== 0) {
                 return $returnCode;
