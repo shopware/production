@@ -142,7 +142,7 @@ Insert-Release-Data:
   script:
     - 'set -x'
     - '[[ -e artifacts/install.zip && -e artifacts/update.zip ]]'
-    - export TAG=${CI_COMMIT_TAG:-{TAG:-$(.gitlab-ci/tools/console show-next-tag)}}
+    - export TAG=${CI_COMMIT_TAG:-${TAG:-$(.gitlab-ci/tools/console show-next-tag)}}
     - >
       case $TAG in
         *-rc*) BUILD_CHANNEL=80;;
@@ -162,7 +162,7 @@ Insert-Release-Data:
     - mv artifacts/update.zip $UPDATE_FILE
     - s3cmd put artifacts/*.zip s3://releases.s3.shopware.com/sw6/ --acl-public
     - VERSION_TEXT_PARAM=
-    - if [[ -n ${BUILD_VERSION_TEXT} ]]; then VERSION_TEXT_PARAM="--version-text=${BUILD_VERSION_TEXT}" fi
+    - if [[ -n ${BUILD_VERSION_TEXT} ]]; then VERSION_TEXT_PARAM="--version-text=${BUILD_VERSION_TEXT}"; fi
     - ssh shopware@${UPDATE_API_HOST} php /var/www/shopware-update-api/bin/console insert:release:data --release-version=${BUILD_VERSION} ${VERSION_TEXT_PARAM} --channel=${BUILD_CHANNEL} --min-version=6.0.0 --install-uri=${PACKAGE_BASE_URL}$(basename $INSTALL_FILE) --install-size=$(stat -c %s $INSTALL_FILE) --install-sha1=$(sha1sum $INSTALL_FILE | cut -d ' ' -f 1) --install-sha256=$(sha256sum $INSTALL_FILE | cut -d ' ' -f 1) --update-uri=${PACKAGE_BASE_URL}$(basename $UPDATE_FILE) --update-size=$(stat -c %s $UPDATE_FILE) --update-sha1=$(sha1sum $UPDATE_FILE | cut -d ' ' -f 1) --update-sha256=$(sha256sum $UPDATE_FILE | cut -d ' ' -f 1)
 
 .Tag-Platform:
