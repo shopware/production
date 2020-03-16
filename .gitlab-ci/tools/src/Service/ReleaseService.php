@@ -67,6 +67,33 @@ class ReleaseService
         );
     }
 
+    public function deleteTag(string $tag, array $repos): void
+    {
+        $pureTag = $tag;
+        $ref = escapeshellarg("refs/tags/$tag");
+        $tag = escapeshellarg($tag);
+        $privateToken = $this->config['gitlabApiToken'];
+
+        foreach ($repos as $repo => $repoData) {
+            $path = escapeshellarg($repoData['path']);
+            $githubUrl = $repoData['githubUrl'];
+
+            $shellCode = <<<CODE
+    git -C $path -d tag $tag || true
+    git -C $path push origin :$ref
+    curl -X DELETE -H "Private-Token: $privateToken" $githubUrl/git/refs/tags/$pureTag
+CODE;
+
+            echo 'exec: ' . $shellCode . PHP_EOL;
+
+            system($shellCode, $retCode);
+
+            if ($retCode !== 0) {
+                echo 'Failed to delete tag for ' . $repoData['remoteUrl'] . '. Please delete by manual' . PHP_EOL;
+            }
+        }
+    }
+
     private function tagAndPushRepos(string $tag, array $repos): void
     {
         $ref = escapeshellarg("refs/tags/$tag");

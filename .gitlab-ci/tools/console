@@ -4,6 +4,7 @@
 require __DIR__ . '/vendor/autoload.php';
 
 use Shopware\CI\Command\CreateReleaseBranchCommand;
+use Shopware\CI\Command\DeleteTagCommand;
 use Shopware\CI\Command\GenerateChangelogCommand;
 use Shopware\CI\Command\ShowNextTagCommand;
 use Symfony\Component\Console\Application;
@@ -13,5 +14,6 @@ $application = new Application('Shopware CI');
 $application->add(new GenerateChangelogCommand());
 $application->add(new ShowNextTagCommand());
 $application->add(new CreateReleaseBranchCommand());
+$application->add(new DeleteTagCommand());
 
 $application->run();
