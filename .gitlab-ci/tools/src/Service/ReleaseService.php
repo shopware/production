@@ -154,6 +154,8 @@ CODE;
                 $repoData['reference'] = exec('git -C ' . escapeshellarg($repoData['path']) . ' rev-parse HEAD');
 
                 if (!$this->validatePackage($package, $tag, $repoData)) {
+                    echo "retry! current packageData:" . PHP_EOL;
+                    var_dump($package);
                     continue 2;
                 }
             }
