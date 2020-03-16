@@ -342,4 +342,5 @@ Create-Release-Branch:
     - export PROJECT_ROOT=$(pwd)
     - docker cp $(docker-compose ps -q app_server):/sw6/vendor/ .
     - docker cp $(docker-compose ps -q app_server):/sw6/composer.lock composer.lock
+    - rm -Rf vendor/shopware
     - .gitlab-ci/tools/console create-release-branch $TAG
