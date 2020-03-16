@@ -123,9 +123,14 @@ CODE;
     private function updateStability(string $composerJsonPath, string $stability): void
     {
         $composerJson = json_decode(file_get_contents($composerJsonPath), true);
-        $composerJson['minimum-stability'] = VersionParser::normalizeStability($stability);
 
-        file_put_contents($composerJsonPath, \json_encode($composerJson, JSON_PRETTY_PRINT));
+        $currentStability = VersionParser::normalizeStability($composerJson['minimum-stability']);
+        $newStability = VersionParser::normalizeStability($stability);
+
+        if ($currentStability !== $newStability) {
+            $encoded = \json_encode($composerJson, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
+            file_put_contents($composerJsonPath, $encoded);
+        }
     }
 
     private function createInstallerVersionFile(string $projectRoot, string $tag): void

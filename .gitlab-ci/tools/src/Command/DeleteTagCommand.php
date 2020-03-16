@@ -19,7 +19,7 @@ class DeleteTagCommand extends Command
     {
         $config = [
             'projectId' => $_SERVER['CI_PROJECT_ID'],
-            'gitlabBaseUri' => $_SERVER['CI_API_V4_URL'],
+            'gitlabBaseUri' => $_SERVER['CI_API_V4_URL'] . '/api/v4',
             'gitlabRemoteUrl' => $_SERVER['CI_REPOSITORY_URL'],
             'gitlabApiToken' => $_SERVER['BOT_API_TOKEN'],
             'tag' => $tag,
