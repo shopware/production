@@ -6,7 +6,7 @@
         "optimize-autoloader": true
     },
     "prefer-stable": true,
-    "minimum-stability": "stable",
+    "minimum-stability": "RC",
     "scripts": {
         "pre-install-cmd": [
             "[ ! -f vendor\/autoload.php ] || bin\/console system:update:prepare"
@@ -42,11 +42,11 @@
     "require": {
         "php": "~7.2",
         "ocramius\/package-versions": "1.4.0",
-        "shopware\/core": "v6.1.*",
-        "shopware\/administration": "v6.1.*",
-        "shopware\/storefront": "v6.1.*",
-        "shopware\/elasticsearch": "v6.1.*",
-        "shopware\/recovery": "v6.1.*"
+        "shopware\/core": "~v6.2",
+        "shopware\/administration": "~v6.2",
+        "shopware\/storefront": "~v6.2",
+        "shopware\/elasticsearch": "~v6.2",
+        "shopware\/recovery": "~v6.2"
     },
     "require-dev": {
         "ext-tokenizer": "*",

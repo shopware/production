@@ -11,7 +11,7 @@ variables:
   GIT_EMAIL: "shopwareBot@shopware.com"
   IMAGE_NAME: "gitlab.shopware.com:5005/shopware/6/product/production"
   PACKAGE_BASE_URL: "https://releases.shopware.com/sw6/"
-  PLATFORM_BRANCH: "6.1"
+  PLATFORM_BRANCH: "master"
 
 stages:
   - prepare-build

@@ -106,12 +106,12 @@ class SystemInstallCommand extends Command
         $commands = [
             [
                 'command' =>'database:migrate',
-                'identifier' => 'Shopware\\',
+                'identifier' => 'core',
                 '--all'  => true,
             ],
             [
                 'command' => 'database:migrate-destructive',
-                'identifier' => 'Shopware\\',
+                'identifier' => 'core',
                 '--all'  => true,
             ],
             [
