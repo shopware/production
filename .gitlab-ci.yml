@@ -152,7 +152,7 @@ Insert-Release-Data:
         *) BUILD_CHANNEL=100;;
       esac
     - 'IFS="-" read -ra VERSION_PARTS <<< "$TAG"'
-    - export BUILD_VERSION=${VERSION_PARTS[0]}
+    - export BUILD_VERSION=${VERSION_PARTS[0]#"v"}
     - export BUILD_VERSION_TEXT=${VERSION_PARTS[1]}
     - '[[ -n $BUILD_VERSION ]]'
     - TSTAMP=$(date +%s)
