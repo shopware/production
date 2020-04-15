@@ -43,10 +43,13 @@
         <service class="League\OAuth2\Server\CryptKey" id="shopware.private_key">
             <argument>%kernel.project_dir%/config/jwt/private.pem</argument>
             <argument>%env(string:default:jwt_private_key_passphrase_default:JWT_PRIVATE_KEY_PASSPHRASE)%</argument>
+            <argument key="$keyPermissionsCheck">false</argument>
         </service>
 
         <service class="League\OAuth2\Server\CryptKey" id="shopware.public_key">
             <argument>%kernel.project_dir%/config/jwt/public.pem</argument>
+            <argument></argument>
+            <argument key="$keyPermissionsCheck">false</argument>
         </service>
 
         <service id="_dummy_env_usage" class="iterable" lazy="true">
