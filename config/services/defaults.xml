@@ -11,8 +11,8 @@
 
         <parameter key="elasticsearch.enabled">%env(bool:default:default_whitespace:SHOPWARE_ES_ENABLED)%</parameter>
         <parameter key="elasticsearch.indexing_enabled">%env(bool:default:default_whitespace:SHOPWARE_ES_INDEXING_ENABLED)%</parameter>
-        <parameter key="elasticsearch.hosts">%env(default:default_whitespace:SHOPWARE_ES_HOSTS)%</parameter>
-        <parameter key="elasticsearch.index_prefix">%env(default:default_elasticsearch_prefix:SHOPWARE_ES_INDEX_PREFIX)%</parameter>
+        <parameter key="elasticsearch.hosts">%env(string:default:default_whitespace:SHOPWARE_ES_HOSTS)%</parameter>
+        <parameter key="elasticsearch.index_prefix">%env(string:default:default_elasticsearch_prefix:SHOPWARE_ES_INDEX_PREFIX)%</parameter>
 
         <parameter key="shopware.store.frw">true</parameter>
 
