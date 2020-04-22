@@ -23,6 +23,7 @@ services:
       - SHOPWARE_ES_INDEXING_ENABLED=1
       - SHOPWARE_ES_INDEX_PREFIX=sw
       - SHOPWARE_CDN_STRATEGY_DEFAULT=id
+      - MAILER_URL=smtp://localhost:25?encryption=&auth_mode=
     volumes:
       - "./config/jwt:/sw6/config/jwt"
       - "./public/bundles:/sw6/public/bundles"
