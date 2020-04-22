@@ -20,6 +20,7 @@ services:
       - APP_ENV=prod
       - INSTANCE_ID=
       - APP_URL=http://docker.vm:8000
+      - BLUE_GREEN_DEPLOYMENT=1
       - SHOPWARE_ES_ENABLED=1
       - SHOPWARE_ES_HOSTS=elasticsearch:9200
       - SHOPWARE_ES_INDEXING_ENABLED=1

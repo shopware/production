@@ -11,7 +11,7 @@ variables:
   GIT_EMAIL: "shopwareBot@shopware.com"
   IMAGE_NAME: "gitlab.shopware.com:5005/shopware/6/product/production"
   PACKAGE_BASE_URL: "https://releases.shopware.com/sw6/"
-  PLATFORM_BRANCH: "master"
+  PLATFORM_BRANCH: "6.2"
 
 stages:
   - prepare-build
@@ -223,7 +223,7 @@ Insert-Release-Data:
       for TEST_SUITE in $TEST_SUITES; do
         log_unit_file=/artifacts/$TEST_SUITE.junit.xml
         set -x
-        docker-compose run --rm -u root unit -d memory_limit=1024M vendor/bin/phpunit --configuration phpunit.xml.dist --log-junit "$log_unit_file" --colors=never --testsuite "$TEST_SUITE"
+        docker-compose run --rm -u root unit -d memory_limit=1824M vendor/bin/phpunit --configuration phpunit.xml.dist --log-junit "$log_unit_file" --colors=never --testsuite "$TEST_SUITE"
         set +x
         tail -n +3 artifacts/$TEST_SUITE.junit.xml | head -n -1 >> artifacts/phpunit.junit.xml
       done

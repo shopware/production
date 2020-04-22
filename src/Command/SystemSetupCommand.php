@@ -50,7 +50,9 @@ class SystemSetupCommand extends Command
             'SHOPWARE_ES_INDEX_PREFIX' => 'sw',
             'SHOPWARE_HTTP_CACHE_ENABLED' => '1',
             'SHOPWARE_HTTP_DEFAULT_TTL' => '7200',
-            'SHOPWARE_CDN_STRATEGY_DEFAULT' => 'id'
+            'SHOPWARE_CDN_STRATEGY_DEFAULT' => 'id',
+            'BLUE_GREEN_DEPLOYMENT' => 1,
+            'MAILER_URL' => 'smtp://localhost:25?encryption=&auth_mode='
         ];
 
         $io = new SymfonyStyle($input, $output);
@@ -80,6 +82,9 @@ class SystemSetupCommand extends Command
 
             return $value;
         });
+
+        $io->section('Application information');
+        $env['BLUE_GREEN_DEPLOYMENT'] = $io->choice('Blue Green Deployment', [1, 0], 1);
 
         $io->section('Generate keys and secrets');
 

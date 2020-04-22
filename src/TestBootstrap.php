@@ -12,6 +12,7 @@ $testEnv = [
     'APP_SECRET' => 's$cretf0rt3st',
     'KERNEL_CLASS' => \Shopware\Production\Kernel::class,
     'SHOPWARE_ES_ENABLED' => '',
+    'BLUE_GREEN_DEPLOYMENT' => 1,
     'SHOPWARE_ES_INDEXING_ENABLED' => '',
     'JWT_PRIVATE_KEY_PASSPHRASE' => 'shopware',
     'VERSION' => $_SERVER['VERSION'] ?? $_SERVER['BUILD_VERSION'] ?? 'v6.1.0'
