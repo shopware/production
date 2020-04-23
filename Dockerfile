@@ -20,7 +20,7 @@ RUN apk --no-cache add \
 # Copy system configs
 COPY config/etc /etc
 
-# Make sure files/folders needed by the processes are accessable when they run under the sw6
+# Make sure files/folders needed by the processes are accessible when they run under the sw6
 RUN chown -R sw6.sw6 /run && \
   chown -R sw6.sw6 /var/lib/nginx && \
   chown -R sw6.sw6 /var/tmp/nginx && \
