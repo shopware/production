@@ -146,6 +146,7 @@ Insert-Release-Data:
     - >
       case $TAG in
         *-rc*) BUILD_CHANNEL=80;;
+        *-RC*) BUILD_CHANNEL=80;;
         *-beta*) BUILD_CHANNEL=60;;
         *-alpha*) BUILD_CHANNEL=40;;
         *-dev*) BUILD_CHANNEL=20;;
