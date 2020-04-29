@@ -79,7 +79,7 @@ class SystemUpdateFinishCommand extends Command
         $command = $this->getApplication()->find('database:migrate');
 
         $arguments = [
-            'identifier' => 'Shopware\\',
+            'identifier' => 'core',
             '--all'  => true,
         ];
         $arrayInput = new ArrayInput($arguments, $command->getDefinition());
