@@ -53,7 +53,7 @@ if ($input->getFirstArgument() === 'system:install') {
     $_SERVER['INSTALL'] = true;
 }
 
-if (!isset($_SERVER['DATABASE_URL'])) {
+if (trim($_SERVER['DATABASE_URL'] ?? '') === '') {
     // fake DATABASE_URL
     $_SERVER['DATABASE_URL'] = Kernel::PLACEHOLDER_DATABASE_URL;
 } else if (!isset($_SERVER['INSTALL'])) {

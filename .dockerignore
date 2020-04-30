@@ -18,3 +18,9 @@ docker-compose.override.yml
 
 /var/build-cache
 /public/theme
+
+/public/media
+/public/sitemap
+/public/theme
+/public/thumbnail
+/artifacts

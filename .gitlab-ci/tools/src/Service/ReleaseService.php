@@ -144,11 +144,16 @@ CODE;
     {
         $dir = escapeshellarg($this->config['projectRoot']);
 
+        sleep(45);
+
         $max = 10;
         for($i = 0; $i < $max; ++$i) {
             sleep(15);
 
-            $cmd = 'composer update --working-dir=' . $dir . ' "shopware/*" --ignore-platform-reqs --no-interaction --no-scripts';
+            $cmd = 'cd ' . $dir . ' && rm -Rf vendor/shopware';
+            system($cmd);
+
+            $cmd = 'composer update -vvv --working-dir=' . $dir . ' "shopware/*" --ignore-platform-reqs --no-interaction --no-scripts';
             system($cmd);
 
             $composerLock = json_decode(file_get_contents($composerLockPath), true);

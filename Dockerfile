@@ -6,7 +6,7 @@ ENV ARTIFACTS_DIR=/artifacts
 ENV LD_PRELOAD=/usr/lib/preloadable_libiconv.so
 
 RUN apk --no-cache add \
-        nginx supervisor curl zip rsync \
+        nginx supervisor curl zip rsync xz \
         php7 php7-fpm \
         php7-ctype php7-curl php7-dom php7-fileinfo php7-gd \
         php7-iconv php7-intl php7-json php7-mbstring \
@@ -32,7 +32,7 @@ USER sw6
 
 ADD --chown=sw6 . .
 
-RUN bin/console assets:install \
+RUN DATABASE_URL="" bin/console assets:install \
     && rm -Rf var/cache \
     && touch install.lock \
     && mkdir -p var/cache
