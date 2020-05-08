@@ -9,8 +9,6 @@ services:
       - app_server:docker.vm
     environment:
       - CYPRESS_baseUrl=http://docker.vm:8000
-      - npm_config_cache=/cache/npm
-      - CYPRESS_CACHE_FOLDER=/cache/Cypress
     volumes:
       - ./vendor/shopware/recovery/Test/e2e:/e2e-Installer
       - ./var/build-cache/:/cache

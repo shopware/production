@@ -1,370 +1,216 @@
 variables:
-  DOCKER_DRIVER: overlay2
-  DOCKER_TLS_CERTDIR: "/certs"
-  DOCKER_HOST: "tcp://docker:2375"
-  COMPOSE_PROJECT_NAME: "sw6_ci"
-  TEST_SUITES: "administration framework storefront checkout content system elasticsearch docs migration"
-  SPLIT_REPOS: "Administration Storefront Core Elasticsearch Recovery"
-  REPOSITORY_HOST: "gitlab.shopware.com:5005"
-  npm_config_cache: "var/build-cache/npm"
-  GIT_USER: "shopwareBot"
-  GIT_EMAIL: "shopwareBot@shopware.com"
-  IMAGE_NAME: "gitlab.shopware.com:5005/shopware/6/product/production"
-  PACKAGE_BASE_URL: "https://releases.shopware.com/sw6/"
-  MINIMUM_STABILITY: ""
-  PLATFORM_BRANCH: "6.2"
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: "/certs"
+    DOCKER_HOST: "tcp://docker:2375"
+    # shopware 6 variables
+    MYSQL_ROOT_PASSWORD: root
+    WEB_DOCUMENT_ROOT: '$CI_PROJECT_DIR/public'
+    APP_URL: http://localhost:8000
+    INSTANCE_ID: ""
+    MAILER_URL: smtp://localhost:25?encryption=&auth_mode=
+    SHOPWARE_CDN_STRATEGY_DEFAULT: id
+    BLUE_GREEN_DEPLOYMENT: 1
+    SHOPWARE_ES_ENABLED: 1
+    SHOPWARE_ES_HOSTS: elasticsearch:9200
+    SHOPWARE_ES_INDEXING_ENABLED: 1
+    SHOPWARE_ES_INDEX_PREFIX: sw
+    # The platform branch used to split the repos
+    PLATFORM_BRANCH: "6.2"
+    # minimum stability of the new version. current: v6.2.0-RC2 -> if rc: v6.2.0-RC3, if stable: v6.2.0
+    MINIMUM_STABILITY: "stable"
+    TEST_SUITES: "administration framework storefront checkout content system elasticsearch docs migration"
+    SPLIT_REPOS: "Administration Storefront Core Elasticsearch Recovery"
+    PACKAGE_BASE_URL: "https://releases.shopware.com/sw6/"
 
-stages:
-  - prepare-build
-  - build
-  - package
-  - test
-  - prepare-release
-  - release
+include:
+    -   local: .gitlab-ci/release.yml
 
-Split-Repos:on-nightly:
-  stage: prepare-build
-  only:
-    refs:
-      - schedules
-  image: debian:buster-slim
-  variables:
-    SPLITSH: /usr/bin/splitsh-lite
-  before_script:
-    - apt-get update && apt-get install -y wget git
-    - wget https://github.com/splitsh/lite/releases/download/v1.0.1/lite_linux_amd64.tar.gz
-    - tar -xf lite_linux_amd64.tar.gz ./splitsh-lite
-    - chmod +x splitsh-lite
-    - mv splitsh-lite $SPLITSH
-    - HASH_CHECK_LINE="ec46c5a409422bf55b26f7de1faab67c2320362934947f984872b3aedc4a9d99  $SPLITSH"
-    - echo $HASH_CHECK_LINE | sha256sum -c
-  script:
-    - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/platform.git -b ${PLATFORM_BRANCH} --bare platform
-    - git -C platform remote set-url origin https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/platform.git
-    - git -C platform fetch origin
-    - >
-      for pkg in $SPLIT_REPOS ; do
-        .gitlab-ci/split_repo.sh platform src/${pkg}
-        git -C platform/ rev-parse HEAD > repos/${pkg,,}/PLATFORM_COMMIT_SHA
-      done
-  artifacts:
-    expire_in: 1 week
-    paths:
-      - repos/*
-
-Build:on-nightly:
-  stage: build
-  only:
-    refs:
-      - schedules
-  image: docker
-  services:
-    - name: docker:18.09.7-dind
-      alias: docker
-  dependencies:
-    - Split-Repos:on-nightly
-  before_script:
-    - apk --no-cache add openssh-client git bash jq composer php-dom php-tokenizer php-xmlwriter php-xml curl curl-dev npm
-    - git config --global user.email $GIT_EMAIL
-    - git config --global user.name $GIT_USER
-    - docker login gitlab.shopware.com:5005 -u $REGISTRY_USERNAME --password-stdin < $REGISTRY_PASSWORD_FILE
-    - '[ -n "$TAG" ] || composer install --working-dir=.gitlab-ci/tools'
-  script:
-    - export TAG=${TAG:-$(.gitlab-ci/tools/console show-next-tag --minimum-stability "$MINIMUM_STABILITY")}
-    - export IMAGE_TAG="${TAG}-dev"
-    - .gitlab-ci/build-nightly.sh
-    - docker build . -t "${IMAGE_NAME}:${IMAGE_TAG}"
-    - docker push "${IMAGE_NAME}:${IMAGE_TAG}"
-  artifacts:
-    expire_in: 1 week
-    paths:
-      - repos/*
-
-Build:
-  stage: build
-  only:
-    - tags
-  image: docker
-  services:
-    - name: docker:18.09.7-dind
-      alias: docker
-  before_script:
-    - apk add git bash jq composer npm
-    - docker login gitlab.shopware.com:5005 -u $REGISTRY_USERNAME --password-stdin < $REGISTRY_PASSWORD_FILE
-  script:
-    - export PLATFORM_COMMIT_SHA=$(cat PLATFORM_COMMIT_SHA)
-    - composer install --ignore-platform-reqs --no-interaction
-    - docker build . -t "${IMAGE_NAME}:${PLATFORM_COMMIT_SHA}"
-    - docker push "${IMAGE_NAME}:${PLATFORM_COMMIT_SHA}"
-    - docker tag "${IMAGE_NAME}:${PLATFORM_COMMIT_SHA}" "${IMAGE_NAME}:${CI_COMMIT_TAG}"
-    - docker push "${IMAGE_NAME}:${CI_COMMIT_TAG}"
-    - 'echo TODO: tag as v6.1 if stable'
-
-Package:
-  stage: package
-  image:
-    name: docker/compose:1.24.1
-    entrypoint: [""]
-  services:
-    - name: docker:18.09.7-dind
-      alias: docker
-  only:
-    refs:
-      - tags
-      - schedules
-  before_script:
-    - '[ -n "$TAG" ] || apk --no-cache add openssh-client git bash jq composer php-dom php-tokenizer php-xmlwriter php-xml curl curl-dev'
-    - '[ -n "$TAG" ] || composer install --working-dir=.gitlab-ci/tools'
-    - docker login $REPOSITORY_HOST -u $REGISTRY_USERNAME --password-stdin < $REGISTRY_PASSWORD_FILE
-  script:
-    - TAG=${TAG:-$(.gitlab-ci/tools/console  show-next-tag --minimum-stability "$MINIMUM_STABILITY")}
-    - IMAGE_TAG="${CI_COMMIT_TAG:-${TAG}-dev}"
-    - docker pull ${IMAGE_NAME}:${IMAGE_TAG}
-    - docker run -v $PWD/artifacts:/artifacts --entrypoint=bin/package.sh ${IMAGE_NAME}:${IMAGE_TAG}
-    - mv artifacts/install.tar.xz artifacts/install_${IMAGE_TAG}.tar.xz
-  artifacts:
-    paths:
-      - artifacts/
-
-Upload-Dev-Archive:
-    stage: prepare-release
-    image: debian:buster-slim
+Test-Package:
+    stage: build
+    tags:
+        - release
     only:
-      refs:
-        - schedules
-    dependencies:
-        - Package
+        refs:
+            - schedules
+    image: debian:buster-slim
+    services:
+        -   name: docker:18.09.7-dind
+            alias: docker
+    variables:
+        SPLITSH: /opt/splitsh-lite
+    cache:
+        key: "package_$PLATFORM_BRANCH"
+        paths:
+            - .platform
+            - .composer
+            - .apt
+            - .npm
+        policy: pull-push
     before_script:
-        - apt-get update && apt-get install -y python3-pip
-        - pip3 install -Iv s3cmd==2.0.2
+        - apt-get update
+        - DEB_PACKAGES="git jq composer php-dom php-tokenizer php-xmlwriter php-xml curl docker.io build-essential nodejs"
+        # setup caching
+        - rm /etc/apt/apt.conf.d/docker-clean
+        - cp -a /var/cache/apt .apt
+        - echo "Dir::Cache::Archives ${PWD}/.apt;" >> /etc/apt/apt.conf.d/cache.conf
+        - apt-get install -y --download-only curl
+        - apt-get install -y curl
+        - curl -sL https://deb.nodesource.com/setup_12.x | bash -
+        - apt-get install -y --download-only $DEB_PACKAGES
+        - apt-get install -y $DEB_PACKAGES
+        - npm config set cache $PWD/.npm
+        - composer config --global  cache-dir $PWD/.composer
+        # install helper tools
+        - composer install --working-dir=.gitlab-ci/tools
+        - '[[ -x $SPLITSH ]] || (curl -sL https://github.com/splitsh/lite/releases/download/v1.0.1/lite_linux_amd64.tar.gz | tar -xz ./splitsh-lite && mv splitsh-lite $SPLITSH)'
+        - chmod +x $SPLITSH
+        - HASH_CHECK_LINE="ec46c5a409422bf55b26f7de1faab67c2320362934947f984872b3aedc4a9d99  $SPLITSH"
+        - echo $HASH_CHECK_LINE | sha256sum -c
+        - git config --global user.email $GIT_EMAIL
+        - git config --global user.name $GIT_USER
     script:
-        - set -x
-        - cd artifacts
-        - INSTALL=$(ls install_*.tar.xz)
-        - echo $INSTALL
-        - s3cmd put $INSTALL s3://releases.s3.shopware.com/sw6/ --acl-public
-        - s3cmd put $INSTALL s3://releases.s3.shopware.com/sw6/install_${PLATFORM_BRANCH}_next.tar.xz --acl-public
+        # clone platform if it's not cached
+        - '[[ -d .platform/ ]] || git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/platform.git -b ${PLATFORM_BRANCH} --bare .platform'
+        - git -C .platform remote set-url origin https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/platform.git
+        # fetch newest changes from $PLATFORM_BRANCH
+        - git -C .platform fetch origin ${PLATFORM_BRANCH}
+        # set HEAD to newest commit in $PLATFORM_BRANCH
+        - git -C .platform reset --soft FETCH_HEAD
+        # split platform into separate repos/packages
+        - >
+            for pkg in $SPLIT_REPOS ; do
+              .gitlab-ci/split_repo.sh .platform src/${pkg}
+              git -C .platform/ rev-parse HEAD > repos/${pkg,,}/PLATFORM_COMMIT_SHA
+            done
+        - export TAG=${TAG:-$(.gitlab-ci/tools/console show-next-tag --minimum-stability "$MINIMUM_STABILITY")}
+        - export IMAGE_TAG=${TAG}-dev
+        # build test package
+        - .gitlab-ci/build-nightly.sh
+        - docker build . -t "${CI_REGISTRY_IMAGE}:${IMAGE_TAG}"
+        # create package archive file
+        - docker run -v $PWD/artifacts:/artifacts --entrypoint=bin/package.sh ${CI_REGISTRY_IMAGE}:${IMAGE_TAG}
+        - mv artifacts/install.tar.xz artifacts/install_${IMAGE_TAG}.tar.xz
+    artifacts:
+        expire_in: 1 week
+        paths:
+            - artifacts/
+            - repos/
 
-Insert-Release-Data:
-  stage: prepare-release
-  image: debian:buster-slim
-  when: manual
-  only:
-    refs:
-      - tags
-      - schedules
-  before_script:
-    - apt-get update && apt-get install -y git openssh-client composer php-dom python3-pip
-    - pip3 install -Iv s3cmd==2.0.2
-    - composer install --working-dir=.gitlab-ci/tools
-    - eval $(ssh-agent -s)
-    - chmod 600 $SSH_PRIVATE_KEY_FILE && ssh-add $SSH_PRIVATE_KEY_FILE
-    - '[[ -f /.dockerenv ]] && mkdir -p ~/.ssh/ && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
-  script:
-    - 'set -x'
-    - '[[ -e artifacts/install.zip && -e artifacts/update.zip ]]'
-    - export TAG=${CI_COMMIT_TAG:-${TAG:-$(.gitlab-ci/tools/console show-next-tag --minimum-stability "$MINIMUM_STABILITY")}}
-    - >
-      case $TAG in
-        *-rc*) BUILD_CHANNEL=80;;
-        *-RC*) BUILD_CHANNEL=80;;
-        *-beta*) BUILD_CHANNEL=60;;
-        *-alpha*) BUILD_CHANNEL=40;;
-        *-dev*) BUILD_CHANNEL=20;;
-        *) BUILD_CHANNEL=100;;
-      esac
-    - 'IFS="-" read -ra VERSION_PARTS <<< "$TAG"'
-    - export BUILD_VERSION=${VERSION_PARTS[0]#"v"}
-    - export BUILD_VERSION_TEXT=${VERSION_PARTS[1]}
-    - '[[ -n $BUILD_VERSION ]]'
-    - TSTAMP=$(date +%s)
-    - 'INSTALL_FILE=artifacts/install_${TAG#"v"}_${TSTAMP}.zip'
-    - 'UPDATE_FILE=artifacts/update_${TAG#"v"}_${TSTAMP}.zip'
-    - mv artifacts/install.zip $INSTALL_FILE
-    - mv artifacts/update.zip $UPDATE_FILE
-    - s3cmd put artifacts/*.zip s3://releases.s3.shopware.com/sw6/ --acl-public
-    - VERSION_TEXT_PARAM=
-    - if [[ -n ${BUILD_VERSION_TEXT} ]]; then VERSION_TEXT_PARAM="--version-text=${BUILD_VERSION_TEXT}"; fi
-    - ssh shopware@${UPDATE_API_HOST} php /var/www/shopware-update-api/bin/console insert:release:data --release-version=${BUILD_VERSION} ${VERSION_TEXT_PARAM} --channel=${BUILD_CHANNEL} --min-version=6.0.0 --install-uri=${PACKAGE_BASE_URL}$(basename $INSTALL_FILE) --install-size=$(stat -c %s $INSTALL_FILE) --install-sha1=$(sha1sum $INSTALL_FILE | cut -d ' ' -f 1) --install-sha256=$(sha256sum $INSTALL_FILE | cut -d ' ' -f 1) --update-uri=${PACKAGE_BASE_URL}$(basename $UPDATE_FILE) --update-size=$(stat -c %s $UPDATE_FILE) --update-sha1=$(sha1sum $UPDATE_FILE | cut -d ' ' -f 1) --update-sha256=$(sha256sum $UPDATE_FILE | cut -d ' ' -f 1)
+.test_base:
+    image: shopware/development:latest
+    stage: test
+    only:
+        refs:
+            - schedules
+    variables:
+        GIT_STRATEGY: none
+    services:
+        -   name: mariadb:10.3
+            alias: mysql
+        -   name: elastic/elasticsearch:7.1.1
+            alias: elasticsearch
+            command: [ "bin/elasticsearch", "-Expack.security.enabled=false", "-Ediscovery.type=single-node" ]
 
-.Tag-Platform:
-  stage: release
-  only:
-    - tags
-  image: docker
-  when: manual
-  services:
-    - name: docker:18.09.7-dind
-      alias: docker
-  before_script:
-    - apk add git bash jq composer npm
-    - git config --global user.email $GIT_EMAIL
-    - git config --global user.name $GIT_USER
-  script:
-    - echo "Tag platform"
-    - echo checkout PLATFORM_COMMIT_SHA
-    - echo tag platform with ${TAG}
+.e2e_base:
+    extends: .test_base
+    tags:
+        - release
+    cache:
+        key: "e2e_$PLATFORM_BRANCH"
+        paths:
+            - .npm
+            - .cypress
+        policy: pull-push
+    before_script:
+        - export CYPRESS_CACHE_FOLDER="${PWD}/.cypress"
+        - npm config set cache $PWD/.npm
 
+.unit_base:
+    extends: .test_base
+    variables:
+        GIT_STRATEGY: none
+        DATABASE_URL: mysql://root:root@mysql:3306/sw6
+    before_script:
+        - cp artifacts/install*.tar.xz install.tar.xz
+        - tar -xf install.tar.xz
+        - rm install.tar.xz
+        - /entrypoint supervisord > /dev/null 2>&1 &
+    script:
+        - bin/console system:install --drop-database --basic-setup --force
+        - echo -e
+            '<?xml version="1.0" encoding="UTF-8"?>
+            <testsuites>
+            ' > artifacts/phpunit.junit.xml
+        - FAILED=0
+        - >
+            for TEST_SUITE in $TEST_SUITES; do
+                log_unit_file=artifacts/$TEST_SUITE.junit.xml
+                set -x
+                php vendor/bin/phpunit --configuration phpunit.xml.dist --log-junit "$log_unit_file" --colors=never --testsuite "$TEST_SUITE" || FAILED=1
+                set +x
+                tail -n +3 "$log_unit_file" | head -n -1 >> artifacts/phpunit.junit.xml
+            done
+        - echo -e "</testsuites>" >> "artifacts/phpunit.junit.xml"
+        - '[[ $FAILED -eq 0 ]]'
+    artifacts:
+        expire_in: 1 week
+        paths:
+            - artifacts/*.junit.xml
+        reports:
+            junit: artifacts/phpunit.junit.xml
 
-.unit-tests:on-nightly: &unit_test_script_definition_nightly
-  stage: test
-  only:
-    refs:
-      - schedules
-  image:
-    name: docker/compose:1.24.1
-    entrypoint: [""]
-  services:
-    - name: docker:18.09.7-dind
-      alias: docker
-  dependencies: []
-  script:
-    - set -x
-    - apk --no-cache add composer php-dom php-tokenizer php-xmlwriter php-xml curl curl-dev git
-    - composer install --working-dir=.gitlab-ci/tools
-    - export TAG=${TAG:-$(.gitlab-ci/tools/console  show-next-tag --minimum-stability "$MINIMUM_STABILITY")}
-    - export VERSION=${TAG}
-    - export IMAGE_TAG=${TAG}-dev
-    - export COMPOSE_FILE=docker-compose.yml:.gitlab-ci/conf/docker-compose.unit.yml
-    - if [ -n "$COMPOSE_FILE_EXTENSION" ]; then export COMPOSE_FILE="$COMPOSE_FILE:$COMPOSE_FILE_EXTENSION"; fi
-    - chmod 755 .gitlab-ci/conf/mysql || true
-    - chmod 744 .gitlab-ci/conf/mysql/* || true
-    - docker-compose up -d mysql
-    - docker login $REPOSITORY_HOST -u $REGISTRY_USERNAME --password-stdin < $REGISTRY_PASSWORD_FILE
-    - docker pull ${IMAGE_NAME}:${IMAGE_TAG}
-    - docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${COMPOSE_PROJECT_NAME}_app_server
-    - docker tag ${IMAGE_NAME}:${IMAGE_TAG} shopware-production:local
-    - docker-compose build unit
-    - docker-compose up -d
-    - sleep 3
-    - docker cp $(docker-compose ps -q app_server):/sw6/vendor .
-    - cat vendor/shopware/core/PLATFORM_COMMIT_SHA
-    - docker-compose exec -T app_server bin/console system:install --drop-database --create-database --basic-setup --force
-    - mkdir -p artifacts/
-    - echo -e '<?xml version="1.0" encoding="UTF-8"?><testsuites>' > artifacts/phpunit.junit.xml
-    - >
-      for TEST_SUITE in $TEST_SUITES; do
-        log_unit_file=/artifacts/$TEST_SUITE.junit.xml
-        set -x
-        docker-compose run --rm -u root unit -d memory_limit=1824M vendor/bin/phpunit --configuration phpunit.xml.dist --log-junit "$log_unit_file" --colors=never --testsuite "$TEST_SUITE"
-        set +x
-        tail -n +3 artifacts/$TEST_SUITE.junit.xml | head -n -1 >> artifacts/phpunit.junit.xml
-      done
-    - echo -e '</testsuites>' >> "artifacts/phpunit.junit.xml"
-  artifacts:
-    paths:
-      - artifacts/
-    reports:
-      junit: artifacts/phpunit.junit.xml
+Unit PHP 7.2:
+    extends: .unit_base
+    image: shopware/development:7.2
 
-unit:mysql:5.7:
-  <<: *unit_test_script_definition_nightly
-  variables:
-    COMPOSE_FILE_EXTENSION: "" # default
+Unit PHP 7.3:
+    extends: .unit_base
+    image: shopware/development:7.3
 
-unit:mysql:8:
-  <<: *unit_test_script_definition_nightly
-  variables:
-    COMPOSE_FILE_EXTENSION: ".gitlab-ci/conf/docker-compose.mysql8.0.yml"
+Unit PHP 7.4:
+    extends: .unit_base
+    image: shopware/development:7.4
 
-unit:mariadb:10.4:
-  <<: *unit_test_script_definition_nightly
-  variables:
-    COMPOSE_FILE_EXTENSION: ".gitlab-ci/conf/docker-compose.mariadb10.4.yml"
+Unit MySQL 5.7:
+    extends: .unit_base
+    services:
+        -   name: mysql:5.7
+            alias: mysql
+        -   name: elastic/elasticsearch:7.1.1
+            alias: elasticsearch
+            command: [ "bin/elasticsearch", "-Expack.security.enabled=false", "-Ediscovery.type=single-node" ]
 
-unit:php7.2:
-  <<: *unit_test_script_definition_nightly
-  variables:
-    COMPOSE_FILE_EXTENSION: ".gitlab-ci/conf/docker-compose.php72.yml"
+Unit MySQL 8.0:
+    extends: .unit_base
+    services:
+        -   name: mysql:8.0.19
+            alias: mysql
+            command: ["mysqld", "--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci", "--default-authentication-plugin=mysql_native_password"]
+        -   name: elastic/elasticsearch:7.1.1
+            alias: elasticsearch
+            command: [ "bin/elasticsearch", "-Expack.security.enabled=false", "-Ediscovery.type=single-node" ]
 
-unit:php7.4:
-  <<: *unit_test_script_definition_nightly
-  variables:
-    COMPOSE_FILE_EXTENSION: ".gitlab-ci/conf/docker-compose.php74.yml"
+Unit MariaDB 10.4:
+    extends: .unit_base
+    services:
+        -   name: mariadb:10.4
+            alias: mysql
+        -   name: elastic/elasticsearch:7.1.1
+            alias: elasticsearch
+            command: [ "bin/elasticsearch", "-Expack.security.enabled=false", "-Ediscovery.type=single-node" ]
 
-
-e2e-tests:on-nightly:
-  stage: test
-  only:
-    refs:
-      - schedules
-  image:
-    name: docker/compose:1.24.1
-    entrypoint: [""]
-  services:
-    - name: docker:18.09.7-dind
-      alias: docker
-  variables:
-    COMPOSE_FILE: "docker-compose.yml:.gitlab-ci/conf/docker-compose.e2e.yml"
-  script:
-    - set -x
-    - apk --no-cache add composer php-dom php-tokenizer php-xmlwriter php-xml php-pdo_mysql curl curl-dev git
-    - composer install --working-dir=.gitlab-ci/tools
-    - export TAG=${TAG:-$(.gitlab-ci/tools/console  show-next-tag --minimum-stability "$MINIMUM_STABILITY")}
-    - export IMAGE_TAG="${TAG}-dev"
-    - docker login $REPOSITORY_HOST -u $REGISTRY_USERNAME --password-stdin < $REGISTRY_PASSWORD_FILE
-    - docker pull ${IMAGE_NAME}:${IMAGE_TAG}
-    - chmod 755 .gitlab-ci/conf/mysql || true
-    - chmod 744 .gitlab-ci/conf/mysql/* || true
-    - docker-compose up -d mysql
-    - docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${COMPOSE_PROJECT_NAME}_app_server
-    - docker tag ${IMAGE_NAME}:${IMAGE_TAG} shopware-production:local
-    - mkdir -p vendor/shopware/recovery/Test/e2e
-    - docker-compose up -d app_server
-    - sleep 10
-    - docker-compose exec -T app_server bin/console assets:install
-    - docker cp $(docker-compose ps -q app_server):/sw6/vendor/shopware/recovery/Test/e2e/ vendor/shopware/recovery/Test/
-    - docker-compose up -d
-    - sleep 3
-    - docker-compose exec -T app_server rm install.lock
-    - docker-compose exec -T app_cypress npm clean-install --prefix /e2e-Installer
-    - docker-compose exec -T app_cypress /e2e-Installer/node_modules/.bin/cypress run --project /e2e-Installer --browser chrome --config baseUrl=http://docker.vm:8000 --config numTestsKeptInMemory=0
-  artifacts:
-    expire_in: 1 week
-    when: always
-    paths:
-      - vendor/shopware/recovery/Test/e2e/artifacts/
-
-
-Create-Release-Branch:
-  stage: prepare-release
-  image:
-      name: docker/compose:1.24.1
-      entrypoint: [""]
-  services:
-      - name: docker:18.09.7-dind
-        alias: docker
-  when: manual
-  only:
-    refs:
-      - schedules
-  variables:
-    MANY_REPO_BASE_URL: "git@gitlab.shopware.com:shopware/6/product/many-repositories"
-    MANY_REPO_GITHUB_URL: "https://api.github.com/repos/shopware/"
-    TARGET_BRANCH: $PLATFORM_BRANCH
-    CI_REPOSITORY_URL: "git@gitlab.shopware.com:/shopware/6/product/production"
-  before_script:
-    - apk --no-cache add openssh-client git bash jq composer php-dom php-tokenizer php-xmlwriter php-xml curl curl-dev
-    - mkdir -p ~/.ssh/
-    - echo -e "$SHOPWAREBOT_PRIVATE_KEY" > ~/.ssh/id_rsa
-    - chmod 600 ~/.ssh/id_rsa
-    - eval `ssh-agent -s`
-    - ssh-add ~/.ssh/id_rsa
-    - ssh-keyscan github.com >> ~/.ssh/known_hosts
-    - '[[ -f /.dockerenv ]] && mkdir -p ~/.ssh/ && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
-    - git config --global user.email $GIT_EMAIL
-    - git config --global user.name $GIT_USER
-    - composer install --working-dir=.gitlab-ci/tools
-    - export TAG=${TAG:-$(.gitlab-ci/tools/console show-next-tag --minimum-stability "$MINIMUM_STABILITY")}
-    - export IMAGE_TAG="${TAG}-dev"
-    - docker login $REPOSITORY_HOST -u $REGISTRY_USERNAME --password-stdin < $REGISTRY_PASSWORD_FILE
-    - docker pull ${IMAGE_NAME}:${IMAGE_TAG}
-    - docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${COMPOSE_PROJECT_NAME}_app_server
-    - docker tag ${IMAGE_NAME}:${IMAGE_TAG} shopware-production:local
-    - docker-compose up -d app_server
-  script:
-    - export PROJECT_ROOT=$(pwd)
-    - docker cp $(docker-compose ps -q app_server):/sw6/vendor/ .
-    - docker cp $(docker-compose ps -q app_server):/sw6/composer.lock composer.lock
-    - rm -Rf vendor/shopware
-    - .gitlab-ci/tools/console create-release-branch $TAG
+E2E Installer:
+    extends: .e2e_base
+    script:
+        - cp artifacts/install*.tar.xz install.tar.xz
+        - tar -xf install.tar.xz
+        - rm install.tar.xz
+        - /entrypoint supervisord > /dev/null 2>&1 &
+        - apt-get update && apt-get install -y xvfb
+        - cd vendor/shopware/recovery/Test/e2e
+        - npm clean-install
+        - $(npm bin)/cypress run --browser chrome --config baseUrl=http://localhost:8000 --config numTestsKeptInMemory=0
+    artifacts:
+        expire_in: 1 week
+        paths:
+            - vendor/shopware/recovery/Test/e2e/artifacts/
