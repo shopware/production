@@ -14,13 +14,6 @@ rm -rf var/cache/* \
     var/log/* \
     var/queue/* \
     var/test/* \
-    vendor/shopware/administration/Resources/nuxt-component-library \
-    vendor/shopware/core/Framework/Test \
-    vendor/shopware/core/Content/Test \
-    vendor/shopware/core/Checkout/Test \
-    vendor/shopware/elasticsearch/Test \
-    vendor/shopware/platform/src/Docs \
-    vendor/shopware/platform/bin \
     vendor/symfony/*/Tests \
     vendor/twig/twig/test \
     vendor/swiftmailer/swiftmailer/tests \
@@ -30,6 +23,10 @@ rm -rf var/cache/* \
     install.lock
 
 CORE_TAG=$(php -r 'include_once "vendor/autoload.php"; echo ltrim(explode("@", PackageVersions\Versions::getVersion("shopware/core"))[0], "v");')
+
+if command -v xz >/dev/null 2>&1; then
+    tar -cf - . | xz -9 -z  > ${ARTIFACTS_DIR}/install.tar.xz
+fi
 
 echo "$CORE_TAG" > public/recovery/install/data/version
 

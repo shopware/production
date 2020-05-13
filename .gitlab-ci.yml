@@ -11,6 +11,7 @@ variables:
   GIT_EMAIL: "shopwareBot@shopware.com"
   IMAGE_NAME: "gitlab.shopware.com:5005/shopware/6/product/production"
   PACKAGE_BASE_URL: "https://releases.shopware.com/sw6/"
+  MINIMUM_STABILITY: ""
   PLATFORM_BRANCH: "6.1"
 
 stages:
@@ -69,7 +70,7 @@ Build:on-nightly:
     - docker login gitlab.shopware.com:5005 -u $REGISTRY_USERNAME --password-stdin < $REGISTRY_PASSWORD_FILE
     - '[ -n "$TAG" ] || composer install --working-dir=.gitlab-ci/tools'
   script:
-    - export TAG=${TAG:-$(.gitlab-ci/tools/console show-next-tag)}
+    - export TAG=${TAG:-$(.gitlab-ci/tools/console show-next-tag --minimum-stability "$MINIMUM_STABILITY")}
     - export IMAGE_TAG="${TAG}-dev"
     - .gitlab-ci/build-nightly.sh
     - docker build . -t "${IMAGE_NAME}:${IMAGE_TAG}"
@@ -116,13 +117,33 @@ Package:
     - '[ -n "$TAG" ] || composer install --working-dir=.gitlab-ci/tools'
     - docker login $REPOSITORY_HOST -u $REGISTRY_USERNAME --password-stdin < $REGISTRY_PASSWORD_FILE
   script:
-    - TAG=${TAG:-$(.gitlab-ci/tools/console show-next-tag)}
+    - TAG=${TAG:-$(.gitlab-ci/tools/console  show-next-tag --minimum-stability "$MINIMUM_STABILITY")}
     - IMAGE_TAG="${CI_COMMIT_TAG:-${TAG}-dev}"
     - docker pull ${IMAGE_NAME}:${IMAGE_TAG}
     - docker run -v $PWD/artifacts:/artifacts --entrypoint=bin/package.sh ${IMAGE_NAME}:${IMAGE_TAG}
+    - mv artifacts/install.tar.xz artifacts/install_${IMAGE_TAG}.tar.xz
   artifacts:
     paths:
       - artifacts/
+
+Upload-Dev-Archive:
+    stage: prepare-release
+    image: debian:buster-slim
+    only:
+      refs:
+        - schedules
+    dependencies:
+        - Package
+    before_script:
+        - apt-get update && apt-get install -y python3-pip
+        - pip3 install -Iv s3cmd==2.0.2
+    script:
+        - set -x
+        - cd artifacts
+        - INSTALL=$(ls install_*.tar.xz)
+        - echo $INSTALL
+        - s3cmd put $INSTALL s3://releases.s3.shopware.com/sw6/ --acl-public
+        - s3cmd put $INSTALL s3://releases.s3.shopware.com/sw6/install_${PLATFORM_BRANCH}_next.tar.xz --acl-public
 
 Insert-Release-Data:
   stage: prepare-release
@@ -134,7 +155,7 @@ Insert-Release-Data:
       - schedules
   before_script:
     - apt-get update && apt-get install -y git openssh-client composer php-dom python3-pip
-    - pip3 install s3cmd
+    - pip3 install -Iv s3cmd==2.0.2
     - composer install --working-dir=.gitlab-ci/tools
     - eval $(ssh-agent -s)
     - chmod 600 $SSH_PRIVATE_KEY_FILE && ssh-add $SSH_PRIVATE_KEY_FILE
@@ -142,10 +163,11 @@ Insert-Release-Data:
   script:
     - 'set -x'
     - '[[ -e artifacts/install.zip && -e artifacts/update.zip ]]'
-    - export TAG=${CI_COMMIT_TAG:-${TAG:-$(.gitlab-ci/tools/console show-next-tag)}}
+    - export TAG=${CI_COMMIT_TAG:-${TAG:-$(.gitlab-ci/tools/console show-next-tag --minimum-stability "$MINIMUM_STABILITY")}}
     - >
       case $TAG in
         *-rc*) BUILD_CHANNEL=80;;
+        *-RC*) BUILD_CHANNEL=80;;
         *-beta*) BUILD_CHANNEL=60;;
         *-alpha*) BUILD_CHANNEL=40;;
         *-dev*) BUILD_CHANNEL=20;;
@@ -195,11 +217,12 @@ Insert-Release-Data:
   services:
     - name: docker:18.09.7-dind
       alias: docker
+  dependencies: []
   script:
     - set -x
     - apk --no-cache add composer php-dom php-tokenizer php-xmlwriter php-xml curl curl-dev git
     - composer install --working-dir=.gitlab-ci/tools
-    - export TAG=${TAG:-$(.gitlab-ci/tools/console show-next-tag)}
+    - export TAG=${TAG:-$(.gitlab-ci/tools/console  show-next-tag --minimum-stability "$MINIMUM_STABILITY")}
     - export VERSION=${TAG}
     - export IMAGE_TAG=${TAG}-dev
     - export COMPOSE_FILE=docker-compose.yml:.gitlab-ci/conf/docker-compose.unit.yml
@@ -223,7 +246,7 @@ Insert-Release-Data:
       for TEST_SUITE in $TEST_SUITES; do
         log_unit_file=/artifacts/$TEST_SUITE.junit.xml
         set -x
-        docker-compose run --rm -u root unit -d memory_limit=1024M vendor/bin/phpunit --configuration phpunit.xml.dist --log-junit "$log_unit_file" --colors=never --testsuite "$TEST_SUITE"
+        docker-compose run --rm -u root unit -d memory_limit=1824M vendor/bin/phpunit --configuration phpunit.xml.dist --log-junit "$log_unit_file" --colors=never --testsuite "$TEST_SUITE"
         set +x
         tail -n +3 artifacts/$TEST_SUITE.junit.xml | head -n -1 >> artifacts/phpunit.junit.xml
       done
@@ -277,7 +300,7 @@ e2e-tests:on-nightly:
     - set -x
     - apk --no-cache add composer php-dom php-tokenizer php-xmlwriter php-xml php-pdo_mysql curl curl-dev git
     - composer install --working-dir=.gitlab-ci/tools
-    - export TAG=${TAG:-$(.gitlab-ci/tools/console show-next-tag)}
+    - export TAG=${TAG:-$(.gitlab-ci/tools/console  show-next-tag --minimum-stability "$MINIMUM_STABILITY")}
     - export IMAGE_TAG="${TAG}-dev"
     - docker login $REPOSITORY_HOST -u $REGISTRY_USERNAME --password-stdin < $REGISTRY_PASSWORD_FILE
     - docker pull ${IMAGE_NAME}:${IMAGE_TAG}
@@ -332,7 +355,7 @@ Create-Release-Branch:
     - git config --global user.email $GIT_EMAIL
     - git config --global user.name $GIT_USER
     - composer install --working-dir=.gitlab-ci/tools
-    - export TAG=${TAG:-$(.gitlab-ci/tools/console show-next-tag)}
+    - export TAG=${TAG:-$(.gitlab-ci/tools/console show-next-tag --minimum-stability "$MINIMUM_STABILITY")}
     - export IMAGE_TAG="${TAG}-dev"
     - docker login $REPOSITORY_HOST -u $REGISTRY_USERNAME --password-stdin < $REGISTRY_PASSWORD_FILE
     - docker pull ${IMAGE_NAME}:${IMAGE_TAG}

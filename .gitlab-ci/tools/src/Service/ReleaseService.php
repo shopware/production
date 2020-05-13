@@ -144,11 +144,16 @@ CODE;
     {
         $dir = escapeshellarg($this->config['projectRoot']);
 
+        sleep(45);
+
         $max = 10;
         for($i = 0; $i < $max; ++$i) {
             sleep(15);
 
-            $cmd = 'composer update --working-dir=' . $dir . ' "shopware/*" --ignore-platform-reqs --no-interaction --no-scripts';
+            $cmd = 'cd ' . $dir . ' && rm -Rf vendor/shopware';
+            system($cmd);
+
+            $cmd = 'composer update -vvv --working-dir=' . $dir . ' "shopware/*" --ignore-platform-reqs --no-interaction --no-scripts';
             system($cmd);
 
             $composerLock = json_decode(file_get_contents($composerLockPath), true);
@@ -158,7 +163,7 @@ CODE;
 
                 $repoData['reference'] = exec('git -C ' . escapeshellarg($repoData['path']) . ' rev-parse HEAD');
 
-                if (!$this->validatePackage($package, $tag, $repoData)) {
+                if (!$this->validatePackage($package, $tag)) {
                     echo "retry! current packageData:" . PHP_EOL;
                     var_dump($package);
                     continue 2;
@@ -184,34 +189,11 @@ CODE;
         return null;
     }
 
-    public function validatePackage(array $packageData, string $tag, array $repoData): bool
+    public function validatePackage(array $packageData, string $tag): bool
     {
-        $packageName = $packageData['name'];
-
-        if ($packageData['version'] !== $tag) {
-            return false;
-        }
-
-        $repoPath = $repoData['path'];
-        $commitSha = $repoData['reference'];
-
-        if (isset($packageData['dist'])) {
-            if ($packageData['dist']['type'] === 'path') {
-                return false; // retry
-            }
-
-            $distReference = $packageData['dist']['reference'];
-            if (strtolower($distReference) !== $commitSha) {
-                throw new \LogicException("commit sha of $repoPath $commitSha should be the sames as $packageName.dist.reference $distReference");
-            }
-        }
-
-        $sourceRef = $packageData['source']['reference'];
-        if (strtolower($sourceRef) !== $commitSha) {
-            throw new \LogicException("commit sha of $repoPath $commitSha should be the sames as $packageName.source.reference $sourceRef");
-        }
-
-        return true;
+        return $packageData['version'] === $tag
+            && isset($packageData['dist']['type'])
+            && $packageData['dist']['type'] !== 'path';
     }
 
     private function createReleaseBranch(string $repository, string $tag, string $gitRemoteUrl): void
@@ -227,7 +209,7 @@ CODE;
             git -C $repository commit -m $commitMsg
             git -C $repository tag $tag -a -m $commitMsg
             git -C $repository remote add release $gitRemoteUrl
-            git -C $repository push release --tags 
+            git -C $repository push release --tags
 CODE;
 
         system($shellCode, $returnCode);
