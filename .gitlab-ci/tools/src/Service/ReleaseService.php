@@ -231,6 +231,6 @@ CODE;
             ]
         ];
 
-        $this->gitlabApiClient->request('POST', '/projects/' . $projectId . '/merge_requests', $requestOptions);
+        $this->gitlabApiClient->request('POST', 'projects/' . $projectId . '/merge_requests', $requestOptions);
     }
 }

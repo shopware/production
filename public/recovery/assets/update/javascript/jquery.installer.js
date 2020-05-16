@@ -12,7 +12,7 @@
             counterText: shopwareTranslations.counterTextMigrations,
             options: {
                 modus: 'update'
-            }
+            },
         },
         {
             requestUrl: 'applyMigrations',

@@ -1,0 +1,121 @@
+.test_base:
+    image: shopware/development:latest
+    stage: test
+    only:
+        refs:
+            - schedules
+    services:
+        -   name: mariadb:10.3
+            alias: mysql
+        -   name: elastic/elasticsearch:7.1.1
+            alias: elasticsearch
+            command: [ "bin/elasticsearch", "-Expack.security.enabled=false", "-Ediscovery.type=single-node" ]
+
+.unit_base:
+    extends: .test_base
+    variables:
+        TEST_SUITES: "administration framework storefront checkout content system elasticsearch docs migration"
+        # shopware 6 env variables
+        DATABASE_URL: mysql://root:root@mysql:3306/sw6
+        APP_URL: http://localhost:8000
+        INSTANCE_ID: ""
+        MAILER_URL: smtp://localhost:25?encryption=&auth_mode=
+        SHOPWARE_CDN_STRATEGY_DEFAULT: id
+        BLUE_GREEN_DEPLOYMENT: 1
+        SHOPWARE_ES_ENABLED: 1
+        SHOPWARE_ES_HOSTS: elasticsearch:9200
+        SHOPWARE_ES_INDEXING_ENABLED: 1
+        SHOPWARE_ES_INDEX_PREFIX: sw
+        GIT_STRATEGY: none
+    before_script:
+        - export TAG=$(cat artifacts/TAG)
+        - cp artifacts/install*.tar.xz install.tar.xz
+        - tar -xf install.tar.xz
+        - rm install.tar.xz
+        - /entrypoint supervisord > /dev/null 2>&1 &
+    script:
+        - bin/console system:install --drop-database --basic-setup --force
+        - echo -e
+            '<?xml version="1.0" encoding="UTF-8"?>
+            <testsuites>
+            ' > artifacts/phpunit.junit.xml
+        - FAILED=0
+        - >
+            for TEST_SUITE in $TEST_SUITES; do
+                log_unit_file=artifacts/$TEST_SUITE.junit.xml
+                set -x
+                php vendor/bin/phpunit --configuration phpunit.xml.dist --log-junit "$log_unit_file" --colors=never --testsuite "$TEST_SUITE" || FAILED=1
+                set +x
+                tail -n +3 "$log_unit_file" | head -n -1 >> artifacts/phpunit.junit.xml
+            done
+        - echo -e "</testsuites>" >> "artifacts/phpunit.junit.xml"
+        - '[[ $FAILED -eq 0 ]]'
+    artifacts:
+        when: always
+        expire_in: 1 week
+        paths:
+            - artifacts/*.junit.xml
+        reports:
+            junit: artifacts/phpunit.junit.xml
+
+.e2e_base:
+    extends: .test_base
+    services:
+        -   name: mysql:5.7
+            alias: mysql
+        -   name: elastic/elasticsearch:7.1.1
+            alias: elasticsearch
+            command: [ "bin/elasticsearch", "-Expack.security.enabled=false", "-Ediscovery.type=single-node" ]
+    tags:
+        - release
+    cache:
+        key: "e2e_$PLATFORM_BRANCH"
+        paths:
+            - .npm
+            - .cypress
+        policy: pull-push
+    artifacts:
+        expire_in: 1 week
+        when: always
+        paths:
+            - vendor/shopware/recovery/Test/e2e/artifacts/
+            - var/log/*
+
+.e2e_update_base:
+    extends: .e2e_base
+    before_script:
+        # delete everything but the caches and the .gitlab-ci dir
+        - rm -Rf $(ls -a | grep -vE '^(\.gitlab-ci|\.cypress|\.npm|artifacts|\.\.?)$') || true
+        - npm config set cache $PWD/.npm
+        - export CYPRESS_CACHE_FOLDER="${PWD}/.cypress"
+        - export TAG=$(cat artifacts/TAG)
+        - '[[ -n $E2E_INSTALL_PACKAGE_URL && -n $E2E_TEST_DATA_FILE ]]'
+        - curl ${E2E_INSTALL_PACKAGE_URL} --silent -o install
+        - 'if [ ${E2E_INSTALL_PACKAGE_URL: -4} == ".zip" ]; then unzip -qqo install; else tar -xf install; fi'
+        - rm install
+        - export E2E_TEST_DATA_URL="${E2E_TEST_DATA_BASE_URL}/${E2E_TEST_DATA_FILE}"
+        - curl ${E2E_TEST_DATA_URL} --silent -o test_data
+        - 'if [ ${E2E_TEST_DATA_URL: -4} == ".zip" ]; then unzip -qqo test_data; else tar -xf test_data; fi'
+        - rm test_data
+        # import test data dump
+        - mysql -h mysql -u root -proot -e 'DROP DATABASE IF EXISTS `sw6_e2e_test`; CREATE DATABASE `sw6_e2e_test`; use `sw6_e2e_test`; source database.sql;'
+        # set update api base url to mock
+        - >
+            mysql -h mysql -u root -proot sw6_e2e_test -e 'UPDATE system_config SET configuration_value = "{\"_value\": \"http://localhost:3000\"}" WHERE configuration_key IN("core.store.apiUri", "core.update.apiUri")'
+        - bin/console system:generate-jwt-secret
+        - bin/console assets:install
+        - npm --prefix .gitlab-ci/e2e/ ci
+        # start update api mock
+        - DEBUG=* UPDATE_FILE_PATH=$CI_PROJECT_DIR/artifacts/update.zip FAKE_VERSION=$TAG node .gitlab-ci/e2e/update-api-mock.js &
+        # start webserver
+        - /entrypoint supervisord > /dev/null 2>&1 &
+        - apt-get update && apt-get install -y xvfb
+        # get e2e from install archive
+        - mkdir .gitlab-ci/e2e/test
+        - cp artifacts/install*.tar.xz .gitlab-ci/e2e/test/install.tar.xz
+        - cd .gitlab-ci/e2e/test
+        - tar -xvf install.tar.xz ./vendor/shopware/recovery/Test/e2e/
+        - mv ./vendor/shopware/recovery/Test/e2e/* .
+        - npm clean-install
+        - cd $CI_PROJECT_DIR
+        - chown -R application:application $CI_PROJECT_DIR

@@ -1,9 +1,0 @@
-#override defaults for dev
-version: "3.7"
-
-services:
-  unit:
-    image: shopware-production-unit:local
-    build:
-      context: ./.gitlab-ci/conf/docker
-      dockerfile: Dockerfile-php72

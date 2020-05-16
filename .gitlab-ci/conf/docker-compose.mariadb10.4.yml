@@ -1,8 +1,0 @@
-#override defaults for dev
-version: "3.7"
-
-services:
-  mysql:
-    image: mariadb:10.4
-    volumes:
-      - ./.gitlab-ci/conf/mysql:/etc/mysql/conf.d:ro

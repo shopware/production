@@ -11,8 +11,15 @@ Release-Package:
     services:
         -   name: docker:18.09.7-dind
             alias: docker
+    variables:
+        GIT_STRATEGY: none
     before_script:
         - apk add git bash jq composer npm
+        - umask 0022
+        - git init .
+        - git remote add origin ${CI_REPOSITORY_URL}
+        - git fetch
+        - git checkout -f -q ${CI_COMMIT_SHA}
     script:
         - composer install --ignore-platform-reqs --no-interaction
         - docker build . -t ${CI_REGISTRY_IMAGE}:${CI_COMMIT_TAG}
@@ -33,6 +40,9 @@ Insert-Release-Data:
         variables:
             # only run this job if it's protected
             - $CI_COMMIT_REF_PROTECTED == "true"
+    variables:
+        GIT_STRATEGY: clone
+        PACKAGE_BASE_URL: "https://releases.shopware.com/sw6/"
     before_script:
         - apt-get update && apt-get install -y git openssh-client composer php-dom python3-pip
         - pip3 install -Iv s3cmd==2.0.2
@@ -63,14 +73,24 @@ Insert-Release-Data:
         - mv artifacts/install.zip $INSTALL_FILE
         - mv artifacts/update.zip $UPDATE_FILE
         - s3cmd put artifacts/*.zip s3://releases.s3.shopware.com/sw6/ --acl-public
+        - s3cmd put artifacts/*.xz s3://releases.s3.shopware.com/sw6/ --acl-public
         - VERSION_TEXT_PARAM=
         - if [[ -n ${BUILD_VERSION_TEXT} ]]; then VERSION_TEXT_PARAM="--version-text=${BUILD_VERSION_TEXT}"; fi
-        - ssh shopware@${UPDATE_API_HOST} php /var/www/shopware-update-api/bin/console insert:release:data --release-version=${BUILD_VERSION} ${VERSION_TEXT_PARAM} --channel=${BUILD_CHANNEL} --min-version=6.0.0 --install-uri=${PACKAGE_BASE_URL}$(basename $INSTALL_FILE) --install-size=$(stat -c %s $INSTALL_FILE) --install-sha1=$(sha1sum $INSTALL_FILE | cut -d ' ' -f 1) --install-sha256=$(sha256sum $INSTALL_FILE | cut -d ' ' -f 1) --update-uri=${PACKAGE_BASE_URL}$(basename $UPDATE_FILE) --update-size=$(stat -c %s $UPDATE_FILE) --update-sha1=$(sha1sum $UPDATE_FILE | cut -d ' ' -f 1) --update-sha256=$(sha256sum $UPDATE_FILE | cut -d ' ' -f 1)
+        - ssh shopware@${UPDATE_API_HOST} php /var/www/shopware-update-api/bin/console insert:release:data
+          --release-version=${BUILD_VERSION} ${VERSION_TEXT_PARAM}
+          --channel=${BUILD_CHANNEL}
+          --min-version=6.0.0
+          --install-uri=${PACKAGE_BASE_URL}$(basename $INSTALL_FILE)
+          --install-size=$(stat -c %s $INSTALL_FILE)
+          --install-sha1=$(sha1sum $INSTALL_FILE | cut -d ' ' -f 1)
+          --install-sha256=$(sha256sum $INSTALL_FILE | cut -d ' ' -f 1)
+          --update-uri=${PACKAGE_BASE_URL}$(basename $UPDATE_FILE)
+          --update-size=$(stat -c %s $UPDATE_FILE) --update-sha1=$(sha1sum $UPDATE_FILE | cut -d ' ' -f 1)
+          --update-sha256=$(sha256sum $UPDATE_FILE | cut -d ' ' -f 1)
 
 
 Create-Release-Branch:
     stage: deploy
-    # TODO: test
     image: alpine:3.10
     when: manual
     only:
@@ -80,6 +100,7 @@ Create-Release-Branch:
             # only run this job if it's protected
             - $CI_COMMIT_REF_PROTECTED == "true"
     variables:
+        GIT_STRATEGY: clone
         MANY_REPO_BASE_URL: "git@gitlab.shopware.com:shopware/6/product/many-repositories"
         MANY_REPO_GITHUB_URL: "https://api.github.com/repos/shopware/"
         TARGET_BRANCH: $PLATFORM_BRANCH
@@ -116,6 +137,8 @@ Upload-Test-Package:
         variables:
             # only run this job if it's protected
             - $CI_COMMIT_REF_PROTECTED == "true"
+    variables:
+        GIT_STRATEGY: clone
     before_script:
         - apt-get update && apt-get install -y python3-pip
         - pip3 install -Iv s3cmd==2.0.2
@@ -125,7 +148,6 @@ Upload-Test-Package:
         - INSTALL=$(ls install_*.tar.xz)
         - s3cmd put $INSTALL s3://releases.s3.shopware.com/sw6/ --acl-public
         - s3cmd put $INSTALL s3://releases.s3.shopware.com/sw6/install_${PLATFORM_BRANCH}_next.tar.xz --acl-public
-
 
 # TODO:
 
