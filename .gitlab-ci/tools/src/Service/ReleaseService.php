@@ -128,8 +128,8 @@ CODE;
         $newStability = VersionParser::normalizeStability($stability);
 
         if ($currentStability !== $newStability) {
+            $composerJson['minimum-stability'] = $newStability;
             $encoded = \json_encode($composerJson, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
-            $encoded['minimum-stability'] = $newStability;
             file_put_contents($composerJsonPath, $encoded);
         }
     }
