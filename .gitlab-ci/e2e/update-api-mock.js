@@ -95,28 +95,22 @@ if (!fs.existsSync(path.join(WEB_DOCUMENT_ROOT, '../vendor/shopware/platform')))
      publicKeyFilePath = path.join(WEB_DOCUMENT_ROOT, '../vendor/shopware/core/Framework/Store/public.key');
 }
 
-let privateKey;
-if (!fs.existsSync(privateKeyFilePath)) {
-    const encoded = crypto.generateKeyPairSync('rsa', {
-        modulusLength: 2048,
-        publicKeyEncoding: {
-            type: 'spki',
-            format: 'pem'
-        },
-        privateKeyEncoding: {
-            type: 'pkcs8',
-            format: 'pem',
-        }
-    });
+const encoded = crypto.generateKeyPairSync('rsa', {
+    modulusLength: 2048,
+    publicKeyEncoding: {
+        type: 'spki',
+        format: 'pem'
+    },
+    privateKeyEncoding: {
+        type: 'pkcs8',
+        format: 'pem',
+    }
+});
 
-    fs.writeFileSync(publicKeyFilePath, encoded.publicKey);
-    fs.writeFileSync(privateKeyFilePath, encoded.privateKey);
+fs.writeFileSync(publicKeyFilePath, encoded.publicKey);
+fs.writeFileSync(privateKeyFilePath, encoded.privateKey);
 
-    privateKey = crypto.createPrivateKey(encoded.privateKey)
-} else {
-    let keyData = fs.readFileSync(path.join(WEB_DOCUMENT_ROOT, '/../config/private'));
-    privateKey = crypto.createPrivateKey(keyData)
-}
+let privateKey = crypto.createPrivateKey(encoded.privateKey)
 
 const baseUrl = 'http://localhost:' + PORT;
 

@@ -47,7 +47,7 @@ mysql -h mysql -u root -proot ${DB_NAME} -e 'UPDATE system_config SET configurat
 
 sed -ie "s/sw6_e2e_test/${DB_NAME}/g" /app/.env
 
-gosu application node ${SCRIPT_DIR}/update-api-mock.js &
+node ${SCRIPT_DIR}/update-api-mock.js &
 
 chown application:application -R /app
 
