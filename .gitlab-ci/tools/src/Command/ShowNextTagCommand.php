@@ -11,9 +11,9 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ShowNextTagCommand extends Command
+class ShowNextTagCommand extends ReleaseCommand
 {
-    public static $defaultName = 'show-next-tag';
+    public static $defaultName = 'release:show-next-tag';
 
     protected function configure(): void
     {
@@ -37,12 +37,7 @@ class ShowNextTagCommand extends Command
             $constraint = $composerJson['require']['shopware/core'];
         }
 
-        $minimumStability = $input->getOption('minimum-stability');
-        if (!$minimumStability) {
-            $minimumStability = $composerJson['minimum-stability'];
-        }
-
-        $taggingService = new TaggingService(new VersionParser(), $minimumStability);
+        $taggingService = $this->getTaggingService($input, $output);
         $tags = self::getTags($repository);
         $matchingVersions = $taggingService->getMatchingVersions($tags, $constraint);
 

@@ -7,8 +7,13 @@ namespace Shopware\CI\Test\Service;
 use Composer\Semver\VersionParser;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
+use League\Flysystem\Filesystem;
 use PHPUnit\Framework\TestCase;
+use Shopware\CI\Service\ChangelogService;
+use Shopware\CI\Service\ReleasePrepareService;
 use Shopware\CI\Service\ReleaseService;
+use Shopware\CI\Service\TaggingService;
+use Shopware\CI\Service\Xml\Release;
 
 class ReleaseServiceTest extends TestCase
 {
@@ -41,13 +46,9 @@ class ReleaseServiceTest extends TestCase
                     'version' => 'v6.1.0',
                     'source' => [
                         'reference' => $validSha
-                    ]
+                    ],
                 ],
                 'v6.1.1',
-                [
-                    'path' => 'repos/core',
-                    'reference' => $validSha
-                ]
             ],
             [
                 true,
@@ -56,13 +57,13 @@ class ReleaseServiceTest extends TestCase
                     'version' => 'v6.1.1',
                     'source' => [
                         'reference' => $validSha
+                    ],
+                    'dist' => [
+                        'type' => 'zip',
+                        'reference' => $validSha
                     ]
                 ],
                 'v6.1.1',
-                [
-                    'path' => 'repos/core',
-                    'reference' => $validSha
-                ]
             ],
             [
                 true,
@@ -71,30 +72,13 @@ class ReleaseServiceTest extends TestCase
                     'version' => 'v6.2.0',
                     'source' => [
                         'reference' => $validSha
+                    ],
+                    'dist' => [
+                        'type' => 'zip',
+                        'reference' => $validSha
                     ]
                 ],
                 'v6.2.0',
-                [
-                    'path' => 'repos/core',
-                    'reference' => $validSha
-                ]
-            ],
-            [
-                true,
-                [
-                    'name' => 'shopware/core',
-                    'version' => 'v6.2.0',
-                    'source' => [
-                        'reference' => $invalidSha
-                    ]
-                ],
-                'v6.2.0',
-                [
-                    'path' => 'repos/core',
-                    'reference' => $validSha
-                ],
-                \LogicException::class,
-                'commit sha of repos/core 36f9ca136c87f4d3f860cd6b2516f02f2516f02a should be the sames as shopware/core.source.reference 36f9ca136c87f4d3f860cd6b2516f02bdeadbeef'
             ],
             [
                 false,
@@ -110,52 +94,110 @@ class ReleaseServiceTest extends TestCase
                     ]
                 ],
                 'v6.2.0',
-                [
-                    'path' => 'repos/core',
-                    'reference' => $validSha
-                ],
             ],
-            [
-                true,
-                [
-                    'name' => 'shopware/core',
-                    'version' => 'v6.2.0',
-                    'source' => [
-                        'reference' => $validSha,
-                    ],
-                    'dist' => [
-                        'type' => 'git',
-                        'reference' => $invalidSha
-                    ]
-                ],
-                'v6.2.0',
-                [
-                    'path' => 'repos/core',
-                    'reference' => $validSha
-                ],
-                \LogicException::class,
-                'commit sha of repos/core 36f9ca136c87f4d3f860cd6b2516f02f2516f02a should be the sames as shopware/core.dist.reference 36f9ca136c87f4d3f860cd6b2516f02bdeadbeef'
-            ]
         ];
     }
 
     /**
      * @dataProvider validatePackageProvider
      */
-    public function testValidatePackage(bool $expected, array $packageData, string $tag, array $repoData, string $expectedException = null, string $msg = null): void
+    public function testValidatePackage(bool $expected, array $packageData, string $tag, string $expectedException = null, string $msg = null): void
     {
-        $releaseService = new ReleaseService([], $this->createMock(ClientInterface::class));
+        $releaseService = new ReleaseService(
+            [],
+            $this->createMock(ReleasePrepareService::class),
+            $this->createMock(TaggingService::class)
+        );
         if ($expectedException) {
             $this->expectException($expectedException);
             if ($msg) {
                 $this->expectExceptionMessage($msg);
             }
         }
-        $actual = $releaseService->validatePackage($packageData, $tag, $repoData);
+        $actual = $releaseService->validatePackage($packageData, $tag);
         static::assertSame($expected, $actual);
     }
 
-    public function testRelease(): void
+    public function testReleasePackage(): void
+    {
+        $releasePrepareService = $this->createMock(ReleasePrepareService::class);
+        $taggingService = $this->createMock(TaggingService::class);
+        $releaseService = new ReleaseService(
+            [],
+            $releasePrepareService,
+            $taggingService
+        );
+        $content = file_get_contents(__DIR__ . '/fixtures/shopware6.xml');
+        /** @var Release $list */
+        $list =  simplexml_load_string($content, Release::class);
+
+        $tag = 'v6.2.1';
+
+        $releasePrepareService->method('getReleaseList')->willReturn($list);
+
+        $before = $list->getRelease($tag);
+
+        $releasePrepareService->expects($this->once())->method('uploadArchives')->with($before);
+        $releasePrepareService->expects($this->once())->method('storeReleaseList')->with($list);
+        $releasePrepareService->expects($this->once())->method('registerUpdate')->with($tag, $before);
+
+        static::assertFalse($before->isPublic());
+
+        $releaseService->releasePackage($tag);
+
+        static::assertTrue($before->isPublic());
+    }
+
+    public function testReleasePackageAlreadyReleased(): void
+    {
+        $releasePrepareService = $this->createMock(ReleasePrepareService::class);
+        $taggingService = $this->createMock(TaggingService::class);
+        $releaseService = new ReleaseService(
+            [],
+            $releasePrepareService,
+            $taggingService
+        );
+        $content = file_get_contents(__DIR__ . '/fixtures/shopware6.xml');
+        /** @var Release $list */
+        $list =  simplexml_load_string($content, Release::class);
+
+        $tag = 'v6.2.1';
+
+        $releasePrepareService->method('getReleaseList')->willReturn($list);
+
+        $before = $list->getRelease($tag);
+        $before->makePublic();
+
+        $releasePrepareService->expects($this->never())->method('uploadArchives');
+        $releasePrepareService->expects($this->never())->method('storeReleaseList');
+        $releasePrepareService->expects($this->never())->method('registerUpdate');
+
+        static::assertTrue($before->isPublic());
+
+        $releaseService->releasePackage($tag);
+
+        static::assertTrue($before->isPublic());
+    }
+
+    public function testReleasePackageUnknownTag(): void
+    {
+        $releasePrepareService = $this->createMock(ReleasePrepareService::class);
+        $taggingService = $this->createMock(TaggingService::class);
+        $releaseService = new ReleaseService(
+            [],
+            $releasePrepareService,
+            $taggingService
+        );
+        $releasePrepareService->method('getReleaseList')->willReturn(new Release('<Release/>'));
+
+        $tag = 'v6.2.5';
+        $this->expectException(\RuntimeException::class);
+        $this->expectErrorMessage('Tag ' . $tag . ' not found');
+        $releaseService->releasePackage($tag);
+    }
+
+
+    public function testReleaseTags(): void
     {
         $client = $this->createMock(Client::class);
         $client->expects($this->once())->method('request');
@@ -167,10 +209,13 @@ class ReleaseServiceTest extends TestCase
 
         $this->makeFakeRelease($config, 'v6.1.998');
 
-        $releaseService = new ReleaseService($config, $client);
+        $taggingService = new TaggingService(new VersionParser(), $config, $client);
+        $releasePrepareService = $this->createMock(ReleasePrepareService::class);
 
-        $this->startGitServer(60);
-        $releaseService->release();
+        $releaseService = new ReleaseService($config, $releasePrepareService, $taggingService);
+
+        $this->startGitServer();
+        $releaseService->releaseTags($tag);
 
         static::assertFileExists($this->fakeProd . '/composer.json');
         $composerJson = json_decode(file_get_contents($this->fakeProd . '/composer.json'), true);
@@ -293,6 +338,7 @@ class ReleaseServiceTest extends TestCase
                 'remoteUrl' => $config['manyReposBaseUrl'] . '/storefront'
             ]
         ];
+        $config['composerUpdateWaitTime'] = 0;
 
         return $config;
     }

@@ -8,6 +8,8 @@ use Composer\Semver\Constraint\Constraint;
 use Composer\Semver\Constraint\MultiConstraint;
 use Composer\Semver\Semver;
 use Composer\Semver\VersionParser;
+use GuzzleHttp\Client;
+use GuzzleHttp\RequestOptions;
 
 class TaggingService
 {
@@ -31,10 +33,20 @@ class TaggingService
      */
     private $allowedStabilities;
 
-    public function __construct(VersionParser $versionParser, string $minimumStability)
+    /**
+     * @var array
+     */
+    private $config;
+
+    /**
+     * @var Client
+     */
+    private $gitlabApiClient;
+
+    public function __construct(VersionParser $versionParser, array $config, Client $gitlabApiClient)
     {
         $this->versionParser = $versionParser;
-        $this->minimumStability = VersionParser::normalizeStability($minimumStability);
+        $this->minimumStability = VersionParser::normalizeStability($config['stability']);
 
         if ($this->minimumStability === 'dev') {
             throw new \InvalidArgumentException('minimal stability dev is not supported. Use at least alpha');
@@ -45,6 +57,8 @@ class TaggingService
             0,
             1 + array_search($this->minimumStability, self::$stabilities, true)
         );
+        $this->config = $config;
+        $this->gitlabApiClient = $gitlabApiClient;
     }
 
     public function getMatchingVersions(array $versions, string $constraint): array
@@ -71,22 +85,30 @@ class TaggingService
 
         $normalizedVersion = (string)$this->versionParser->parseConstraints($lastVersion);
 
-        if(!preg_match('/== 6\.(\d+)\.(\d+)\.\d+(-(rc|RC|beta|alpha|dev)(\d+))?/', $normalizedVersion, $matches)) {
+        if(!preg_match('/== 6\.(\d+)\.(\d+)\.(\d+)(-(rc|RC|beta|alpha|dev)(\d+))?/', $normalizedVersion, $matches)) {
             throw new \RuntimeException('Invalid version ' . $lastVersion);
         }
 
-        $minor = $matches[1];
-        $patch = $matches[2];
+        $major = $matches[1];
+        $minor = $matches[2];
+        $patch = $matches[3];
+        $stability = $matches[5] ?? null;
 
-        if (!isset($matches[4])) {
-            $patch++;
-            return sprintf('v6.%d.%d', $minor, $patch);
+        if ($stability === null) {
+            if ($major >= 3) {
+                $patch++;
+                return sprintf('v6.%d.%d.%d', $major, $minor, $patch);
+            }
+            $minor++;
+            return sprintf('v6.%d.%d', $major, $minor);
         }
 
-        $stability = $matches[4];
-        $preReleaseVersionNumber = ($matches[5] ?? 0) + 1;
+        $preReleaseVersionNumber = ($matches[6] ?? 0) + 1;
 
-        return sprintf('v6.%d.%d-%s%d', $minor, $patch, $stability, $preReleaseVersionNumber);
+        if ($major >= 3) {
+            return sprintf('v6.%d.%d.%d-%s%d', $major, $minor, $patch, $stability, $preReleaseVersionNumber);
+        }
+        return sprintf('v6.%d.%d-%s%d', $major, $minor, $stability, $preReleaseVersionNumber);
     }
 
     private function getInitialMinorTag(string $constraint): string
@@ -103,13 +125,134 @@ class TaggingService
             throw new \RuntimeException('No initial tag found!');
         }
 
-        $minor = $matches[1];
+        $major = $matches[1];
 
         $suffix = '';
         if ($this->minimumStability !== 'stable') {
             $suffix = '-' . $this->minimumStability . '1';
         }
 
-        return sprintf('v6.%d.0%s', $minor, $suffix);
+        // we use 4 digit version numbers starting with 6.3.0.0
+        if ($major >= 3) {
+            return sprintf('v6.%d.0.0%s', $major, $suffix);
+        }
+
+        return sprintf('v6.%d.0%s', $major, $suffix);
+    }
+
+    public function deleteTag(string $tag, array $repos): void
+    {
+        $pureTag = $tag;
+        $ref = escapeshellarg("refs/tags/$tag");
+        $tag = escapeshellarg($tag);
+        $privateToken = $this->config['gitlabApiToken'];
+
+        foreach ($repos as $repo => $repoData) {
+            $path = escapeshellarg($repoData['path']);
+            $githubUrl = $repoData['githubUrl'];
+
+            $shellCode = <<<CODE
+    git -C $path -d tag $tag || true
+    git -C $path push origin :$ref
+    curl -X DELETE -H "Private-Token: $privateToken" $githubUrl/git/refs/tags/$pureTag
+CODE;
+
+            echo 'exec: ' . $shellCode . PHP_EOL;
+
+            system($shellCode, $retCode);
+
+            if ($retCode !== 0) {
+                echo 'Failed to delete tag for ' . $repoData['remoteUrl'] . '. Please delete by manual' . PHP_EOL;
+            }
+        }
+    }
+
+    public function tagAndPushRepos(string $tag, array $repos): void
+    {
+        $ref = escapeshellarg("refs/tags/$tag");
+        $tag = escapeshellarg($tag);
+        $commitMsg = escapeshellarg('Release ' . $tag);
+
+        foreach ($repos as $repo => $repoData) {
+            $path = escapeshellarg($repoData['path']);
+            $remote = escapeshellarg($repoData['remoteUrl']);
+
+            $shellCode = <<<CODE
+    git -C $path tag $tag -a -m $commitMsg || true
+    git -C $path remote add release  $remote
+    git -C $path push release $ref
+CODE;
+
+            echo 'exec: ' . $shellCode . PHP_EOL;
+
+            system($shellCode, $retCode);
+
+            if ($retCode !== 0) {
+                throw new \RuntimeException('Failed to push tag for ' . $repoData['remoteUrl'] . '. Please delete the tags that where already pushed');
+            }
+        }
+    }
+
+    public function tagAndPushPlatform(string $tag, string $commitRef, string $remote): void
+    {
+        $path = sys_get_temp_dir() . '/platform_' . bin2hex(random_bytes(16));
+        mkdir($path);
+
+        $path = escapeshellarg($path);
+
+        $commitMsg = 'Release ' . $tag;
+        $shellCode = <<<CODE
+    git -C $path init --bare
+    git -C $path remote add origin $remote
+    git -C $path fetch --depth=1 origin $commitRef
+    git -C $path reset --soft FETCH_HEAD
+    git -C $path tag $tag -a -m "$commitMsg"
+    git -C $path push origin refs/tags/$tag
+CODE;
+
+        system($shellCode, $retCode);
+
+        if ($retCode !== 0) {
+            throw new \RuntimeException('Failed tag platform and push it');
+        }
+
+        system('rm -Rf ' . $path);
+    }
+
+    public function createReleaseBranch(string $repository, string $tag, string $gitRemoteUrl): void
+    {
+        $repository = escapeshellarg($repository);
+        $commitMsg = escapeshellarg('Release ' . $tag);
+        $escapedTag = escapeshellarg($tag);
+        $gitRemoteUrl = escapeshellarg($gitRemoteUrl);
+
+        $shellCode = <<<CODE
+            set -e
+            git -C $repository add PLATFORM_COMMIT_SHA composer.json composer.lock public/recovery/install/data/version
+            git -C $repository commit -m $commitMsg
+            git -C $repository tag $escapedTag -a -m $commitMsg
+            git -C $repository remote add release $gitRemoteUrl
+            git -C $repository push release --tags
+CODE;
+
+        system($shellCode, $returnCode);
+
+        if ($returnCode !== 0) {
+            throw new \RuntimeException('Failed to create release branch');
+        }
+    }
+
+    public function openMergeRequest(string $projectId, string $sourceBranch, string $targetBranch, string $title)
+    {
+        $requestOptions = [
+            RequestOptions::JSON => [
+                'id' => $projectId,
+                'source_branch' => $sourceBranch,
+                'target_branch' => $targetBranch,
+                'title' => $title
+            ]
+        ];
+
+        $this->gitlabApiClient->request('POST', 'projects/' . $projectId . '/merge_requests', $requestOptions);
     }
 }

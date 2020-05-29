@@ -14,7 +14,7 @@ class CredentialService
     {
         $io = new SymfonyStyle($input, $output);
 
-        $username = $_SERVER['SHOPWARE_USER'] ?? null;
+        $username = $_SERVER['JIRA_API_USERNAME'] ?? null;
         if (empty($username)) {
             $question = new Question('Shopware username');
             $question->setMaxAttempts(2);
@@ -29,7 +29,7 @@ class CredentialService
             $username = $io->askQuestion($question);
         }
 
-        $password = $_SERVER['SHOPWARE_PASSWORD'] ?? null;
+        $password = $_SERVER['JIRA_API_PASSWORD'] ?? null;
         if (empty($password)) {
             $question = new Question('Shopware password');
             $question->setHidden(true);

@@ -1,0 +1,127 @@
+#stages:
+#    - build
+#    - test
+#    - prepare-release
+#    - release
+
+Prepare release:
+    stage: prepare-release
+    image: debian:buster-slim
+    only:
+        refs:
+            - schedules
+        # TODO: re enable
+        #variables:
+        #    # only run this job if it's protected
+        #    - $CI_COMMIT_REF_PROTECTED == "true"
+    variables:
+        GIT_STRATEGY: clone
+        PACKAGE_BASE_URL: "https://releases.shopware.com/sw6/"
+    before_script:
+        - apt-get update && apt-get install -y git openssh-client composer php-dom
+        - composer install --working-dir=.gitlab-ci/tools
+        - eval $(ssh-agent -s)
+        - chmod 600 $SSH_PRIVATE_KEY_FILE && ssh-add $SSH_PRIVATE_KEY_FILE
+        - '[[ -f /.dockerenv ]] && mkdir -p ~/.ssh/ && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+    script:
+        - '[[ -e artifacts/install.zip && -e artifacts/update.zip ]]'
+        - export MINIMUM_VERSION=${MINIMUM_VERSION:-6.2.1}
+        - export TAG=$(cat artifacts/TAG)
+        - .gitlab-ci/tools/console release:prepare $TAG --deploy
+
+.Release tags:
+    stage: release
+    image: alpine:3.10
+    when: manual
+    only:
+        refs:
+            - schedules
+        variables:
+            # only run this job if it's protected
+            - $CI_COMMIT_REF_PROTECTED == "true"
+    variables:
+        GIT_STRATEGY: clone
+        MANY_REPO_BASE_URL: "git@gitlab.shopware.com:shopware/6/product/many-repositories"
+        MANY_REPO_GITHUB_URL: "https://api.github.com/repos/shopware/"
+        TARGET_BRANCH: $PLATFORM_BRANCH
+        CI_REPOSITORY_URL: "git@gitlab.shopware.com:/shopware/6/product/production"
+    before_script:
+        - apk --no-cache add openssh-client git bash jq composer php-dom php-tokenizer php-xmlwriter php-xml curl curl-dev
+        - mkdir -p ~/.ssh/
+        - echo -e "$SHOPWAREBOT_PRIVATE_KEY" > ~/.ssh/id_rsa
+        - chmod 600 ~/.ssh/id_rsa
+        - eval `ssh-agent -s`
+        - ssh-add ~/.ssh/id_rsa
+        - ssh-keyscan github.com >> ~/.ssh/known_hosts
+        - '[[ -f /.dockerenv ]] && mkdir -p ~/.ssh/ && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+        - git config --global user.email $GIT_EMAIL
+        - git config --global user.name $GIT_USER
+        - composer install --working-dir=.gitlab-ci/tools
+        - export TAG=${TAG:-$(cat artifacts/TAG)}
+    script:
+        - export PROJECT_ROOT=$(pwd)
+        - cp artifacts/install_*.tar.xz install.tar.xz
+        # copy vendor and composer.lock from tested package
+        - tar -xf install.tar.xz ./vendor ./composer.lock
+        # create tags, push repos/*, update composer.lock with pushed versions, tag prod, push tag, create mr
+        - .gitlab-ci/tools/console release:tags $TAG --deploy
+
+Build package:
+    stage: build
+    only:
+        refs:
+            - tags
+        variables:
+            # only run this job if the tag is protected
+            - $CI_COMMIT_REF_PROTECTED == "true"
+    image: docker
+    services:
+        -   name: docker:18.09.7-dind
+            alias: docker
+    variables:
+        GIT_STRATEGY: none
+    before_script:
+        - apk add git bash jq composer npm
+        - umask 0022
+        - git init .
+        - git remote add origin ${CI_REPOSITORY_URL}
+        - git fetch origin ${CI_COMMIT_SHA}
+        - git checkout -f -q ${CI_COMMIT_SHA}
+    script:
+        - composer install --ignore-platform-reqs --no-interaction
+        - docker build . -t ${CI_REGISTRY_IMAGE}:${CI_COMMIT_TAG}
+        - mkdir artifacts || true
+        - chmod 777 artifacts || true
+        - docker run -v $PWD/artifacts:/artifacts -e REFERENCE_INSTALLER_URL -e REFERENCE_INSTALLER_SHA256 --entrypoint=bin/package.sh ${CI_REGISTRY_IMAGE}:${CI_COMMIT_TAG}
+        - mv artifacts/install.tar.xz artifacts/install_${CI_COMMIT_TAG}.tar.xz
+    artifacts:
+        paths:
+            - artifacts/
+
+Release package:
+    stage: release
+    image: debian:buster-slim
+    only:
+        refs:
+            - tags
+        variables:
+            # only run this job if it's protected
+            - $CI_COMMIT_REF_PROTECTED == "true"
+    variables:
+        GIT_STRATEGY: clone
+    before_script:
+        - apt-get update && apt-get install -y git openssh-client composer php-dom
+        - composer install --working-dir=.gitlab-ci/tools
+        - eval $(ssh-agent -s)
+        - chmod 600 $SSH_PRIVATE_KEY_FILE && ssh-add $SSH_PRIVATE_KEY_FILE
+        - '[[ -f /.dockerenv ]] && mkdir -p ~/.ssh/ && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+    script:
+        - '[[ -e artifacts/install.zip && -e artifacts/update.zip ]]'
+        - .gitlab-ci/tools/console release:package ${CI_COMMIT_TAG} --deploy
+
+# TODO:
+# *
+# * Add SBP-Version
+# * create github releases
+# * make sbp-version public
+# * deploy test system?

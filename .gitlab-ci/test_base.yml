@@ -104,7 +104,7 @@
         - bin/console assets:install
         - npm --prefix .gitlab-ci/e2e/ ci
         # start update api mock
-        - DEBUG=* UPDATE_FILE_PATH=$CI_PROJECT_DIR/artifacts/update.zip FAKE_VERSION=$TAG node .gitlab-ci/e2e/update-api-mock.js &
+        - DEBUG=* UPDATE_FILE_PATH=$CI_PROJECT_DIR/artifacts/update.zip node .gitlab-ci/e2e/update-api-mock.js &
         # start webserver
         - /entrypoint supervisord > /dev/null 2>&1 &
         - apt-get update && apt-get install -y xvfb

@@ -1,0 +1,236 @@
+<?php
+
+
+namespace Shopware\CI\Service;
+
+
+use Composer\Semver\VersionParser;
+use League\Flysystem\Filesystem;
+use Shopware\CI\Service\Xml\Release;
+
+class ReleasePrepareService
+{
+    // TODO: use live shopware6.xml
+    public const SHOPWARE_XML_PATH = '_meta/shopware6_test.xml';
+
+    /**
+     * @var array
+     */
+    private $config;
+
+    /**
+     * @var Filesystem
+     */
+    private $deployFilesystem;
+
+    /**
+     * @var ChangelogService
+     */
+    private $changelogService;
+
+    /**
+     * @var Filesystem
+     */
+    private $artifactsFilesystem;
+
+    /**
+     * @var UpdateApiService
+     */
+    private $updateApiService;
+
+    public function __construct(
+        array $config,
+        Filesystem $deployFilesystem,
+        FileSystem $artifactsFilesystem,
+        ChangelogService $changelogService,
+        UpdateApiService $updateApiService
+    )
+    {
+        $this->config = $config;
+        $this->deployFilesystem = $deployFilesystem;
+        $this->changelogService = $changelogService;
+        $this->artifactsFilesystem = $artifactsFilesystem;
+        $this->updateApiService = $updateApiService;
+    }
+
+    public function prepareRelease(string $tag): void
+    {
+        $releaseList = $this->getReleaseList();
+
+        $release = $releaseList->getRelease($tag);
+        if ($release === null) {
+            $release = $releaseList->addRelease($tag);
+        }
+
+        if ($release->isPublic()) {
+            throw new \RuntimeException('Release ' . $tag . ' is already public');
+        }
+
+        $this->setReleaseProperties($tag, $release);
+
+        $this->uploadArchives($release);
+
+        if($this->mayAlterChangelog($release)) {
+            try {
+                $changelog = $this->changelogService->getChangeLog($tag);
+                $release->setLocales($changelog);
+            } catch (\Throwable $e) {}
+        }
+
+        $this->storeReleaseList($releaseList);
+
+        $this->registerUpdate($tag, $release);
+    }
+
+    public function uploadArchives(Release $release): void
+    {
+        $installUpload = $this->hashAndUpload($release->tag, 'install.zip');
+        $release->download_link_install = $installUpload['url'];
+        $release->sha1_install = $installUpload['sha1'];
+        $release->sha256_install = $installUpload['sha256'];
+
+        $updateUpload = $this->hashAndUpload($release->tag, 'update.zip');
+        $release->download_link_update = $updateUpload['url'];
+        $release->sha1_update = $updateUpload['sha1'];
+        $release->sha256_update = $updateUpload['sha256'];
+
+        if (isset($this->config['minor_branch']) && preg_match('/^\d+\.\d+(\.\d+)?$/', $this->config['minor_branch'])) {
+            $this->hashAndUpload($release->tag, 'install.tar.xz');
+            $this->hashAndUpload($release->tag, 'install.tar.xz', 'sw6/install_' . $this->config['minor_branch'] . '_next.tar.xz');
+        }
+    }
+
+    public function getReleaseList(): Release
+    {
+        $content = $this->deployFilesystem->read(self::SHOPWARE_XML_PATH);
+        return simplexml_load_string($content, Release::class);
+    }
+
+    public function storeReleaseList(Release $release): void
+    {
+        $dom = new \DOMDocument("1.0");
+        $dom->preserveWhiteSpace = false;
+        $dom->formatOutput = true;
+        $dom->loadXML($release->asXML());
+
+        $this->deployFilesystem->put(self::SHOPWARE_XML_PATH, $dom->saveXML());
+    }
+
+    public function registerUpdate(string $tag, Release $release): void
+    {
+        $baseParams = [
+            '--release-version' => (string)$release->version,
+            '--channel' => $this->getUpdateChannel($tag),
+        ];
+
+        if (((string)$release->version_text) !== '') {
+            $baseParams['--version-text'] = (string)$release->version_text;
+        }
+
+        $insertReleaseParameters = array_merge($baseParams, [
+            '--min-version' => $this->config['minimumVersion'],
+            '--install-uri' => (string)$release->download_link_install,
+            '--install-size' => (string)$this->artifactsFilesystem->getSize('install.zip'),
+            '--install-sha1' => (string)$release->sha1_install,
+            '--install-sha256' => (string)$release->sha256_install,
+            '--update-uri' => (string)$release->download_link_update,
+            '--update-size' => (string)$this->artifactsFilesystem->getSize('update.zip'),
+            '--update-sha1' => (string)$release->sha1_update,
+            '--update-sha256' => (string)$release->sha256_update
+        ]);
+
+        $this->updateApiService->insertReleaseData($insertReleaseParameters);
+        $this->updateApiService->updateReleaseNotes($baseParams);
+
+        if ($release->isPublic()) {
+            $this->updateApiService->publishRelease($baseParams);
+        }
+    }
+
+    private function setReleaseProperties(string $tag, Release $release): void
+    {
+        $release->minimum_version = $this->config['minimumVersion'];
+        $release->public = 0;
+        $release->ea = 0;
+        $release->revision = '';
+        $release->type = $this->getReleaseType($tag);
+        $release->release_date = '';
+        $release->tag = $tag;
+        $release->github_repo = 'https://github.com/shopware/platform/tree/' . $tag;
+        $release->upgrade_md = sprintf(
+            'https://github.com/shopware/platform/blob/%s/UPGRADE-%s.md',
+            $tag,
+            $this->config['minor_branch']
+        );
+    }
+
+    private function getReleaseType(string $tag): string
+    {
+        if (!preg_match('/v?\d+\.\d+\.(\d+)(\.(\d+))?/', $tag, $matches)) {
+            throw new \RuntimeException('Invalid tag ' . $tag);
+        }
+
+        $minor = (int)$matches[1];
+        $patch = (int)($matches[2] ?? 0);
+
+        if ($minor === 0 && $patch === 0) {
+            return 'Major';
+        }
+
+        if ($patch === 0) {
+            return 'Minor';
+        }
+
+        return 'Patch';
+    }
+
+    private function hashAndUpload(string $tag, string $source, string $targetPath = null): array
+    {
+        $sha1 = $this->hashFile('sha1', $source);
+        $sha256 = $this->hashFile('sha256', $source);
+
+        $basename = basename($source);
+        $parts = explode('.', $basename, 2);
+
+        $targetPath = $targetPath ?: 'sw6/' . $parts[0] . '_' . $tag . '_' . $sha1 . '.' . $parts[1];
+        $this->deployFilesystem->putStream($targetPath, $this->artifactsFilesystem->readStream($source));
+        return [
+            'url' => $this->config['deployFilesystem']['publicDomain'] . '/' . $targetPath,
+            'sha1' => $sha1,
+            'sha256' => $sha256
+        ];
+    }
+
+    private function hashFile(string $alg, string $path): string
+    {
+        $context = hash_init($alg);
+        hash_update_stream($context, $this->artifactsFilesystem->readStream($path));
+        return hash_final($context);
+    }
+
+    private function getUpdateChannel(string $tag): int
+    {
+        if (!preg_match('/v?\d+\.\d+\.\d+(\.\d+)?(-([^0-9]+))?/i', trim($tag), $matches)) {
+            throw new \RuntimeException('Invalid tag ' . $tag);
+        }
+
+        if (($matches[2] ?? '') === '') {
+            return 100;
+        }
+
+        switch (strtolower($matches[3] ?? '')) {
+            case 'rc': return 80;
+            case 'beta': return 60;
+            case 'alpha': return 40;
+            case 'dev':
+            default:
+                return 20;
+        }
+    }
+
+    private function mayAlterChangelog(Release $release): bool
+    {
+        return !$release->isPublic()
+            && ((bool)($release->manual ?? false)) !== true;
+    }
+}

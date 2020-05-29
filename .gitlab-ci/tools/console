@@ -3,17 +3,28 @@
 
 require __DIR__ . '/vendor/autoload.php';
 
-use Shopware\CI\Command\CreateReleaseBranchCommand;
-use Shopware\CI\Command\DeleteTagCommand;
+use Shopware\CI\Command\EditReleaseCommand;
+use Shopware\CI\Command\ReleasePackageCommand;
+use Shopware\CI\Command\ReleaseTagsCommand;
+use Shopware\CI\Command\DeleteTagsCommand;
 use Shopware\CI\Command\GenerateChangelogCommand;
+use Shopware\CI\Command\ReleasePrepareCommand;
 use Shopware\CI\Command\ShowNextTagCommand;
 use Symfony\Component\Console\Application;
+use Symfony\Component\Dotenv\Dotenv;
 
 $application = new Application('Shopware CI');
 
+if (is_readable(__DIR__ . '/.env')) {
+    (new Dotenv())->load(__DIR__ . '/.env');
+}
+
 $application->add(new GenerateChangelogCommand());
 $application->add(new ShowNextTagCommand());
-$application->add(new CreateReleaseBranchCommand());
-$application->add(new DeleteTagCommand());
+$application->add(new ReleaseTagsCommand());
+$application->add(new DeleteTagsCommand());
+$application->add(new ReleasePrepareCommand());
+$application->add(new ReleasePackageCommand());
+$application->add(new EditReleaseCommand());
 
 $application->run();

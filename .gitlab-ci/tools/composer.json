@@ -6,7 +6,10 @@
         "composer/semver": "^1.5",
         "symfony/console": "^5.0",
         "guzzlehttp/guzzle": "^6.5",
-        "ext-json": "*"
+        "ext-json": "*",
+        "symfony/dotenv": "^5.0",
+        "league/flysystem-aws-s3-v3": "^1.0",
+        "league/flysystem-memory": "^1.0"
     },
     "require-dev": {
         "phpunit/phpunit": "8.5.2"

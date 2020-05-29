@@ -1,18 +1,26 @@
 variables:
-    GIT_STRATEGY: clone
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: "/certs"
     DOCKER_HOST: "tcp://docker:2375"
     # shopware 6
     WEB_DOCUMENT_ROOT: '$CI_PROJECT_DIR/public'
     MYSQL_ROOT_PASSWORD: root
-    # The platform branch used to split the repos
-    PLATFORM_BRANCH: "6.2"
+
+    # The platform branch used to split the repos - by default try using branches matching the version.
+    # The order is: $PLATFORM_BRANCH 6.$MAJOR.$MINOR.$PATCH 6.$MAJOR.$MINOR 6.$MAJOR
+    # PLATFORM_BRANCH: "6.2"
+
     # minimum stability of the new version. Example: v6.2.0-RC2 -> if rc: v6.2.0-RC3, if stable: v6.2.0
     MINIMUM_STABILITY: "stable"
 
+stages:
+    - build
+    - test
+    - prepare-release
+    - release
+
 include:
-    -   local: .gitlab-ci/release.yml
+    -   local: .gitlab-ci/release_jobs.yml
     -   local: .gitlab-ci/test_base.yml
 
 Build Test Package:
@@ -31,7 +39,7 @@ Build Test Package:
         SPLIT_REPOS: "Administration Storefront Core Elasticsearch Recovery"
         SPLITSH: /opt/splitsh-lite
     cache:
-        key: "package_$PLATFORM_BRANCH"
+        key: "package_$CI_COMMIT_BRANCH"
         paths:
             - .platform
             - .composer
@@ -45,11 +53,9 @@ Build Test Package:
         - rm /etc/apt/apt.conf.d/docker-clean
         - cp -a /var/cache/apt .apt
         - echo "Dir::Cache::Archives ${PWD}/.apt;" >> /etc/apt/apt.conf.d/cache.conf
-        - apt-get install -y --download-only curl
-        - apt-get install -y curl
+        - apt-get install -y --download-only curl && apt-get install -y curl
         - curl -sL https://deb.nodesource.com/setup_12.x | bash -
-        - apt-get install -y --download-only $DEB_PACKAGES
-        - apt-get install -y $DEB_PACKAGES
+        - apt-get install -y --download-only $DEB_PACKAGES && apt-get install -y $DEB_PACKAGES
         - npm config set cache $PWD/.npm
         # we need to do the checkout to have correct permissions. See: https://gitlab.com/gitlab-org/gitlab-runner/-/issues/1736
         - umask 0022
@@ -65,15 +71,33 @@ Build Test Package:
         - chmod +x $SPLITSH
         - HASH_CHECK_LINE="ec46c5a409422bf55b26f7de1faab67c2320362934947f984872b3aedc4a9d99  $SPLITSH"
         - echo $HASH_CHECK_LINE | sha256sum -c
-        - git config --global user.email $GIT_EMAIL
-        - git config --global user.name $GIT_USER
     script:
         # clone platform if it's not cached
-        - '[[ -d .platform/ ]] || git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/platform.git -b ${PLATFORM_BRANCH} --bare .platform'
+        - export TAG=${TAG:-$(.gitlab-ci/tools/console release:show-next-tag --minimum-stability "$MINIMUM_STABILITY")}
+        - '[[ -d .platform/ ]] || git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/platform.git -b ${DEFAULT_PLATFORM_BRANCH} --bare .platform'
         - git -C .platform remote set-url origin https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/platform.git
-        # fetch newest changes from $PLATFORM_BRANCH
-        - git -C .platform fetch origin ${PLATFORM_BRANCH}
-        # set HEAD to newest commit in $PLATFORM_BRANCH
+        - >
+           VERSION=${TAG#"v"};
+           IFS=. parts=(${VERSION%-*});
+           unset IFS;
+           BASE=${parts[0]}.${parts[1]};
+           BRANCHES="$PLATFORM_BRANCH $BASE.${parts[2]}.${parts[3]} $BASE.${parts[2]} $BASE";
+           cd .platform;
+           MATCHING_BRANCH=;
+           for branch in $BRANCHES; do
+             if git ls-remote --exit-code --heads origin $branch >/dev/null; then
+                 MATCHING_BRANCH=$branch;
+                 break;
+             else
+                 echo "Branch $branch not found";
+             fi
+           done;
+           cd $CI_PROJECT_DIR;
+           if [[ -z $MATCHING_BRANCH ]]; then echo "No matching branch found" exit 1; fi
+        - echo "Checkout platform branch $branch"
+        # fetch newest changes from $MATCHING_BRANCH
+        - git -C .platform fetch origin ${MATCHING_BRANCH}
+        # set HEAD to newest commit in $$MATCHING_BRANCH
         - git -C .platform reset --soft FETCH_HEAD
         # split platform into separate repos/packages
         - >
@@ -81,10 +105,9 @@ Build Test Package:
               .gitlab-ci/split_repo.sh .platform src/${pkg}
               git -C .platform/ rev-parse HEAD > repos/${pkg,,}/PLATFORM_COMMIT_SHA
             done
-        - export TAG=${TAG:-$(.gitlab-ci/tools/console show-next-tag --minimum-stability "$MINIMUM_STABILITY")}
-        - export IMAGE_TAG=${TAG}-dev
         # build test package
         - .gitlab-ci/build-nightly.sh
+        - IMAGE_TAG=${TAG}-dev
         - docker build . -t "${CI_REGISTRY_IMAGE}:${IMAGE_TAG}"
         - mkdir artifacts || true
         - chmod 777 artifacts || true
@@ -100,19 +123,19 @@ Build Test Package:
 
 # Unit tests
 
-Unit PHP 7.2:
+.Unit PHP 7.2:
     extends: .unit_base
     image: shopware/development:7.2
 
-Unit PHP 7.3:
+.Unit PHP 7.3:
     extends: .unit_base
     image: shopware/development:7.3
 
-Unit PHP 7.4:
+.Unit PHP 7.4:
     extends: .unit_base
     image: shopware/development:7.4
 
-Unit MySQL 5.7:
+.Unit MySQL 5.7:
     extends: .unit_base
     services:
         -   name: mysql:5.7
@@ -121,7 +144,7 @@ Unit MySQL 5.7:
             alias: elasticsearch
             command: [ "bin/elasticsearch", "-Expack.security.enabled=false", "-Ediscovery.type=single-node" ]
 
-Unit MySQL 8.0:
+.Unit MySQL 8.0:
     extends: .unit_base
     services:
         -   name: mysql:8.0.19
@@ -131,7 +154,7 @@ Unit MySQL 8.0:
             alias: elasticsearch
             command: [ "bin/elasticsearch", "-Expack.security.enabled=false", "-Ediscovery.type=single-node" ]
 
-Unit MariaDB 10.4:
+.Unit MariaDB 10.4:
     extends: .unit_base
     services:
         -   name: mariadb:10.4
@@ -142,7 +165,7 @@ Unit MariaDB 10.4:
 
 # e2e install tests
 
-Install:
+.Install:
     extends: .e2e_base
     variables:
         GIT_STRATEGY: none
@@ -165,8 +188,9 @@ Install:
 
 # e2e update tests
 
-Manual Upd 6.2.0:
+.Manual Upd 6.2.0:
     extends: .e2e_update_base
+    allow_failure: true
     variables:
         E2E_INSTALL_PACKAGE_URL: $REFERENCE_INSTALLER_URL
         E2E_TEST_DATA_FILE: "v6.1.6_test_data.tar.xz"
@@ -186,6 +210,7 @@ Manual Upd 6.2.0:
 
 .E2E Update:
     extends: .e2e_update_base
+    allow_failure: true
     script:
         - cd .gitlab-ci/e2e/test/
         - timeout 20m $(npm bin)/cypress run
@@ -203,7 +228,7 @@ Manual Upd 6.2.0:
             - .gitlab-ci/e2e/test/artifacts/*
             - var/log/*
 
-Update (Mysql 8.0):
+.Update (Mysql 8.0):
     extends: .E2E Update
     services:
         -   name: mysql:8.0.19
@@ -216,7 +241,7 @@ Update (Mysql 8.0):
         E2E_INSTALL_PACKAGE_URL: $REFERENCE_INSTALLER_URL
         E2E_TEST_DATA_FILE: "v6.1.6_test_data.tar.xz"
 
-Update:
+.Update:
     extends: .E2E Update
     variables:
         E2E_INSTALL_PACKAGE_URL: $REFERENCE_INSTALLER_URL

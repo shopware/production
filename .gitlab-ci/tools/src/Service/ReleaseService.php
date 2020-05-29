@@ -5,40 +5,68 @@ namespace Shopware\CI\Service;
 
 
 use Composer\Semver\VersionParser;
-use GuzzleHttp\ClientInterface;
-use GuzzleHttp\RequestOptions;
 
 class ReleaseService
 {
-    /**
-     * @var ClientInterface
-     */
-    private $gitlabApiClient;
-
     /**
      * @var array
      */
     private $config;
 
-    public function __construct(array $config, ClientInterface $gitlabApiClient)
+    /**
+     * @var TaggingService
+     */
+    private $taggingService;
+
+    /**
+     * @var ReleasePrepareService
+     */
+    private $releasePrepareService;
+
+    public function __construct(
+        array $config,
+        ReleasePrepareService $releasePrepareService,
+        TaggingService $taggingService
+    )
     {
-        $this->config = $config ?? self::getDefaultConfig();
-        $this->gitlabApiClient = $gitlabApiClient;
+        $this->config = $config;
+        $this->taggingService = $taggingService;
+        $this->releasePrepareService = $releasePrepareService;
+    }
+
+    public function releasePackage(string $tag): void
+    {
+        $releaseList = $this->releasePrepareService->getReleaseList();
+
+        $release = $releaseList->getRelease($tag);
+        if ($release === null) {
+            throw new \RuntimeException('Tag ' . $tag . ' not found');
+        }
+
+        if ($release->isPublic()) {
+            throw new \RuntimeException('Release ' . $tag . ' is already public');
+        }
+
+        $release->makePublic();
+
+        $this->releasePrepareService->uploadArchives($release);
+
+        $this->releasePrepareService->storeReleaseList($releaseList);
+
+        $this->releasePrepareService->registerUpdate($tag, $release);
     }
 
     /**
      * Copy new composer.lock into the projectRoot before calling this function
      */
-    public function release(): void
+    public function releaseTags(string $tag): void
     {
-        $tag = $this->config['tag'];
-
         copy(
             $this->config['repos']['core']['path'] . '/PLATFORM_COMMIT_SHA',
             $this->config['projectRoot'] . '/PLATFORM_COMMIT_SHA'
         );
 
-        $this->tagAndPushRepos($tag, $this->config['repos']);
+        $this->taggingService->tagAndPushRepos($tag, $this->config['repos']);
 
         $this->updateStability(
             $this->config['projectRoot'] . '/composer.json',
@@ -53,71 +81,27 @@ class ReleaseService
 
         $this->createInstallerVersionFile($this->config['projectRoot'], $tag);
 
-        $this->createReleaseBranch(
+        $this->taggingService->createReleaseBranch(
             $this->config['projectRoot'],
             $tag,
             $this->config['gitlabRemoteUrl']
         );
 
-        $this->openMergeRequest(
+        $this->taggingService->openMergeRequest(
             $this->config['projectId'],
             'release/' . $tag,
             $this->config['targetBranch'],
             'Release ' . $tag
         );
-    }
 
-    public function deleteTag(string $tag, array $repos): void
-    {
-        $pureTag = $tag;
-        $ref = escapeshellarg("refs/tags/$tag");
-        $tag = escapeshellarg($tag);
-        $privateToken = $this->config['gitlabApiToken'];
+        $platformRemote = '';
+        $platformSha = file_get_contents($this->config['projectRoot'] . '/PLATFORM_COMMIT_SHA');
 
-        foreach ($repos as $repo => $repoData) {
-            $path = escapeshellarg($repoData['path']);
-            $githubUrl = $repoData['githubUrl'];
-
-            $shellCode = <<<CODE
-    git -C $path -d tag $tag || true
-    git -C $path push origin :$ref
-    curl -X DELETE -H "Private-Token: $privateToken" $githubUrl/git/refs/tags/$pureTag
-CODE;
-
-            echo 'exec: ' . $shellCode . PHP_EOL;
-
-            system($shellCode, $retCode);
-
-            if ($retCode !== 0) {
-                echo 'Failed to delete tag for ' . $repoData['remoteUrl'] . '. Please delete by manual' . PHP_EOL;
-            }
-        }
-    }
-
-    private function tagAndPushRepos(string $tag, array $repos): void
-    {
-        $ref = escapeshellarg("refs/tags/$tag");
-        $tag = escapeshellarg($tag);
-        $commitMsg = escapeshellarg('Release ' . $tag);
-
-        foreach ($repos as $repo => $repoData) {
-            $path = escapeshellarg($repoData['path']);
-            $remote = escapeshellarg($repoData['remoteUrl']);
-
-            $shellCode = <<<CODE
-    git -C $path tag $tag -a -m $commitMsg || true
-    git -C $path remote add release  $remote
-    git -C $path push release $ref
-CODE;
-
-            echo 'exec: ' . $shellCode . PHP_EOL;
-
-            system($shellCode, $retCode);
-
-            if ($retCode !== 0) {
-                throw new \RuntimeException('Failed to push tag for ' . $repoData['remoteUrl'] . '. Please delete the tags that where already pushed');
-            }
-        }
+        $this->taggingService->tagAndPushPlatform(
+            $tag,
+            $platformSha,
+            $platformRemote
+        );
     }
 
     private function updateStability(string $composerJsonPath, string $stability): void
@@ -145,11 +129,12 @@ CODE;
     {
         $dir = escapeshellarg($this->config['projectRoot']);
 
-        sleep(45);
+        $composerWaitTime = $this->config['composerUpdateWaitTime'] ?? 45;
+        sleep($composerWaitTime);
 
         $max = 10;
         for($i = 0; $i < $max; ++$i) {
-            sleep(15);
+            sleep($composerWaitTime / 3);
 
             $cmd = 'cd ' . $dir . ' && rm -Rf vendor/shopware';
             system($cmd);
@@ -193,44 +178,6 @@ CODE;
     public function validatePackage(array $packageData, string $tag): bool
     {
         return $packageData['version'] === $tag
-            && isset($packageData['dist']['type'])
-            && $packageData['dist']['type'] !== 'path';
-    }
-
-    private function createReleaseBranch(string $repository, string $tag, string $gitRemoteUrl): void
-    {
-        $repository = escapeshellarg($repository);
-        $commitMsg = escapeshellarg('Release ' . $tag);
-        $tag = escapeshellarg($tag);
-        $gitRemoteUrl = escapeshellarg($gitRemoteUrl);
-
-        $shellCode = <<<CODE
-            set -e
-            git -C $repository add PLATFORM_COMMIT_SHA composer.json composer.lock public/recovery/install/data/version
-            git -C $repository commit -m $commitMsg
-            git -C $repository tag $tag -a -m $commitMsg
-            git -C $repository remote add release $gitRemoteUrl
-            git -C $repository push release --tags
-CODE;
-
-        system($shellCode, $returnCode);
-
-        if ($returnCode !== 0) {
-            throw new \RuntimeException('Failed to create release branch');
-        }
-    }
-
-    private function openMergeRequest(string $projectId, string $sourceBranch, string $targetBranch, string $title)
-    {
-        $requestOptions = [
-            RequestOptions::JSON => [
-                'id' => $projectId,
-                'source_branch' => $sourceBranch,
-                'target_branch' => $targetBranch,
-                'title' => $title
-            ]
-        ];
-
-        $this->gitlabApiClient->request('POST', 'projects/' . $projectId . '/merge_requests', $requestOptions);
+            && ($packageData['dist']['type'] ?? null) !== 'path';
     }
 }

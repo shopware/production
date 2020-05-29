@@ -1,0 +1,658 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<releases>
+  <release>
+    <version>6.2.1</version>
+    <version_text/>
+    <minimum_version>6.1.0</minimum_version>
+    <security_update>0</security_update>
+    <public>0</public>
+    <rc>0</rc>
+    <ea>0</ea>
+    <revision>202005191000000</revision>
+    <type>Minor</type>
+    <release_date>2020-05-19 10:00</release_date>
+    <github_repo>https://github.com/shopware/platform/tree/v6.2.1</github_repo>
+    <upgrade_md>https://github.com/shopware/platform/blob/v6.2.1/UPGRADE-6.2.md</upgrade_md>
+    <download_link_install/>
+    <download_link_update/>
+    <sha256_install/>
+    <sha256_update/>
+    <locales>
+      <de>
+        <important_changes/>
+        <changelog><![CDATA[
+WIP
+]]></changelog>
+      </de>
+      <en>
+        <important_changes/>
+        <changelog><![CDATA[
+WIP
+]]></changelog>
+      </en>
+    </locales>
+  </release>
+  <release>
+    <version>6.2.0</version>
+    <version_text/>
+    <minimum_version>6.1.0</minimum_version>
+    <security_update>0</security_update>
+    <public>1</public>
+    <rc>0</rc>
+    <ea>0</ea>
+    <revision>202005191000000</revision>
+    <type>Major</type>
+    <release_date>2020-05-19 10:00</release_date>
+    <github_repo>https://github.com/shopware/platform/tree/v6.2.0</github_repo>
+    <upgrade_md>https://github.com/shopware/platform/blob/v6.2.0/UPGRADE-6.2.md</upgrade_md>
+    <download_link_install>https://releases.shopware.com/sw6/install_6.2.0_1589874223.zip</download_link_install>
+    <download_link_update>https://releases.shopware.com/sw6/update_6.2.0_1589874223.zip</download_link_update>
+    <sha256_install>bc308b170cf44c501277fab57dbb27be25fbd9ccb07b3c1a007d906ae4f0e64b</sha256_install>
+    <sha256_update>933f49e9bd0739b869cffe820b56e700c72fdc6f56638c061025b86710eddbde</sha256_update>
+    <locales>
+      <de>
+        <important_changes/>
+        <changelog><![CDATA[
+<div class="sw-alert sw-alert--info alert alert-info important-information" style="margin-bottom: 15px;padding: 25px 35px;font-size: 16px;">
+    <h3>Zusätzliche Information</h3>
+	<p>
+	Wir bekommen gerade vermehrt den Hinweis, dass das Update auf langsamen Dateisystemen nicht komplett über diesen Auto-Update Assistenten durchgeführt werden kann. Solltest Du Probleme mit dem Update feststellen, empfehlen wir das Update manuell wie <a target="_blank" href="https://docs.shopware.com/de/shopware-6-de/update-guides/shopware-aktualisieren-updaten?category=shopware-6-de/update-guides">hier</a> beschrieben durchzuführen.
+	</p>
+</div>
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6981" target="_blank">NEXT-6981</a> - </strong>Der Kunde wird nach fehlerhafter Zahlung nun auf die Bestellbestätigungsseite mit entsprechender Fehlermeldung geleitet
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7563" target="_blank">NEXT-7563</a> - </strong>Promotion Codes werden nach einer Bestellung nicht erneut in den Warenkorb gelegt.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7629" target="_blank">NEXT-7629</a> - </strong>Die Streichpreis Regel wird nun richtig angewendet
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7772" target="_blank">NEXT-7772</a> - </strong>Wenn der Kunde in der Suche einen Slash verwendet, kann nun wieder richtig gefiltert und sortiert werden.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-8182" target="_blank">NEXT-8182</a> - </strong>Der Suchalgorithmus bei aktivierter Elasticsearch wurde optimiert
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-8217" target="_blank">NEXT-8217</a> - </strong>Ansichtsfehler in der Storefront unter dem Internet Explorer 11 wurden gefixt
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-8221" target="_blank">NEXT-8221</a> - </strong>Nach Plugin Update wird nun der Symfony Container Cache geleert
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-8250" target="_blank">NEXT-8250</a> - </strong>Die Preissortierung in Produktlisten greift nun auf Nachkommastellen
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-8269" target="_blank">NEXT-8269</a> - </strong>Die Performance des Varianten Generators wurde stark optimiert
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-8291" target="_blank">NEXT-8291</a> - </strong>Wenn in einem Snippetset ein Snippet nicht existiert, so greift nun der Fallback auf das Standard Snippet der System Sprache.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-8328" target="_blank">NEXT-8328</a> - </strong>Die Funktion "Produkt erneut bestellen" wurde gefixt
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-8332" target="_blank">NEXT-8332</a> - </strong>Die Snippets bei der Benachrichtigung für das Löschen von Cookies wurden gefixt
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-8336" target="_blank">NEXT-8336</a> - </strong>Produkte die einmal bestellt wurden, können nun wieder gelöscht werden
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-8346" target="_blank">NEXT-8346</a> - </strong>Wir haben die Invalidierung des Http Caches optimiert
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-8363" target="_blank">NEXT-8363</a> - </strong>Variantennamen in der Cross Selling Vorschauliste werden nun richtig angezeigt
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-2562" target="_blank">NEXT-2562</a> - </strong>Wenn die Aktualisierung eines Plugins fehlschlägt, wird das Plugin deaktiviert
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-3027" target="_blank">NEXT-3027</a> - </strong>Invalide Plugin Informationen unterbrechen nicht länger den Plugin-Refresh
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-3124" target="_blank">NEXT-3124</a> - </strong>Einstellungen in der Administration sind nun alphabetisch sortiert
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-3467" target="_blank">NEXT-3467</a> - </strong>In der Plugin-Konfiguration können nun Entity-Mehrfachauswahl, Farbauswahl, URL-Feld und Checkbox genutzt werden
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-3496" target="_blank">NEXT-3496</a> - </strong>In der Plugin-Konfiguration können nun Datumsauswahl, Zeitauswahl, HTML-Editor und Media-Auswahl genutzt werden
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-4207" target="_blank">NEXT-4207</a> - </strong>Für Medienkomponenten wurde das Store-basierte Data Handling mit Repository-basiertem Data Handling ersetzt.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-4210" target="_blank">NEXT-4210</a> - </strong>Tabellen im Pluginmanager haben jetzt das gewohnte Styling
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-4596" target="_blank">NEXT-4596</a> - </strong>Honeypot-Captcha zu Formularen in der Storefront hinzugefügt um Spam-Registrierungen zu verringern
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-5038" target="_blank">NEXT-5038</a> - </strong>Versandarten können nun für jede Währung gepflegt werden.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-5116" target="_blank">NEXT-5116</a> - </strong>Reguläre plugins können nun über ein Event eigene SCSS variablen hinzufügen.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-5149" target="_blank">NEXT-5149</a> - </strong>Der Theme Manager wird eine Fehlermeldung, falls das Theme nicht erfolgreich kompiliert werden konnte.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-5489" target="_blank">NEXT-5489</a> - </strong>Es wurde eine neue Regel für Warenkorb Positionen mit Eigenschaften hinzugefügt.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-5713" target="_blank">NEXT-5713</a> - </strong>Leere Sektionen in der Formular-Anschicht in den Erlebniswelten werden nun besser dargestellt.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-5805" target="_blank">NEXT-5805</a> - </strong>Jest Test Vorlage als externes Paket ausgelagert und in den Core integriert
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-5948" target="_blank">NEXT-5948</a> - </strong>Möglichkeit hinzugefügt,  einem Cross Selling einzelne Produkte zuzuordnen
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6098" target="_blank">NEXT-6098</a> - </strong>Es ist nun möglich Produkte ohne Varianten in der Übersicht und in der Detailseite zu duplizieren
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6107" target="_blank">NEXT-6107</a> - </strong>Es können nun Tabs im Theme Manager benutzt werden, in denen die Blöcke, Sektionen und Felder zugeordnet werden können. Das sorgt für noch mehr Übersichtlichkeit, vor allem bei großen Theme Konfigurationen.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6133" target="_blank">NEXT-6133</a> - </strong>Wir haben die Datenindexierung optimiert, so dass diese auf größeren Systemen parallelisiert werden kann.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6238" target="_blank">NEXT-6238</a> - </strong>Man kann nun ein sehr hohes Shop-Logo verwenden ohne, dass der "AGB"-Button verdeckt wird.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6279" target="_blank">NEXT-6279</a> - </strong>Support für hreflang-tags hinzugefügt
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6305" target="_blank">NEXT-6305</a> - </strong>Google Analytics Integration zur Storefront hinzugefügt
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6306" target="_blank">NEXT-6306</a> - </strong>Google Analytics Cookies zum Consent Manager hinzugefügt
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6319" target="_blank">NEXT-6319</a> - </strong>Der Cache kann nun über den Admin gelöscht werden.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6433" target="_blank">NEXT-6433</a> - </strong>Verwaltung von Track & Trace-Codes in der Administration ermöglicht
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6434" target="_blank">NEXT-6434</a> - </strong>Im Account werden nun Tracking Links für Bestellungen angezeigt
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6443" target="_blank">NEXT-6443</a> - </strong>Ausverkaufte Abverkaufsprodukte werden in Listen gefiltert (wenn Einstellung gesetzt wurde) und können über die Suche nicht mehr gefunden werden
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6444" target="_blank">NEXT-6444</a> - </strong>Detailseite für Abverkaufsprodukte ohne Lagerbestand werden auf eine Fehlerseite geleitet und Abverkaufprodukte ohne Lagerbestand werden aus Crossellings gefiltert, wenn die Konfiguration aktiviert wurde.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6461" target="_blank">NEXT-6461</a> - </strong>Neue Zahlungsstatus `Fehlgeschlagen` und `In Bearbeitung` wurden hinzugefügt. Es kann nun beim Ändern des Status auf die Zuweisung einer E-Mail Vorlage verzichtet werden.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6465" target="_blank">NEXT-6465</a> - </strong>Option zum Erlauben von Stornierungen und Link zur Bestellung in E-Mail Vorlagen eingefügt
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6469" target="_blank">NEXT-6469</a> - </strong>- Set default context data from current sales channel to context fields when user leave one of them empty -  No loading and updating cart action when there is no item in item list
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6477" target="_blank">NEXT-6477</a> - </strong>E2E Tests hinzugefügt, die den Workflow mit einer beschränkten Versandart repräsentiert
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6575" target="_blank">NEXT-6575</a> - </strong>Die Übersetzungen für die Auswahl der Systemsprache im Installer wurde angepasst so das alle Sprachen in der für den Installer ausgewählten Sprache angezeigt werden.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6627" target="_blank">NEXT-6627</a> - </strong>Der Kunde kann nun die Bestellung nicht abschließen wenn die von ihm/ihr ausgewählte Zahlungsart inaktiv ist.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6697" target="_blank">NEXT-6697</a> - </strong>Internet Explorer 11 wird nun in der Storefront unterstützt
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6754" target="_blank">NEXT-6754</a> - </strong>Detailseite für Import Export Log-Einträge hinzugefügt.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6856" target="_blank">NEXT-6856</a> - </strong>Dokumenation für JavaScript-Plugins in der Storefront überarbeitet.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6910" target="_blank">NEXT-6910</a> - </strong>Im SEO Modul können keine leeren Templates mehr gespeichert werden. Dies fixt ein Problem, dass ein komplettes Template unwiederbringlich gelöscht werden könnte.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6920" target="_blank">NEXT-6920</a> - </strong>Der Slim Error wenn während der Installation eine nicht vorinstallierte Sprache ausgewählt wird wurde behoben. Die ausgewählte Sprache wird beim First-Run-Wizard automatisch installiert.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7039" target="_blank">NEXT-7039</a> - </strong>Einstellungs-Seite zur Konfiguration der Varianten-Ausspielung in der Storefront hinzugefügt.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7040" target="_blank">NEXT-7040</a> - </strong>Logik für die Variantenvorauswahl implementiert, um sowohl Hauptvarianten, als auch das Auffächern von Variantengruppen zu ermöglichen
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7092" target="_blank">NEXT-7092</a> - </strong>Sollte bei einer Kundengruppe beim löschen noch mit einem Verkaufskanal und/oder Kunden assoziiert sein, dann erscheint eine Fehlermeldung.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7159" target="_blank">NEXT-7159</a> - </strong>Theme Guide zur Dokumentation hinzugefügt
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7164" target="_blank">NEXT-7164</a> - </strong>Github-Workflow in Contribution Guideline aktualisiert
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7165" target="_blank">NEXT-7165</a> - </strong>Der User kann nun Seiten in unserer Entwickler-Dokumentation bewerten
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7177" target="_blank">NEXT-7177</a> - </strong>Snippets im Pluginmanager korrigiert <a href="https://github.com/simkli" target="_blank">(simkli)</a>
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7278" target="_blank">NEXT-7278</a> - </strong>Beim Klick auf ein Label wird nun die richtige Checkbox oder Schalter ausgewählt <a href="https://github.com/@deepakk-webkul" target="_blank">(@deepakk-webkul)</a>
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7282" target="_blank">NEXT-7282</a> - </strong>Breadcrumbs in Einstellungsunterseiten ergänzt
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7411" target="_blank">NEXT-7411</a> - </strong>Einstellung  für `Produkte nach Abverkaufende ausblenden` implementiert. Wenn die Einstellung aktiviert wurde, werden Abverkaufsprodukt in der Storefront ausgeblendet, solange der Warenbestand erschöpft ist.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7439" target="_blank">NEXT-7439</a> - </strong>Wenn Medien mit gleichem Namen hochgeladen werden, dann wird der Dateiname passend umbenannt. `my-file.jpg` nach `my_file_(2).jpg`.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7461" target="_blank">NEXT-7461</a> - </strong>Label für "Mailer"-Einstellung in Administratoren-Einstellungsseite korrigiert
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7462" target="_blank">NEXT-7462</a> - </strong>"Plugins" Tab in Einstellungsseite der Administration nicht länger sichtbar, wenn keine Plugins installiert und aktiv sind
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7463" target="_blank">NEXT-7463</a> - </strong>Google Analytics Integration hinzugefügt
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7479" target="_blank">NEXT-7479</a> - </strong>Deprecated DAL Felder werden nun vom Resultat entfernt. Mit den neuen Header "sw-ignore-deprecations" kann dieses Verhalten umgangen werden
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7489" target="_blank">NEXT-7489</a> - </strong>Unter "Bestellungen > Übersicht > Bestellung anlegen" kannst Du nun auch Kundenbestellungen manuell über den Admin erfassen.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7498" target="_blank">NEXT-7498</a> - </strong>Der Lieferschein verwendet jetzt die Lieferadresse anstelle der Rechnungsadresse <a href="https://github.com/lietzi" target="_blank">(lietzi)</a>
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7504" target="_blank">NEXT-7504</a> - </strong>Alphabetische Sortierung der Einstellungen innerhalb der Administrationseinstellungen nun natürlicher sortiert
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7533" target="_blank">NEXT-7533</a> - </strong>Darstellungsfehler in der Mehrfachauswahl in Listen der Administration behoben. <a href="https://github.com/JoshuaBehrens" target="_blank">(JoshuaBehrens)</a>
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7544" target="_blank">NEXT-7544</a> - </strong>Sitemap-Dateien werden nun gesplittet nach 50tsd Einträgen
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7628" target="_blank">NEXT-7628</a> - </strong>Die folgenden Regel-Felder erlauben nun Nachkommastellen: Streichpreise, Höhe, Länge, Breite, Einkaufspreise
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7659" target="_blank">NEXT-7659</a> - </strong>Die CMS Produkt-Slider  werden nun nach der definierten Reihenfolge ausgegeben.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7684" target="_blank">NEXT-7684</a> - </strong>Der Kunde kann nun nach einer Bestellung die Zahlungsart ändern
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7716" target="_blank">NEXT-7716</a> - </strong>Plugin Uploads, mit bestimmten neuen Dateien, verursachen nun keinen Fehler mehr bei nachfolgenden Requests
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7757" target="_blank">NEXT-7757</a> - </strong>Der Scroll-Up Button in der Storefront ist nicht mehr hinter der Cookie-Bar versteckt.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7815" target="_blank">NEXT-7815</a> - </strong>Temporäre Dateien werden nun erfolgreich entfernt, wenn der Upload abgebrochen wird
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7818" target="_blank">NEXT-7818</a> - </strong>Im Variantengenerator ist es nun möglich, eine Vorauswahl an Varianten oder Hauptvariante auszuwählen, die im Shoplisting angezeigt werden sollen
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7834" target="_blank">NEXT-7834</a> - </strong>Recovery nutzt nun die aktualisierten Migrationen
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7850" target="_blank">NEXT-7850</a> - </strong>Kundenkommentarfeld zum Bestellprozess hinzugefügt
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7855" target="_blank">NEXT-7855</a> - </strong>Wenn Elasticsearch aktiviert ist, wird nun auch die Paginierung in der Storefront richtig aktualisiert, wenn die Produktlisten gefiltert werden.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7870" target="_blank">NEXT-7870</a> - </strong>Es ist nun möglich, pro E-Mail Template und Sprache E-Mail Anhänge zu definieren
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7901" target="_blank">NEXT-7901</a> - </strong>Import Export Profile Namen können übersetzt werden
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7920" target="_blank">NEXT-7920</a> - </strong>Import/Export Profile für Newsletter-Empfänger hinzugefügt.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7946" target="_blank">NEXT-7946</a> - </strong>Bevor ein Plugin deaktiviert werden kann, wird jetzt überprüft, ob andere aktive Plugins eine Abhängigkeit zu diesem Plugin haben.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-8033" target="_blank">NEXT-8033</a> - </strong>Tooltipps für Länder-Auswahlfelder in Einstellungen/Steuern und Verkaufskanal-Detailseite hinzugefügt.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-8046" target="_blank">NEXT-8046</a> - </strong>Plugins können eigene Favicons für Administrations-Module setzen.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-8049" target="_blank">NEXT-8049</a> - </strong>Die Veerbung von Preisen und Medien wurde beim Importieren von Varianten korrigiert.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-8052" target="_blank">NEXT-8052</a> - </strong>MetaTitle für das ThemeManager-Modul hinzugefügt.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-8092" target="_blank">NEXT-8092</a> - </strong>Das Fehlerhandling im Importer/Exporter wurde verbessert
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-8134" target="_blank">NEXT-8134</a> - </strong>Zahlungsarten können vom "Bezahlen nach der Bestellung" ausgenommen werden
+]]></changelog>
+      </de>
+      <en>
+        <important_changes/>
+        <changelog><![CDATA[
+<div class="sw-alert sw-alert--info alert alert-info important-information" style="margin-bottom: 15px;padding: 25px 35px;font-size: 16px;">
+    <h3>Additional Information</h3>
+	<p>
+	We are getting more and more hints that the update on slow file systems cannot be performed completely via this auto-update wizard. If you encounter problems with the update, we recommend that you perform the update manually as described <a target="_blank" href="https://docs.shopware.com/de/shopware-6-de/update-guides/shopware-aktualisieren-updaten?category=shopware-6-de/update-guides">here</a>.
+	</p>
+</div>
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6981" target="_blank">NEXT-6981</a> - </strong>The Customer now will be redirected to the order confirmation page even when an error occured while paying. The page will display a proper errormessage.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7563" target="_blank">NEXT-7563</a> - </strong>Promotion codes are not added to the shopping cart again after an order.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7629" target="_blank">NEXT-7629</a> - </strong>We fixed the list price rule
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7772" target="_blank">NEXT-7772</a> - </strong>If the customer uses a slash in the search, it can now be filtered and sorted correctly again.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-8182" target="_blank">NEXT-8182</a> - </strong>Optimized elasticsearch search algorithm
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-8217" target="_blank">NEXT-8217</a> - </strong>Display issues in the Storefront under Internet Explorer 11 were fixed
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-8221" target="_blank">NEXT-8221</a> - </strong>After plugin update the Symfony container cache is cleared now
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-8250" target="_blank">NEXT-8250</a> - </strong>Price sorting in product lists now uses decimal precisions
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-8269" target="_blank">NEXT-8269</a> - </strong>We optimized the variant generator performance significant
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-8291" target="_blank">NEXT-8291</a> - </strong>If a snippet does not exist in a snippet set, the fallback now uses the default snippet of the system language.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-8328" target="_blank">NEXT-8328</a> - </strong>We fixed the "reorder product" function
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-8332" target="_blank">NEXT-8332</a> - </strong>Fixed the snippets for the cookie deletion notification
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-8336" target="_blank">NEXT-8336</a> - </strong>Products that were ordered can now be deleted
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-8346" target="_blank">NEXT-8346</a> - </strong>We optimized the http cache invalidation
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-8363" target="_blank">NEXT-8363</a> - </strong>Variant names in the Cross Selling listing are now displayed correctly
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-2562" target="_blank">NEXT-2562</a> - </strong>If the update of a plugin fails, the plugin will be deactivated
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-3027" target="_blank">NEXT-3027</a> - </strong>Invalid plugin information do not longer break the plugin refresh
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-3124" target="_blank">NEXT-3124</a> - </strong>Settings in administration are alphabetically sorted now
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-3467" target="_blank">NEXT-3467</a> - </strong>Multi entity selection, color selection, URL field and checkbox can now be used in the plugin configuration
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-3496" target="_blank">NEXT-3496</a> - </strong>Date picker, time picker, HTML editor and media selection can now be used in the plugin configuration
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-4207" target="_blank">NEXT-4207</a> - </strong>Replaced Store based data handling with repository based data handling in media specific components and modules
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-4210" target="_blank">NEXT-4210</a> - </strong>Replaced tables in plugin manager with common styling
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-4596" target="_blank">NEXT-4596</a> - </strong>Added honeypot captcha to forms in the storefront to reduce the amount of spam registrations
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-5038" target="_blank">NEXT-5038</a> - </strong>Shipping prices can now be set for every currency.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-5116" target="_blank">NEXT-5116</a> - </strong>Regular plugins can now add their own SCSS variables via an event.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-5149" target="_blank">NEXT-5149</a> - </strong>The Theme manager will display an error message if the theme could not be compiled successfully.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-5489" target="_blank">NEXT-5489</a> - </strong>A new rule for cart line items with properties has been added.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-5713" target="_blank">NEXT-5713</a> - </strong>Empty Sections inside the Form View in the Shopping Experiences have no an empty state.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-5805" target="_blank">NEXT-5805</a> - </strong>Outsourced Jest test preset and integrated it into the core
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-5865" target="_blank">NEXT-5865</a> - </strong>Research requirement and list down possible errors
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-5948" target="_blank">NEXT-5948</a> - </strong>Implements possibility to add individual products to Cross Selling
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6098" target="_blank">NEXT-6098</a> - </strong>It is now possible to duplicate products without variants in the listing or the detail page
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6107" target="_blank">NEXT-6107</a> - </strong>You can now use tabs in the Theme Manager to organize the blocks, sections and fields. This provides even more tidiness, especially for large theme configurations.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6133" target="_blank">NEXT-6133</a> - </strong>We have optimized data indexing so that it can be parallel processed on larger systems.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6238" target="_blank">NEXT-6238</a> - </strong>You can now use a tall image for the shop-logo that won't hide the Terms of Service button at the end of the checkout.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6242" target="_blank">NEXT-6242</a> - </strong>Refactoring to set the cart behavior to recalculation
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6279" target="_blank">NEXT-6279</a> - </strong>Added support for hreflang-tags
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6305" target="_blank">NEXT-6305</a> - </strong>Added Google Analytics integration to the Storefront
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6306" target="_blank">NEXT-6306</a> - </strong>Added Google Analytics cookies to consent manager
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6319" target="_blank">NEXT-6319</a> - </strong>You can now clear the cache via the administration.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6425" target="_blank">NEXT-6425</a> - </strong>CartBehavior::isRecalculation deprecation New way over permissions
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6433" target="_blank">NEXT-6433</a> - </strong>Added support for managing track & trace codes to the administration
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6434" target="_blank">NEXT-6434</a> - </strong>Tracking links for orders are now displayed in the account
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6443" target="_blank">NEXT-6443</a> - </strong>Filter closeout products in listing and search when they are out of stock and filter flag is active.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6444" target="_blank">NEXT-6444</a> - </strong>Detailpage for products with clearance sale active and out of stock shows an `ProductNotFound`page and those products get filtered for crossellings, when listing configuration is set
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6461" target="_blank">NEXT-6461</a> - </strong>New paymentstates `failed` and `In Progress` added. Assignement of a E-Mail template can now be skipped during statechange
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6465" target="_blank">NEXT-6465</a> - </strong>Added refund option and url to order in email templates
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6469" target="_blank">NEXT-6469</a> - </strong>- Set default context data from current sales channel to context fields when user leave one of them empty -  No loading and updating cart action when there is no item in item list
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6477" target="_blank">NEXT-6477</a> - </strong>Adds e2e tests which represents the checkout workflow with a restricted shipping method
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6575" target="_blank">NEXT-6575</a> - </strong>Fixed some translation so all System language options are being displayed in the language chosen for the Installer.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6627" target="_blank">NEXT-6627</a> - </strong>The user cannot complete the checkout when his/her selected payment method is not active.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6697" target="_blank">NEXT-6697</a> - </strong>Internet Explorer 11 is now supported in the storefront
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6754" target="_blank">NEXT-6754</a> - </strong>Added detail page for import export log entries.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6856" target="_blank">NEXT-6856</a> - </strong>Improved documentation for storefront JavaScript-plugins
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6910" target="_blank">NEXT-6910</a> - </strong>You can not save empty templates in the seo module. This fixes a problem that a complete template could be irretrievably deleted.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6920" target="_blank">NEXT-6920</a> - </strong>Fixed the Slim error when selecting an non-bundled language. Also the selected language is now automatically installed in the first-run-wizard.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7039" target="_blank">NEXT-7039</a> - </strong>Add `Listing` tab in the `Storefront presentation` modal to configure the variant preselection
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7040" target="_blank">NEXT-7040</a> - </strong>Implemented the logic for the variant preselection to allow main variant selection, aswell as variant expression for specific variant groups
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7092" target="_blank">NEXT-7092</a> - </strong>If the user tries to delete a customer group that still has a SalesChannel and or a customer assigned to it then a error message will be shown.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7159" target="_blank">NEXT-7159</a> - </strong>Added theme guide to the documentation
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7164" target="_blank">NEXT-7164</a> - </strong>Updated github workflow in contribution guideline
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7165" target="_blank">NEXT-7165</a> - </strong>Users can now rate pages on our developer documentation
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7177" target="_blank">NEXT-7177</a> - </strong>Fix snippets in plugin manager <a href="https://github.com/simkli" target="_blank">(simkli)</a>
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7278" target="_blank">NEXT-7278</a> - </strong>When clicking on a label, the correct checkbox or button is selected <a href="https://github.com/@deepakk-webkul" target="_blank">(@deepakk-webkul)</a>
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7282" target="_blank">NEXT-7282</a> - </strong>Fixed breadcrumbs for various settings pages
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7411" target="_blank">NEXT-7411</a> - </strong>Add `Hide products after clearance` option in `Setting -> Shop -> Listing`. When `Hide products after clearance` is enabled, products marked as on "clearance sale" are hidden, as soon as their stock depletes back to 0
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7439" target="_blank">NEXT-7439</a> - </strong>If media with the same name is uploaded, the file name will be renamed appropriately. `my-file.jpg' to `my_file_(2).jpg'.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7461" target="_blank">NEXT-7461</a> - </strong>Fixed label for "mailer"-settings-item in administration settings page
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7462" target="_blank">NEXT-7462</a> - </strong>"Plugins" Tab on settings administration page is no longer visible, if no installed plugins are active in the shop
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7463" target="_blank">NEXT-7463</a> - </strong>Added google analytics integration
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7479" target="_blank">NEXT-7479</a> - </strong>Deprecated DAL fields are now removed from the result. With the new header "sw-ignore-deprecations" this behavior can be bypassed
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7489" target="_blank">NEXT-7489</a> - </strong>In "Orders > Overview > Add order" you can now manually create customer orders via the admin.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7498" target="_blank">NEXT-7498</a> - </strong>The delivers note now uses the shipping address instead of the billing address <a href="https://github.com/lietzi" target="_blank">(lietzi)</a>
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7504" target="_blank">NEXT-7504</a> - </strong>Settings items on settings index page in administration are now sorted more naturally
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7533" target="_blank">NEXT-7533</a> - </strong>Fixed display errors in multiple selections in administration lists. <a href="https://github.com/JoshuaBehrens" target="_blank">(JoshuaBehrens)</a>
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7544" target="_blank">NEXT-7544</a> - </strong>Sitemap files are now split by 50k entries
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7628" target="_blank">NEXT-7628</a> - </strong>The following rule fields now allow decimal places: strike prices, height, length, width, purchase prices
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7659" target="_blank">NEXT-7659</a> - </strong>The cms products slider are now sorted according to the defined order.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7684" target="_blank">NEXT-7684</a> - </strong>The customer is now able to change the payment method after he has finished the checkout.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7716" target="_blank">NEXT-7716</a> - </strong>Plugin uploads with specific new files no longer cause errors on following requests
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7757" target="_blank">NEXT-7757</a> - </strong>The scroll up button is no longer hidden behind the cookie bar.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7815" target="_blank">NEXT-7815</a> - </strong>Temporary files are now successfully removed when the upload is canceled
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7818" target="_blank">NEXT-7818</a> - </strong>It is now possible to pick a main variant or a preselection of variants in the variant generator, which will be displayed in the storefront listing
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7834" target="_blank">NEXT-7834</a> - </strong>Recovery now executes the updated Migrations
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7850" target="_blank">NEXT-7850</a> - </strong>Add customer comment field to checkout process
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7855" target="_blank">NEXT-7855</a> - </strong>If Elasticsearch is enabled, the pagination in the storefront is now also updated correctly when the product lists are filtered.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7870" target="_blank">NEXT-7870</a> - </strong>It is now possible to define email attachments for each email template and language
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7901" target="_blank">NEXT-7901</a> - </strong>Import Export profile labels are translatable
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7920" target="_blank">NEXT-7920</a> - </strong>Added import/export profile for newsletter recipients.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7946" target="_blank">NEXT-7946</a> - </strong>Added a check to ensure, that no other active plugin depends on a given plugin before it can be deactivated.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-8033" target="_blank">NEXT-8033</a> - </strong>Added tooltipps to country-select fields in settings/ tax and sales channel config.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-8046" target="_blank">NEXT-8046</a> - </strong>Plugins can define their own favicons for admin modules.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-8049" target="_blank">NEXT-8049</a> - </strong>The inheritance of prices and media was corrected when importing variants.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-8052" target="_blank">NEXT-8052</a> - </strong>Added a meta title to the theme manager module.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-8092" target="_blank">NEXT-8092</a> - </strong>The error handling in the importer/exporter was improved
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-8134" target="_blank">NEXT-8134</a> - </strong>Payments can be disabled for after order payments
+]]></changelog>
+      </en>
+    </locales>
+  </release>
+  <release>
+    <version>6.2.0</version>
+    <version_text>RC1</version_text>
+    <minimum_version>6.1.0</minimum_version>
+    <security_update>0</security_update>
+    <public>1</public>
+    <rc>1</rc>
+    <ea>0</ea>
+    <revision>202004271535000</revision>
+    <type>Major</type>
+    <release_date>2020-04-27 15:35</release_date>
+    <github_repo>https://github.com/shopware/platform/tree/v6.2.0-RC1</github_repo>
+    <upgrade_md>https://github.com/shopware/platform/blob/v6.2.0-RC1/UPGRADE-6.2.md</upgrade_md>
+    <download_link_install>https://releases.shopware.com/sw6/install_6.2.0-RC1_1587999999.zip</download_link_install>
+    <download_link_update>https://releases.shopware.com/sw6/update_6.2.0-RC1_1587999999.zip</download_link_update>
+    <sha256_install>fbc9f324a5a9978177d97665f61278e965786a9b6d57316176a3392c9a59c898</sha256_install>
+    <sha256_update>75697b5e85a754f7d8def7c670d0ad9735ded786b086ed64363235ddc165e52a</sha256_update>
+    <locales>
+      <de>
+        <important_changes/>
+        <changelog><![CDATA[
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-2562" target="_blank">NEXT-2562</a> - </strong>Wenn die Aktualisierung eines Plugins fehlschlägt, wird das Plugin deaktiviert
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-3027" target="_blank">NEXT-3027</a> - </strong>Invalide Plugin Informationen unterbrechen nicht länger den Plugin-Refresh
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-3124" target="_blank">NEXT-3124</a> - </strong>Einstellungen in der Administration sind nun alphabetisch sortiert
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-3467" target="_blank">NEXT-3467</a> - </strong>In der Plugin-Konfiguration können nun Entity-Mehrfachauswahl, Farbauswahl, URL-Feld und Checkbox genutzt werden
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-3496" target="_blank">NEXT-3496</a> - </strong>In der Plugin-Konfiguration können nun Datumsauswahl, Zeitauswahl, HTML-Editor und Media-Auswahl genutzt werden
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-4207" target="_blank">NEXT-4207</a> - </strong>Für Medienkomponenten wurde das Store-basierte Data Handling mit Repository-basiertem Data Handling ersetzt.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-4210" target="_blank">NEXT-4210</a> - </strong>Tabellen im Pluginmanager haben jetzt das gewohnte Styling
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-4596" target="_blank">NEXT-4596</a> - </strong>Honeypot-Captcha zu Formularen in der Storefront hinzugefügt um Spam-Registrierungen zu verringern
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-5038" target="_blank">NEXT-5038</a> - </strong>Versandarten können nun für jede Währung gepflegt werden.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-5116" target="_blank">NEXT-5116</a> - </strong>Reguläre plugins können nun über ein Event eigene SCSS variablen hinzufügen.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-5149" target="_blank">NEXT-5149</a> - </strong>Der Theme Manager wird eine Fehlermeldung, falls das Theme nicht erfolgreich kompiliert werden konnte.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-5489" target="_blank">NEXT-5489</a> - </strong>Es wurde eine neue Regel für Warenkorb Positionen mit Eigenschaften hinzugefügt.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-5713" target="_blank">NEXT-5713</a> - </strong>Leere Sektionen in der Formular-Anschicht in den Erlebniswelten werden nun besser dargestellt.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-5805" target="_blank">NEXT-5805</a> - </strong>Jest Test Vorlage als externes Paket ausgelagert und in den Core integriert
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-5948" target="_blank">NEXT-5948</a> - </strong>Möglichkeit hinzugefügt,  einem Cross Selling einzelne Produkte zuzuordnen
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6098" target="_blank">NEXT-6098</a> - </strong>Es ist nun möglich Produkte ohne Varianten in der Übersicht und in der Detailseite zu duplizieren
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6107" target="_blank">NEXT-6107</a> - </strong>Es können nun Tabs im Theme Manager benutzt werden, in denen die Blöcke, Sektionen und Felder zugeordnet werden können. Das sorgt für noch mehr Übersichtlichkeit, vor allem bei großen Theme Konfigurationen.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6133" target="_blank">NEXT-6133</a> - </strong>Wir haben die Datenindexierung optimiert, so dass diese auf größeren Systemen parallelisiert werden kann.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6238" target="_blank">NEXT-6238</a> - </strong>Man kann nun ein sehr hohes Shop-Logo verwenden ohne, dass der "AGB"-Button verdeckt wird.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6279" target="_blank">NEXT-6279</a> - </strong>Support für hreflang-tags hinzugefügt
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6305" target="_blank">NEXT-6305</a> - </strong>Google Analytics Integration zur Storefront hinzugefügt
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6306" target="_blank">NEXT-6306</a> - </strong>Google Analytics Cookies zum Consent Manager hinzugefügt
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6319" target="_blank">NEXT-6319</a> - </strong>Der Cache kann nun über den Admin gelöscht werden.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6433" target="_blank">NEXT-6433</a> - </strong>Verwaltung von Track & Trace-Codes in der Administration ermöglicht
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6434" target="_blank">NEXT-6434</a> - </strong>Im Account werden nun Tracking Links für Bestellungen angezeigt
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6443" target="_blank">NEXT-6443</a> - </strong>Ausverkaufte Abverkaufsprodukte werden in Listen gefiltert (wenn Einstellung gesetzt wurde) und können über die Suche nicht mehr gefunden werden
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6444" target="_blank">NEXT-6444</a> - </strong>Detailseite für Abverkaufsprodukte ohne Lagerbestand werden auf eine Fehlerseite geleitet und Abverkaufprodukte ohne Lagerbestand werden aus Crossellings gefiltert, wenn die Konfiguration aktiviert wurde.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6461" target="_blank">NEXT-6461</a> - </strong>Neue Zahlungsstatus `Fehlgeschlagen` und `In Bearbeitung` wurden hinzugefügt. Es kann nun beim Ändern des Status auf die Zuweisung einer E-Mail Vorlage verzichtet werden.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6465" target="_blank">NEXT-6465</a> - </strong>Option zum Erlauben von Stornierungen und Link zur Bestellung in E-Mail Vorlagen eingefügt
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6469" target="_blank">NEXT-6469</a> - </strong>- Set default context data from current sales channel to context fields when user leave one of them empty -  No loading and updating cart action when there is no item in item list
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6477" target="_blank">NEXT-6477</a> - </strong>E2E Tests hinzugefügt, die den Workflow mit einer beschränkten Versandart repräsentiert
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6575" target="_blank">NEXT-6575</a> - </strong>Die Übersetzungen für die Auswahl der Systemsprache im Installer wurde angepasst so das alle Sprachen in der für den Installer ausgewählten Sprache angezeigt werden.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6627" target="_blank">NEXT-6627</a> - </strong>Der Kunde kann nun die Bestellung nicht abschließen wenn die von ihm/ihr ausgewählte Zahlungsart inaktiv ist.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6697" target="_blank">NEXT-6697</a> - </strong>Internet Explorer 11 wird nun in der Storefront unterstützt
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6754" target="_blank">NEXT-6754</a> - </strong>Detailseite für Import Export Log-Einträge hinzugefügt.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6856" target="_blank">NEXT-6856</a> - </strong>Dokumenation für JavaScript-Plugins in der Storefront überarbeitet.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6910" target="_blank">NEXT-6910</a> - </strong>Im SEO Modul können keine leeren Templates mehr gespeichert werden. Dies fixt ein Problem, dass ein komplettes Template unwiederbringlich gelöscht werden könnte.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6920" target="_blank">NEXT-6920</a> - </strong>Der Slim Error wenn während der Installation eine nicht vorinstallierte Sprache ausgewählt wird wurde behoben. Die ausgewählte Sprache wird beim First-Run-Wizard automatisch installiert.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7039" target="_blank">NEXT-7039</a> - </strong>Einstellungs-Seite zur Konfiguration der Varianten-Ausspielung in der Storefront hinzugefügt.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7040" target="_blank">NEXT-7040</a> - </strong>Logik für die Variantenvorauswahl implementiert, um sowohl Hauptvarianten, als auch das Auffächern von Variantengruppen zu ermöglichen
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7092" target="_blank">NEXT-7092</a> - </strong>Sollte bei einer Kundengruppe beim löschen noch mit einem Verkaufskanal und/oder Kunden assoziiert sein, dann erscheint eine Fehlermeldung.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7159" target="_blank">NEXT-7159</a> - </strong>Theme Guide zur Dokumentation hinzugefügt
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7164" target="_blank">NEXT-7164</a> - </strong>Github-Workflow in Contribution Guideline aktualisiert
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7165" target="_blank">NEXT-7165</a> - </strong>Der User kann nun Seiten in unserer Entwickler-Dokumentation bewerten
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7177" target="_blank">NEXT-7177</a> - </strong>Snippets im Pluginmanager korrigiert <a href="https://github.com/simkli" target="_blank">(simkli)</a>
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7278" target="_blank">NEXT-7278</a> - </strong>Beim Klick auf ein Label wird nun die richtige Checkbox oder Schalter ausgewählt <a href="https://github.com/@deepakk-webkul" target="_blank">(@deepakk-webkul)</a>
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7282" target="_blank">NEXT-7282</a> - </strong>Breadcrumbs in Einstellungsunterseiten ergänzt
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7411" target="_blank">NEXT-7411</a> - </strong>Einstellung  für `Produkte nach Abverkaufende ausblenden` implementiert. Wenn die Einstellung aktiviert wurde, werden Abverkaufsprodukt in der Storefront ausgeblendet, solange der Warenbestand erschöpft ist.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7439" target="_blank">NEXT-7439</a> - </strong>Wenn Medien mit gleichem Namen hochgeladen werden, dann wird der Dateiname passend umbenannt. `my-file.jpg` nach `my_file_(2).jpg`.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7461" target="_blank">NEXT-7461</a> - </strong>Label für "Mailer"-Einstellung in Administratoren-Einstellungsseite korrigiert
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7462" target="_blank">NEXT-7462</a> - </strong>"Plugins" Tab in Einstellungsseite der Administration nicht länger sichtbar, wenn keine Plugins installiert und aktiv sind
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7463" target="_blank">NEXT-7463</a> - </strong>Google Analytics Integration hinzugefügt
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7479" target="_blank">NEXT-7479</a> - </strong>Deprecated DAL Felder werden nun vom Resultat entfernt. Mit den neuen Header "sw-ignore-deprecations" kann dieses Verhalten umgangen werden
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7489" target="_blank">NEXT-7489</a> - </strong>Unter "Bestellungen > Übersicht > Bestellung anlegen" kannst Du nun auch Kundenbestellungen manuell über den Admin erfassen.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7498" target="_blank">NEXT-7498</a> - </strong>Der Lieferschein verwendet jetzt die Lieferadresse anstelle der Rechnungsadresse <a href="https://github.com/lietzi" target="_blank">(lietzi)</a>
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7504" target="_blank">NEXT-7504</a> - </strong>Alphabetische Sortierung der Einstellungen innerhalb der Administrationseinstellungen nun natürlicher sortiert
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7533" target="_blank">NEXT-7533</a> - </strong>Darstellungsfehler in der Mehrfachauswahl in Listen der Administration behoben. <a href="https://github.com/JoshuaBehrens" target="_blank">(JoshuaBehrens)</a>
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7544" target="_blank">NEXT-7544</a> - </strong>Sitemap-Dateien werden nun gesplittet nach 50tsd Einträgen
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7628" target="_blank">NEXT-7628</a> - </strong>Die folgenden Regel-Felder erlauben nun Nachkommastellen: Streichpreise, Höhe, Länge, Breite, Einkaufspreise
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7659" target="_blank">NEXT-7659</a> - </strong>Die CMS Produkt-Slider  werden nun nach der definierten Reihenfolge ausgegeben.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7684" target="_blank">NEXT-7684</a> - </strong>Der Kunde kann nun nach einer Bestellung die Zahlungsart ändern
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7716" target="_blank">NEXT-7716</a> - </strong>Plugin Uploads, mit bestimmten neuen Dateien, verursachen nun keinen Fehler mehr bei nachfolgenden Requests
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7757" target="_blank">NEXT-7757</a> - </strong>Der Scroll-Up Button in der Storefront ist nicht mehr hinter der Cookie-Bar versteckt.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7815" target="_blank">NEXT-7815</a> - </strong>Temporäre Dateien werden nun erfolgreich entfernt, wenn der Upload abgebrochen wird
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7818" target="_blank">NEXT-7818</a> - </strong>Im Variantengenerator ist es nun möglich, eine Vorauswahl an Varianten oder Hauptvariante auszuwählen, die im Shoplisting angezeigt werden sollen
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7834" target="_blank">NEXT-7834</a> - </strong>Recovery nutzt nun die aktualisierten Migrationen
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7850" target="_blank">NEXT-7850</a> - </strong>Kundenkommentarfeld zum Bestellprozess hinzugefügt
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7855" target="_blank">NEXT-7855</a> - </strong>Wenn Elasticsearch aktiviert ist, wird nun auch die Paginierung in der Storefront richtig aktualisiert, wenn die Produktlisten gefiltert werden.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7870" target="_blank">NEXT-7870</a> - </strong>Es ist nun möglich, pro E-Mail Template und Sprache E-Mail Anhänge zu definieren
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7901" target="_blank">NEXT-7901</a> - </strong>Import Export Profile Namen können übersetzt werden
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7920" target="_blank">NEXT-7920</a> - </strong>Import/Export Profile für Newsletter-Empfänger hinzugefügt.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7946" target="_blank">NEXT-7946</a> - </strong>Bevor ein Plugin deaktiviert werden kann, wird jetzt überprüft, ob andere aktive Plugins eine Abhängigkeit zu diesem Plugin haben.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-8033" target="_blank">NEXT-8033</a> - </strong>Tooltipps für Länder-Auswahlfelder in Einstellungen/Steuern und Verkaufskanal-Detailseite hinzugefügt.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-8046" target="_blank">NEXT-8046</a> - </strong>Plugins können eigene Favicons für Administrations-Module setzen.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-8049" target="_blank">NEXT-8049</a> - </strong>Die Veerbung von Preisen und Medien wurde beim Importieren von Varianten korrigiert.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-8052" target="_blank">NEXT-8052</a> - </strong>MetaTitle für das ThemeManager-Modul hinzugefügt.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-8092" target="_blank">NEXT-8092</a> - </strong>Das Fehlerhandling im Importer/Exporter wurde verbessert
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-8134" target="_blank">NEXT-8134</a> - </strong>Zahlungsarten können vom "Bezahlen nach der Bestellung" ausgenommen werden
+]]></changelog>
+      </de>
+      <en>
+        <important_changes/>
+        <changelog><![CDATA[
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-2562" target="_blank">NEXT-2562</a> - </strong>If the update of a plugin fails, the plugin will be deactivated
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-3027" target="_blank">NEXT-3027</a> - </strong>Invalid plugin information do not longer break the plugin refresh
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-3124" target="_blank">NEXT-3124</a> - </strong>Settings in administration are alphabetically sorted now
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-3467" target="_blank">NEXT-3467</a> - </strong>Multi entity selection, color selection, URL field and checkbox can now be used in the plugin configuration
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-3496" target="_blank">NEXT-3496</a> - </strong>Date picker, time picker, HTML editor and media selection can now be used in the plugin configuration
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-4207" target="_blank">NEXT-4207</a> - </strong>Replaced Store based data handling with repository based data handling in media specific components and modules
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-4210" target="_blank">NEXT-4210</a> - </strong>Replaced tables in plugin manager with common styling
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-4596" target="_blank">NEXT-4596</a> - </strong>Added honeypot captcha to forms in the storefront to reduce the amount of spam registrations
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-5038" target="_blank">NEXT-5038</a> - </strong>Shipping prices can now be set for every currency.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-5116" target="_blank">NEXT-5116</a> - </strong>Regular plugins can now add their own SCSS variables via an event.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-5149" target="_blank">NEXT-5149</a> - </strong>The Theme manager will display an error message if the theme could not be compiled successfully.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-5489" target="_blank">NEXT-5489</a> - </strong>A new rule for cart line items with properties has been added.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-5713" target="_blank">NEXT-5713</a> - </strong>Empty Sections inside the Form View in the Shopping Experiences have no an empty state.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-5805" target="_blank">NEXT-5805</a> - </strong>Outsourced Jest test preset and integrated it into the core
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-5865" target="_blank">NEXT-5865</a> - </strong>Research requirement and list down possible errors
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-5948" target="_blank">NEXT-5948</a> - </strong>Implements possibility to add individual products to Cross Selling
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6098" target="_blank">NEXT-6098</a> - </strong>It is now possible to duplicate products without variants in the listing or the detail page
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6107" target="_blank">NEXT-6107</a> - </strong>You can now use tabs in the Theme Manager to organize the blocks, sections and fields. This provides even more tidiness, especially for large theme configurations.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6133" target="_blank">NEXT-6133</a> - </strong>We have optimized data indexing so that it can be parallel processed on larger systems.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6238" target="_blank">NEXT-6238</a> - </strong>You can now use a tall image for the shop-logo that won't hide the Terms of Service button at the end of the checkout.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6242" target="_blank">NEXT-6242</a> - </strong>Refactoring to set the cart behavior to recalculation
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6279" target="_blank">NEXT-6279</a> - </strong>Added support for hreflang-tags
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6305" target="_blank">NEXT-6305</a> - </strong>Added Google Analytics integration to the Storefront
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6306" target="_blank">NEXT-6306</a> - </strong>Added Google Analytics cookies to consent manager
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6319" target="_blank">NEXT-6319</a> - </strong>You can now clear the cache via the administration.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6425" target="_blank">NEXT-6425</a> - </strong>CartBehavior::isRecalculation deprecation New way over permissions
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6433" target="_blank">NEXT-6433</a> - </strong>Added support for managing track & trace codes to the administration
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6434" target="_blank">NEXT-6434</a> - </strong>Tracking links for orders are now displayed in the account
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6443" target="_blank">NEXT-6443</a> - </strong>Filter closeout products in listing and search when they are out of stock and filter flag is active.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6444" target="_blank">NEXT-6444</a> - </strong>Detailpage for products with clearance sale active and out of stock shows an `ProductNotFound`page and those products get filtered for crossellings, when listing configuration is set
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6461" target="_blank">NEXT-6461</a> - </strong>New paymentstates `failed` and `In Progress` added. Assignement of a E-Mail template can now be skipped during statechange
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6465" target="_blank">NEXT-6465</a> - </strong>Added refund option and url to order in email templates
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6469" target="_blank">NEXT-6469</a> - </strong>- Set default context data from current sales channel to context fields when user leave one of them empty -  No loading and updating cart action when there is no item in item list
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6477" target="_blank">NEXT-6477</a> - </strong>Adds e2e tests which represents the checkout workflow with a restricted shipping method
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6575" target="_blank">NEXT-6575</a> - </strong>Fixed some translation so all System language options are being displayed in the language chosen for the Installer.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6627" target="_blank">NEXT-6627</a> - </strong>The user cannot complete the checkout when his/her selected payment method is not active.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6697" target="_blank">NEXT-6697</a> - </strong>Internet Explorer 11 is now supported in the storefront
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6754" target="_blank">NEXT-6754</a> - </strong>Added detail page for import export log entries.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6856" target="_blank">NEXT-6856</a> - </strong>Improved documentation for storefront JavaScript-plugins
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6910" target="_blank">NEXT-6910</a> - </strong>You can not save empty templates in the seo module. This fixes a problem that a complete template could be irretrievably deleted.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6920" target="_blank">NEXT-6920</a> - </strong>Fixed the Slim error when selecting an non-bundled language. Also the selected language is now automatically installed in the first-run-wizard.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7039" target="_blank">NEXT-7039</a> - </strong>Add `Listing` tab in the `Storefront presentation` modal to configure the variant preselection
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7040" target="_blank">NEXT-7040</a> - </strong>Implemented the logic for the variant preselection to allow main variant selection, aswell as variant expression for specific variant groups
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7092" target="_blank">NEXT-7092</a> - </strong>If the user tries to delete a customer group that still has a SalesChannel and or a customer assigned to it then a error message will be shown.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7159" target="_blank">NEXT-7159</a> - </strong>Added theme guide to the documentation
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7164" target="_blank">NEXT-7164</a> - </strong>Updated github workflow in contribution guideline
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7165" target="_blank">NEXT-7165</a> - </strong>Users can now rate pages on our developer documentation
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7177" target="_blank">NEXT-7177</a> - </strong>Fix snippets in plugin manager <a href="https://github.com/simkli" target="_blank">(simkli)</a>
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7278" target="_blank">NEXT-7278</a> - </strong>When clicking on a label, the correct checkbox or button is selected <a href="https://github.com/@deepakk-webkul" target="_blank">(@deepakk-webkul)</a>
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7282" target="_blank">NEXT-7282</a> - </strong>Fixed breadcrumbs for various settings pages
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7411" target="_blank">NEXT-7411</a> - </strong>Add `Hide products after clearance` option in `Setting -> Shop -> Listing`. When `Hide products after clearance` is enabled, products marked as on "clearance sale" are hidden, as soon as their stock depletes back to 0
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7439" target="_blank">NEXT-7439</a> - </strong>If media with the same name is uploaded, the file name will be renamed appropriately. `my-file.jpg' to `my_file_(2).jpg'.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7461" target="_blank">NEXT-7461</a> - </strong>Fixed label for "mailer"-settings-item in administration settings page
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7462" target="_blank">NEXT-7462</a> - </strong>"Plugins" Tab on settings administration page is no longer visible, if no installed plugins are active in the shop
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7463" target="_blank">NEXT-7463</a> - </strong>Added google analytics integration
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7479" target="_blank">NEXT-7479</a> - </strong>Deprecated DAL fields are now removed from the result. With the new header "sw-ignore-deprecations" this behavior can be bypassed
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7489" target="_blank">NEXT-7489</a> - </strong>In "Orders > Overview > Add order" you can now manually create customer orders via the admin.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7498" target="_blank">NEXT-7498</a> - </strong>The delivers note now uses the shipping address instead of the billing address <a href="https://github.com/lietzi" target="_blank">(lietzi)</a>
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7504" target="_blank">NEXT-7504</a> - </strong>Settings items on settings index page in administration are now sorted more naturally
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7533" target="_blank">NEXT-7533</a> - </strong>Fixed display errors in multiple selections in administration lists. <a href="https://github.com/JoshuaBehrens" target="_blank">(JoshuaBehrens)</a>
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7544" target="_blank">NEXT-7544</a> - </strong>Sitemap files are now split by 50k entries
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7628" target="_blank">NEXT-7628</a> - </strong>The following rule fields now allow decimal places: strike prices, height, length, width, purchase prices
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7659" target="_blank">NEXT-7659</a> - </strong>The cms products slider are now sorted according to the defined order.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7684" target="_blank">NEXT-7684</a> - </strong>The customer is now able to change the payment method after he has finished the checkout.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7716" target="_blank">NEXT-7716</a> - </strong>Plugin uploads with specific new files no longer cause errors on following requests
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7757" target="_blank">NEXT-7757</a> - </strong>The scroll up button is no longer hidden behind the cookie bar.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7815" target="_blank">NEXT-7815</a> - </strong>Temporary files are now successfully removed when the upload is canceled
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7818" target="_blank">NEXT-7818</a> - </strong>It is now possible to pick a main variant or a preselection of variants in the variant generator, which will be displayed in the storefront listing
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7834" target="_blank">NEXT-7834</a> - </strong>Recovery now executes the updated Migrations
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7850" target="_blank">NEXT-7850</a> - </strong>Add customer comment field to checkout process
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7855" target="_blank">NEXT-7855</a> - </strong>If Elasticsearch is enabled, the pagination in the storefront is now also updated correctly when the product lists are filtered.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7870" target="_blank">NEXT-7870</a> - </strong>It is now possible to define email attachments for each email template and language
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7901" target="_blank">NEXT-7901</a> - </strong>Import Export profile labels are translatable
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7920" target="_blank">NEXT-7920</a> - </strong>Added import/export profile for newsletter recipients.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7946" target="_blank">NEXT-7946</a> - </strong>Added a check to ensure, that no other active plugin depends on a given plugin before it can be deactivated.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-8033" target="_blank">NEXT-8033</a> - </strong>Added tooltipps to country-select fields in settings/ tax and sales channel config.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-8046" target="_blank">NEXT-8046</a> - </strong>Plugins can define their own favicons for admin modules.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-8049" target="_blank">NEXT-8049</a> - </strong>The inheritance of prices and media was corrected when importing variants.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-8052" target="_blank">NEXT-8052</a> - </strong>Added a meta title to the theme manager module.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-8092" target="_blank">NEXT-8092</a> - </strong>The error handling in the importer/exporter was improved
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-8134" target="_blank">NEXT-8134</a> - </strong>Payments can be disabled for after order payments
+]]></changelog>
+      </en>
+    </locales>
+  </release>
+  <release>
+    <version>6.1.6</version>
+    <version_text/>
+    <minimum_version>6.1.0</minimum_version>
+    <security_update>1</security_update>
+    <public>1</public>
+    <rc>0</rc>
+    <ea>0</ea>
+    <revision>2020051410000000</revision>
+    <type>Minor</type>
+    <release_date>2020-05-14 10:00</release_date>
+    <github_repo>https://github.com/shopware/platform/tree/v6.1.6</github_repo>
+    <upgrade_md>https://github.com/shopware/platform/blob/v6.1.6/UPGRADE-6.1.md</upgrade_md>
+    <download_link_install>https://releases.shopware.com/sw6/install_6.1.6_1589441426.zip</download_link_install>
+    <download_link_update>https://releases.shopware.com/sw6/update_6.1.6_1589441426.zip</download_link_update>
+    <sha256_install>06c3ffc6fa935d2eea7a548c20f0ed344310b4c477a25586ae1197e105bd174f</sha256_install>
+    <sha256_update>4ad8e2fc25f90cf8e6005e0fbc97e68f455117fd2c36f1313a73d3fd1a44d574</sha256_update>
+    <locales>
+      <de>
+        <important_changes/>
+        <changelog><![CDATA[
+<div class="sw-alert sw-alert--warning alert alert-warning important-information" style="margin-bottom: 15px;padding: 25px 35px;font-size: 16px;">
+    <h3>Sicherheitsupdate</h3>
+    <p>NEXT-8282: Die Sicherheitslücke wurde von <a href="https://github.com/patpilus" target="_blank">Patryk Piluś</a> identifiziert.</p>
+    <p>Weitere Informationen: <a href="https://docs.shopware.com/de/shopware-6-de/sicherheitsupdates/security-update-05-2020">https://docs.shopware.com/de/shopware-6-de/sicherheitsupdates/security-update-05-2020</a></p>
+</div>
+]]></changelog>
+      </de>
+      <en>
+        <important_changes/>
+        <changelog><![CDATA[
+<div class="sw-alert sw-alert--warning alert alert-warning important-information" style="margin-bottom: 15px;padding: 25px 35px;font-size: 16px;">
+    <h3>Security update</h3>
+    <p>NEXT-8282: Reported by <a href="https://github.com/patpilus" target="_blank">Patryk Piluś</a>.</p>
+    <p>See also: <a href="https://docs.shopware.com/en/shopware-6-en/security-updates/security-update-05-2020">https://docs.shopware.com/en/shopware-6-en/security-updates/security-update-05-2020</a></p>
+</div>
+]]></changelog>
+      </en>
+    </locales>
+  </release>
+  <release>
+    <version>6.1.5</version>
+    <version_text/>
+    <minimum_version>6.1.0</minimum_version>
+    <security_update>0</security_update>
+    <public>1</public>
+    <rc>0</rc>
+    <ea>0</ea>
+    <revision>202004021425000</revision>
+    <type>Minor</type>
+    <release_date>2020-04-02 14:25</release_date>
+    <github_repo>https://github.com/shopware/platform/tree/v6.1.5</github_repo>
+    <upgrade_md>https://github.com/shopware/platform/blob/v6.1.5/UPGRADE-6.1.md</upgrade_md>
+    <download_link_install>https://releases.shopware.com/sw6/install_6.1.5_1585830011.zip</download_link_install>
+    <download_link_update>https://releases.shopware.com/sw6/update_6.1.5_1585830011.zip</download_link_update>
+    <sha256_install>39c45dd1971f792cb5bde2b7e1feff8057e1ecd12ab4c41811380c905e762e69</sha256_install>
+    <sha256_update>c2eb5adfcff30f6d5b06912de9150b86d3ef71acf810263f9f5c620d59c6381d</sha256_update>
+    <locales>
+      <de>
+        <important_changes/>
+        <changelog><![CDATA[
+					<div class="sw-alert sw-alert--primary alert alert-primary important-information" style="margin-bottom: 15px;padding: 25px 35px;font-size: 16px;">
+<strong>Covid-19 Bewegung:</strong><br>
+
+Auf Grund der aktuellen Situation, wollen wir lokalen Händlern helfen die wirtschaftlichen folgen dieser Krise zu minimieren. Darum haben wir uns in diesem Ausnahmefall dazu entschlossen, neue Funktionen in einem Patch-Release zu veröffentlichen, um diese schnellstmöglich verfügbar zu machen. In diesem Release ist daher eine erste Version eines Import/Export Moduls enthalten, sowie die Möglichkeit Datei-Anhänge zu E-Mail Vorlagen hinzuzufügen. Diese Funktionen wurden häufig aus der Community angefragt und wir wollten diese daher so schnell wie möglich verfügbar machen, obwohl sie sich noch in einer frühen Phase befinden und noch nicht komplett finalisiert sind. Weitere Informationen zur Bewegung findet Ihr auf <a href="https://www.shopware.com/de/covid19/" target="_blank" alt="Shopware covid-19">https://www.shopware.com/de/covid19/</a>.
+
+</div>
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-5036" target="_blank">NEXT-5036</a> - </strong>Es ist nun möglich, pro E-Mail Template und Sprache E-Mail Anhänge zu definieren
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7635" target="_blank">NEXT-7635</a> - </strong>Implementierung des Import/Export-Modules mit csv Unterstützung.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7675" target="_blank">NEXT-7675</a> - </strong>Ein Fehler wurde behoben, wodurch User in der Administration willkürlich ausgeloggt wurden
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7791" target="_blank">NEXT-7791</a> - </strong>Eine Datenbankmigration, die benutzerdefinierte Bestellbestätigunsemail-Templates in 6.1.4 überschrieben hat, wurde angepasst, um dies in Zukunft nicht mehr zu tun
+
+]]></changelog>
+      </de>
+      <en>
+        <important_changes/>
+        <changelog><![CDATA[
+					<div class="sw-alert sw-alert--primary alert alert-primary important-information" style="margin-bottom: 15px;padding: 25px 35px;font-size: 16px;">
+<strong>Covid-19 Movement:</strong><br>
+
+Because of the current situation, we want to support local merchants to limit the economic consequences of this crisis. Therefore we made the exception to release new features in a patch release to make these features available as soon as possible. In this release we included a first version of an Import/Export module and also the possibility to add file attachments to mail templates. These two features were highly requested by the community and we wanted to deliver them as fast as we could, even though they are in an early stage and not finalised yet. For more information about the movement visit <a href="https://www.shopware.com/de/covid19/" target="_blank" alt="Shopware covid-19">https://www.shopware.com/de/covid19/</a>.
+
+</div>
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-5036" target="_blank">NEXT-5036</a> - </strong>It is now possible to define email attachments for each email template and language
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7635" target="_blank">NEXT-7635</a> - </strong>Added Import/Export module with csv support.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7675" target="_blank">NEXT-7675</a> - </strong>Fixed a bug, where users would randomly be forced logged out in the administration
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7791" target="_blank">NEXT-7791</a> - </strong>A database migration for updating the system default order confirmation mail template was updated to no longer override custom content in the template
+
+]]></changelog>
+      </en>
+    </locales>
+  </release>
+  <release>
+    <version>6.1.4</version>
+    <version_text/>
+    <minimum_version>6.1.0</minimum_version>
+    <security_update>1</security_update>
+    <public>1</public>
+    <rc>0</rc>
+    <ea>0</ea>
+    <revision>202003181400000</revision>
+    <type>Minor</type>
+    <release_date>2020-03-18 14:00</release_date>
+    <github_repo>https://github.com/shopware/platform/tree/v6.1.4</github_repo>
+    <upgrade_md>https://github.com/shopware/platform/blob/v6.1.4/UPGRADE-6.1.md</upgrade_md>
+    <download_link_install>https://releases.shopware.com/sw6/install_6.1.4_1584369563.zip</download_link_install>
+    <download_link_update>https://releases.shopware.com/sw6/update_6.1.4_1584369563.zip</download_link_update>
+    <sha256_install>e5aed093af68023b2cf494df6972b48621ca479388059adc4640b6358366df44</sha256_install>
+    <sha256_update>46665aa159622f6ac79a7b72824d6c391113cab2db6d363b4b88bd7b82a01d1c</sha256_update>
+    <locales>
+      <de>
+        <important_changes/>
+        <changelog><![CDATA[
+					<div class="sw-alert sw-alert--warning alert alert-warning important-information" style="margin-bottom: 15px;padding: 25px 35px;font-size: 16px;">
+    <h3>Sicherheitsupdate</h3>
+    <p>NEXT-7538: Die Sicherheitslücke wurde von <a href="https://github.com/patchee500" target="_blank">Daniel Keckeis</a> identifiziert.</p>
+</div>
+					<br/><strong><a href="https://issues.shopware.com/issues/NEXT-4890" target="_blank">NEXT-4890</a> - </strong>Laden der Medien für Unterkategorien im OffCanvas Menü korrigiert <a href="https://github.com/claudiobianco" target="_blank">(claudiobianco)</a>
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6422" target="_blank">NEXT-6422</a> - </strong>Die IP-Whitelist für den Wartungsmodus funktioniert jetzt auch wenn ein Proxy-Server im Einsatz ist
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6927" target="_blank">NEXT-6927</a> - </strong>Beim wechsel vom- oder in den "Abgebrochen"-Status einer Bestellung wird der verfügbare Bestand der Positionen jetzt neu berechnet
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6951" target="_blank">NEXT-6951</a> - </strong>Die Kategorien frieren nicht mehr ein, wenn die Sprache gewechselt wurde und keine Kategorie ausgewählt war.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7027" target="_blank">NEXT-7027</a> - </strong>Es ist jetzt möglich, die SCSS @ extend-Funktion für vorhandene Bootstrap-Klassen zu verwenden, wenn der Befehl ./psh.phar storefront: hot oder ./psh.phar storefront: hot-proxy verwendet wird.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7115" target="_blank">NEXT-7115</a> - </strong>Fehler im Modal zum Wechseln der Adresse korrigiert
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7204" target="_blank">NEXT-7204</a> - </strong>Web-Installer im Production Template gefixt. <a href="https://github.com/binaermanufaktur" target="_blank">(binaermanufaktur)</a>
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7211" target="_blank">NEXT-7211</a> - </strong>Variablennamen in der Dokumentation korrigiert <a href="https://github.com/MemoICT" target="_blank">(MemoICT)</a>
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7212" target="_blank">NEXT-7212</a> - </strong>Korrigiert Service-Tag-Namen in der Dokumentation <a href="https://github.com/soebbing" target="_blank">(soebbing)</a>
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7252" target="_blank">NEXT-7252</a> - </strong>Sitemap gzip Error behoben
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7319" target="_blank">NEXT-7319</a> - </strong>Twig Cache Warmup deaktiviert
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7385" target="_blank">NEXT-7385</a> - </strong>Inaktive Kategorien sind nun nicht länger direkt via SEO URL erreichbar
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7434" target="_blank">NEXT-7434</a> - </strong>Einen Fehler in der Wartungsseite gefixt, der zu einer Weiterleitungsschleife führte.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7499" target="_blank">NEXT-7499</a> - </strong>Rechtschreibprüfung für den Editor in den Erlebniswelten hinzugefügt <a href="https://github.com/tinect" target="_blank">(tinect)</a>
+
+
+]]></changelog>
+      </de>
+      <en>
+        <important_changes/>
+        <changelog><![CDATA[
+					<div class="sw-alert sw-alert--warning alert alert-warning important-information" style="margin-bottom: 15px;padding: 25px 35px;font-size: 16px;">
+    <h3>Security Update</h3>
+    <p>NEXT-7538: The security issue was reported by <a href="https://github.com/patchee500" target="_blank">Daniel Keckeis</a>.</p>
+</div>
+					<br/><strong><a href="https://issues.shopware.com/issues/NEXT-4890" target="_blank">NEXT-4890</a> - </strong>Fixed loading of media for subcategories in offcanvas menu <a href="https://github.com/claudiobianco" target="_blank">(claudiobianco)</a>
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6422" target="_blank">NEXT-6422</a> - </strong>The IP address whitelist for the maintenance mode now works correctly with proxy servers
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6927" target="_blank">NEXT-6927</a> - </strong>When transitioning from or to the "cancelled" state of an order, the available stock of its positions will now be recalculated
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-6951" target="_blank">NEXT-6951</a> - </strong>The categories no longer freeze if the language has been changed and no category was selected.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7027" target="_blank">NEXT-7027</a> - </strong>It is now possible to use the SCSS @extend feature on existing bootstrap classes when using the ./psh.phar storefront:hot or ./psh.phar storefront:hot-proxy command.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7115" target="_blank">NEXT-7115</a> - </strong>Fixed error in address change modal
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7204" target="_blank">NEXT-7204</a> - </strong>Fixed Web Installer in production template. <a href="https://github.com/binaermanufaktur" target="_blank">(binaermanufaktur)</a>
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7211" target="_blank">NEXT-7211</a> - </strong>Fix variable name in documentation <a href="https://github.com/MemoICT" target="_blank">(MemoICT)</a>
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7212" target="_blank">NEXT-7212</a> - </strong>Fix service tag name in documentation <a href="https://github.com/soebbing" target="_blank">(soebbing)</a>
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7252" target="_blank">NEXT-7252</a> - </strong>Fixed sitemap gzip error
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7319" target="_blank">NEXT-7319</a> - </strong>Disabled twig cache warmup
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7385" target="_blank">NEXT-7385</a> - </strong>Inactive categories can no longer be accessed via SEO URL directly
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7434" target="_blank">NEXT-7434</a> - </strong>Fixed an error in the maintenance page that lead to a redirect loop.
+<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7499" target="_blank">NEXT-7499</a> - </strong>Added spellcheck for the shopping experience editor <a href="https://github.com/tinect" target="_blank">(tinect)</a>
+
+]]></changelog>
+      </en>
+    </locales>
+  </release>
+  <release>
+    <version>6.1.3</version>
+    <version_text/>
+    <minimum_version>6.1.0</minimum_version>
+    <security_update>0</security_update>
+    <public>1</public>
+    <rc>0</rc>
+    <ea>0</ea>
+    <revision>202002191400000</revision>
+    <type>Minor</type>
+    <release_date>2020-02-19 14:00</release_date>
+    <github_repo>https://github.com/shopware/platform/tree/v6.1.3</github_repo>
+    <upgrade_md>https://github.com/shopware/platform/blob/v6.1.3/UPGRADE-6.1.md</upgrade_md>
+    <download_link_install>https://releases.shopware.com/sw6/install_6.1.3_1582123990.zip</download_link_install>
+    <download_link_update>https://releases.shopware.com/sw6/update_6.1.3_1582123990.zip</download_link_update>
+    <sha256_install>a20afb0f012073e08d3ab8dd70e274c73544e01b9406aab1235d937bcca4983f</sha256_install>
+    <sha256_update>31cf6b61f565d6cdcab1a04b1f179aa2be408b432cdfca44cb61f567b24b0f53</sha256_update>
+    <locales>
+      <de>
+        <important_changes/>
+        <changelog><![CDATA[
+					<div class="sw-alert sw-alert--info alert alert-info important-information" style="margin-bottom: 15px;padding: 25px 35px;font-size: 16px;">
+    <h3>Zusätzliche Information</h3>
+	<p>Es kam beim Update auf die Version 6.1.2 bei einigen Systemen zu Problemen auf Grund eines Fehlverhaltens innerhalb einer Datenbankmigration. Daher haben wir uns entschiedenen ein schnelles Patch-Update mit der Version 6.1.3 zu bringen. Natürlich beinhaltet das 6.1.3 Release alle Anpassungen aus dem 6.1.2 Release, inklusive der behobenen Sicherheitslücke.</p>
+</div>
+					<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7144" target="_blank">NEXT-7144</a> - </strong>Fehlerhafte Migration behoben, die zum Abbruch des Updates führte, sofern eine deutsche Übersetzung für das Kontaktformular besteht.
+
+]]></changelog>
+      </de>
+      <en>
+        <important_changes/>
+        <changelog><![CDATA[
+					<div class="sw-alert sw-alert--info alert alert-info important-information" style="margin-bottom: 15px;padding: 25px 35px;font-size: 16px;">
+    <h3>Additional Information</h3>
+	<p>Some users discovered some issues when updating to Shopware 6.1.2 because of a misbehaviour in one of the database migrations. Therefore we decided to bring a quick patch update to solve this problem. The Shopware 6.1.3 version of course includes all fixes of 6.1.2 including the fix of the security issue.</p>
+</div>
+					<br/><strong><a href="https://issues.shopware.com/issues/NEXT-7144" target="_blank">NEXT-7144</a> - </strong>Migration fixed which caused the update to abort, if there is a German translation for the contact form.
+
+]]></changelog>
+      </en>
+    </locales>
+  </release>
+</releases>
