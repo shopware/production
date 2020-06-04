@@ -30,8 +30,8 @@ fi
 
 echo "$CORE_TAG" > public/recovery/install/data/version
 
-REFERENCE_INSTALLER_URL="https://releases.shopware.com/sw6/install_6.0.0_ea1_1563354247.zip"
-REFERENCE_INSTALLER_SHA256="eea7508800e95fbdd4cc89ada1a29aba429db82b41a94ae32bf9e34ea27a3697"
+REFERENCE_INSTALLER_URL=${REFERENCE_INSTALLER_URL:-"https://releases.shopware.com/sw6/install_6.0.0_ea1_1563354247.zip"}
+REFERENCE_INSTALLER_SHA256=${REFERENCE_INSTALLER_SHA256:-"eea7508800e95fbdd4cc89ada1a29aba429db82b41a94ae32bf9e34ea27a3697"}
 REFERENCE_INSTALLER_FILE="$ARTIFACTS_DIR/reference.zip"
 
 # make update
@@ -49,6 +49,9 @@ if [ -n "$REFERENCE_INSTALLER_URL" ]; then
 
     UPDATE_TEMP_DIR=$(mktemp -d)
 
+    # fix permissions of reference
+    cp -f -a --attributes-only "$PROJECT_ROOT/." "$REFERENCE_TEMP_DIR"
+
     # copy files that changed between the reference and the new version
     rsync -rvcmq --compare-dest="$REFERENCE_TEMP_DIR" "$PROJECT_ROOT/" "$UPDATE_TEMP_DIR/"
     cd "$UPDATE_TEMP_DIR"
@@ -59,15 +62,11 @@ if [ -n "$REFERENCE_INSTALLER_URL" ]; then
 
     ${PROJECT_ROOT}/bin/deleted_files_vendor.sh -o"$REFERENCE_TEMP_DIR/vendor" -n"$PROJECT_ROOT/vendor" > update-assets/cleanup.txt
 
-    zip -qq -9 -r update.zip .
-
-    mv update.zip "$ARTIFACTS_DIR/update.zip"
+    zip -qq -9 -r "$ARTIFACTS_DIR/update.zip" .
 fi
 
 # installer
 
 cd ${PROJECT_ROOT}
 
-zip -qq -9 -r install.zip .
-mv install.zip "$ARTIFACTS_DIR/"
-
+zip -qq -9 -r "$ARTIFACTS_DIR/install.zip" .

@@ -88,7 +88,7 @@ Build Test Package:
         - mkdir artifacts || true
         - chmod 777 artifacts || true
         # create package archive file
-        - docker run -v $PWD/artifacts:/artifacts --entrypoint=bin/package.sh ${CI_REGISTRY_IMAGE}:${IMAGE_TAG}
+        - docker run -v $PWD/artifacts:/artifacts -e REFERENCE_INSTALLER_URL -e REFERENCE_INSTALLER_SHA256 --entrypoint=bin/package.sh ${CI_REGISTRY_IMAGE}:${IMAGE_TAG}
         - mv artifacts/install.tar.xz artifacts/install_${IMAGE_TAG}.tar.xz
         - echo ${TAG} > artifacts/TAG
     artifacts:
@@ -164,10 +164,10 @@ Install:
 
 # e2e update tests
 
-Manual Upd 6.1.6:
+Manual Upd 6.2.0:
     extends: .e2e_update_base
     variables:
-        E2E_INSTALL_PACKAGE_URL: https://releases.shopware.com/sw6/install_6.1.6_1589441426.zip
+        E2E_INSTALL_PACKAGE_URL: https://releases.shopware.com/sw6/install_6.2.0_1589874223.zip
         E2E_TEST_DATA_FILE: "v6.1.6_test_data.tar.xz"
     script:
         - unzip -qqo artifacts/update.zip
@@ -202,13 +202,14 @@ Manual Upd 6.1.6:
             - .gitlab-ci/e2e/test/artifacts/*
             - var/log/*
 
-Upd 6.1.6:
+# Min version changed to 6.2.0
+.Upd 6.1.6:
     extends: .E2E Update
     variables:
         E2E_INSTALL_PACKAGE_URL: https://releases.shopware.com/sw6/install_6.1.6_1589441426.zip
         E2E_TEST_DATA_FILE: "v6.1.6_test_data.tar.xz"
 
-Upd 6.1.6 (Mysql 8.0):
+Upd 6.2.0 (Mysql 8.0):
     extends: .E2E Update
     services:
         -   name: mysql:8.0.19
@@ -218,7 +219,7 @@ Upd 6.1.6 (Mysql 8.0):
             alias: elasticsearch
             command: [ "bin/elasticsearch", "-Expack.security.enabled=false", "-Ediscovery.type=single-node" ]
     variables:
-        E2E_INSTALL_PACKAGE_URL: https://releases.shopware.com/sw6/install_6.1.6_1589441426.zip
+        E2E_INSTALL_PACKAGE_URL: https://releases.shopware.com/sw6/install_6.2.0_1589874223.zip
         E2E_TEST_DATA_FILE: "v6.1.6_test_data.tar.xz"
 
 Upd 6.2.0:
