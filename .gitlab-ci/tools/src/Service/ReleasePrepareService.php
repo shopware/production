@@ -34,18 +34,25 @@ class ReleasePrepareService
      */
     private $updateApiService;
 
+    /**
+     * @var SbpClient
+     */
+    private $sbpClient;
+
     public function __construct(
         array $config,
         Filesystem $deployFilesystem,
         FileSystem $artifactsFilesystem,
         ChangelogService $changelogService,
-        UpdateApiService $updateApiService
+        UpdateApiService $updateApiService,
+        SbpClient $sbpClient
     ) {
         $this->config = $config;
         $this->deployFilesystem = $deployFilesystem;
         $this->changelogService = $changelogService;
         $this->artifactsFilesystem = $artifactsFilesystem;
         $this->updateApiService = $updateApiService;
+        $this->sbpClient = $sbpClient;
     }
 
     public function prepareRelease(string $tag): void
@@ -82,6 +89,47 @@ class ReleasePrepareService
         $this->storeReleaseList($releaseList);
 
         $this->registerUpdate($tag, $release);
+
+        try {
+            $this->upsertSbpVersion($tag);
+        } catch (\Throwable $e) {
+        }
+    }
+
+    public function upsertSbpVersion(string $tag): void
+    {
+        $parsed = VersioningService::parseTag($tag);
+        $version = $parsed['major'] . '.' . $parsed['minor'] . '.' . $parsed['patch'] . '.' . $parsed['build'];
+
+        $nextParentVersions = [
+            $parsed['major'] . '.' . $parsed['minor'] . '.' . $parsed['patch'],
+            $parsed['major'] . '.' . $parsed['minor'],
+            $parsed['major'],
+        ];
+
+        $parent = null;
+        foreach ($nextParentVersions as $nextParentVersion) {
+            $parent = $this->sbpClient->getVersionByName((string) $nextParentVersion);
+            if ($parent !== null) {
+                break;
+            }
+        }
+
+        if ($parent === null) {
+            echo 'failed to get sbp version. parent not found';
+
+            return;
+        }
+
+        $current = $this->sbpClient->getVersionByName($version);
+        if ($current === null) {
+            $releaseDate = new \DateTime();
+            $releaseDate->setTimestamp(strtotime('first monday of next month'));
+        } else {
+            $releaseDate = new \DateTimeImmutable($current['releaseDate']['date']);
+        }
+
+        $this->sbpClient->upsertVersion($version, $parent['id'], $releaseDate->format('Y-m-d'), null);
     }
 
     public function uploadArchives(Release $release): void

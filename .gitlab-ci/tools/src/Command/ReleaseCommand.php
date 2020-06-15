@@ -12,6 +12,7 @@ use Shopware\CI\Service\ChangelogService;
 use Shopware\CI\Service\CredentialService;
 use Shopware\CI\Service\ReleasePrepareService;
 use Shopware\CI\Service\ReleaseService;
+use Shopware\CI\Service\SbpClient;
 use Shopware\CI\Service\TaggingService;
 use Shopware\CI\Service\UpdateApiService;
 use Shopware\CI\Service\VersioningService;
@@ -150,7 +151,14 @@ abstract class ReleaseCommand extends Command
             $this->getDeployFilesystem($input, $output),
             $artifactFilesystem,
             $this->getChangelogService($input, $output),
-            new UpdateApiService($config['updateApiHost'])
+            new UpdateApiService($config['updateApiHost']),
+            new SbpClient(new Client([
+                'base_uri' => $_SERVER['SBP_API_BASE_URI'],
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                    'User-Agent' => 'gitlab.shopware.com',
+                ],
+            ]))
         );
     }
 

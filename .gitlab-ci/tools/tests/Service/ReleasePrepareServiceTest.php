@@ -7,6 +7,7 @@ use League\Flysystem\Memory\MemoryAdapter;
 use PHPUnit\Framework\TestCase;
 use Shopware\CI\Service\ChangelogService;
 use Shopware\CI\Service\ReleasePrepareService;
+use Shopware\CI\Service\SbpClient;
 use Shopware\CI\Service\UpdateApiService;
 
 class ReleasePrepareServiceTest extends TestCase
@@ -246,13 +247,85 @@ NEXT-1235 - DE Bar
         static::assertEmpty((string) $release->locales->en->changelog);
     }
 
+    public function testUpsertSbpVersion(): void
+    {
+        $sbpClient = $this->createMock(SbpClient::class);
+        $releasePrepareService = $this->getReleasePrepareService(null, null, null, $sbpClient);
+
+        $parentVersion = [
+            'id' => 1,
+            'name' => '6.3',
+            'public' => false,
+            'releaseDate' => null,
+        ];
+        $version = [
+            'id' => 2,
+            'name' => '6.3.0.0',
+            'parent' => 1,
+            'public' => false,
+            'releaseDate' => null,
+        ];
+        $sbpClient->method('getVersion')->with(1)->willReturn($parentVersion);
+        $sbpClient->method('getVersion')->with(2)->willReturn($version);
+        $sbpClient->method('getVersionByName')->with('6.3')->willReturn($parentVersion);
+        $sbpClient->method('getVersionByName')->with('6.3.0')->willReturn(null);
+        $sbpClient->method('getVersionByName')->with('6.3.0.0')->willReturn($version);
+
+        $sbpClient->expects($this->once())
+            ->method('upsertVersion')
+            ->with('6.3.0.0', 1, '2020-12-01', false);
+
+        $releasePrepareService->upsertSbpVersion('v6.3.0.0');
+    }
+
+    public function testUpsertSbpVersionUseMostSpecificVersion(): void
+    {
+        $sbpClient = $this->createMock(SbpClient::class);
+        $releasePrepareService = $this->getReleasePrepareService(null, null, null, $sbpClient);
+
+        $parentParentVersion = [
+            'id' => 1,
+            'name' => '6.3',
+            'public' => false,
+            'releaseDate' => null,
+        ];
+        $parentVersion = [
+            'id' => 2,
+            'name' => '6.3.0',
+            'parent' => $parentParentVersion['id'],
+            'public' => false,
+            'releaseDate' => null,
+        ];
+        $version = [
+            'id' => 3,
+            'name' => '6.3.0.0',
+            'parent' => 1,
+            'public' => false,
+            'releaseDate' => null,
+        ];
+        $sbpClient->method('getVersion')->with($parentParentVersion['id'])->willReturn($parentParentVersion);
+        $sbpClient->method('getVersion')->with($parentVersion['id'])->willReturn($parentVersion);
+        $sbpClient->method('getVersion')->with($version['id'])->willReturn($version);
+        $sbpClient->method('getVersionByName')->with($parentParentVersion['name'])->willReturn($parentParentVersion);
+        $sbpClient->method('getVersionByName')->with($parentVersion['name'])->willReturn($parentVersion);
+        $sbpClient->method('getVersionByName')->with($version['name'])->willReturn($version);
+
+        $sbpClient->expects($this->once())
+            ->method('upsertVersion')
+            ->with('6.3.0.0', 1, '2020-12-01', false);
+
+        $releasePrepareService->upsertSbpVersion('v6.3.0.0');
+    }
+
     private function getReleasePrepareService(
         ?array $config = null,
         ?ChangelogService $changeLogService = null,
-        ?UpdateApiService $updateApiService = null
+        ?UpdateApiService $updateApiService = null,
+        ?SbpClient $sbpClient = null
     ): ReleasePrepareService {
         $changelogService = $changeLogService ?? $this->createMock(ChangelogService::class);
         $updateApiService = $updateApiService ?? $this->createMock(UpdateApiService::class);
+        $sbpClient = $sbpClient ?? $this->createMock(SbpClient::class);
         $config = $config ??
             [
                 'minimumVersion' => '6.2.0',
@@ -261,6 +334,13 @@ NEXT-1235 - DE Bar
                 ],
             ];
 
-        return new ReleasePrepareService($config, $this->deployFilesystem, $this->artifactsFilesystem, $changelogService, $updateApiService);
+        return new ReleasePrepareService(
+            $config,
+            $this->deployFilesystem,
+            $this->artifactsFilesystem,
+            $changelogService,
+            $updateApiService,
+            $sbpClient
+        );
     }
 }
