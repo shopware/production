@@ -18,11 +18,13 @@ Release-Package:
         - umask 0022
         - git init .
         - git remote add origin ${CI_REPOSITORY_URL}
-        - git fetch
+        - git fetch origin ${CI_COMMIT_SHA}
         - git checkout -f -q ${CI_COMMIT_SHA}
     script:
         - composer install --ignore-platform-reqs --no-interaction
         - docker build . -t ${CI_REGISTRY_IMAGE}:${CI_COMMIT_TAG}
+        - mkdir artifacts || true
+        - chmod 777 artifacts || true
         - docker run -v $PWD/artifacts:/artifacts -e REFERENCE_INSTALLER_URL -e REFERENCE_INSTALLER_SHA256 --entrypoint=bin/package.sh ${CI_REGISTRY_IMAGE}:${CI_COMMIT_TAG}
         - mv artifacts/install.tar.xz artifacts/install_${CI_COMMIT_TAG}.tar.xz
     artifacts:
