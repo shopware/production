@@ -175,11 +175,11 @@ Manual Upd 6.2.0:
         - chown -R application:application $CI_PROJECT_DIR
         - cd vendor/shopware/recovery/Test/e2e/
         - npm ci
-        - $(npm bin)/cypress run
+        - timeout 20m $(npm bin)/cypress run
             --browser chrome --config baseUrl=http://localhost:8000,numTestsKeptInMemory=0
             --env expectedVersion=$TAG
             --spec cypress/integration/updater/manual-update.spec.js
-        - $(npm bin)/cypress run
+        - timeout 5m $(npm bin)/cypress run
             --browser chrome --config baseUrl=http://localhost:8000,numTestsKeptInMemory=0
             --env expectedVersion=$TAG
             --spec cypress/integration/updater/storefront.spec.js
@@ -188,11 +188,11 @@ Manual Upd 6.2.0:
     extends: .e2e_update_base
     script:
         - cd .gitlab-ci/e2e/test/
-        - $(npm bin)/cypress run
+        - timeout 20m $(npm bin)/cypress run
             --browser chrome --config baseUrl=http://localhost:8000,numTestsKeptInMemory=0
             --env expectedVersion=$TAG
             --spec cypress/integration/updater/auto-update.spec.js
-        - $(npm bin)/cypress run
+        - timeout 5m $(npm bin)/cypress run
             --browser chrome --config baseUrl=http://localhost:8000,numTestsKeptInMemory=0
             --env expectedVersion=$TAG
             --spec cypress/integration/updater/storefront.spec.js
