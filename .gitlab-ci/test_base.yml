@@ -66,8 +66,6 @@
         -   name: elastic/elasticsearch:7.1.1
             alias: elasticsearch
             command: [ "bin/elasticsearch", "-Expack.security.enabled=false", "-Ediscovery.type=single-node" ]
-    tags:
-        - release
     cache:
         key: "e2e_$PLATFORM_BRANCH"
         paths:

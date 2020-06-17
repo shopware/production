@@ -168,7 +168,7 @@ Install:
 Manual Upd 6.2.0:
     extends: .e2e_update_base
     variables:
-        E2E_INSTALL_PACKAGE_URL: https://releases.shopware.com/sw6/install_6.2.0_1589874223.zip
+        E2E_INSTALL_PACKAGE_URL: $REFERENCE_INSTALLER_URL
         E2E_TEST_DATA_FILE: "v6.1.6_test_data.tar.xz"
     script:
         - unzip -qqo artifacts/update.zip
