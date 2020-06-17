@@ -55,7 +55,8 @@ Build Test Package:
         - umask 0022
         - git init .
         - git remote add origin ${CI_REPOSITORY_URL}
-        - git fetch
+        - git fetch origin $CI_COMMIT_BRANCH
+        - git fetch --tags
         - git checkout -f -q ${CI_COMMIT_SHA}
         - composer config --global  cache-dir $PWD/.composer
         # install helper tools
@@ -202,14 +203,7 @@ Manual Upd 6.2.0:
             - .gitlab-ci/e2e/test/artifacts/*
             - var/log/*
 
-# Min version changed to 6.2.0
-.Upd 6.1.6:
-    extends: .E2E Update
-    variables:
-        E2E_INSTALL_PACKAGE_URL: https://releases.shopware.com/sw6/install_6.1.6_1589441426.zip
-        E2E_TEST_DATA_FILE: "v6.1.6_test_data.tar.xz"
-
-Upd 6.2.0 (Mysql 8.0):
+Update (Mysql 8.0):
     extends: .E2E Update
     services:
         -   name: mysql:8.0.19
@@ -219,11 +213,11 @@ Upd 6.2.0 (Mysql 8.0):
             alias: elasticsearch
             command: [ "bin/elasticsearch", "-Expack.security.enabled=false", "-Ediscovery.type=single-node" ]
     variables:
-        E2E_INSTALL_PACKAGE_URL: https://releases.shopware.com/sw6/install_6.2.0_1589874223.zip
+        E2E_INSTALL_PACKAGE_URL: $REFERENCE_INSTALLER_URL
         E2E_TEST_DATA_FILE: "v6.1.6_test_data.tar.xz"
 
-Upd 6.2.0:
+Update:
     extends: .E2E Update
     variables:
-        E2E_INSTALL_PACKAGE_URL: https://releases.shopware.com/sw6/install_6.2.0_1589874223.zip
+        E2E_INSTALL_PACKAGE_URL: $REFERENCE_INSTALLER_URL
         E2E_TEST_DATA_FILE: "v6.1.6_test_data.tar.xz"
