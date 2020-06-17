@@ -80,9 +80,9 @@ app.get('/v1/release/update', (req, res) => {
 })
 
 
-let { PORT, FAKE_VERSION, UPDATE_FILE_PATH, WEB_DOCUMENT_ROOT } = process.env;
+let { PORT, FAKE_VERSION, TAG, UPDATE_FILE_PATH, WEB_DOCUMENT_ROOT } = process.env;
 
-FAKE_VERSION = FAKE_VERSION || '6.2.1';
+FAKE_VERSION = FAKE_VERSION || TAG || '6.2.1';
 FAKE_VERSION = FAKE_VERSION[0] === 'v' ? FAKE_VERSION.slice(1) : FAKE_VERSION;
 
 PORT = PORT || 3000

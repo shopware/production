@@ -55,6 +55,7 @@ Insert-Release-Data:
     script:
         - 'set -x'
         - '[[ -e artifacts/install.zip && -e artifacts/update.zip ]]'
+        - git fetch --tags
         - export TAG=${CI_COMMIT_TAG:-${TAG:-$(.gitlab-ci/tools/console show-next-tag --minimum-stability "$MINIMUM_STABILITY")}}
         - >
             case $TAG in
@@ -120,6 +121,7 @@ Create-Release-Branch:
         - git config --global user.email $GIT_EMAIL
         - git config --global user.name $GIT_USER
         - composer install --working-dir=.gitlab-ci/tools
+        - git fetch --tags
         - export TAG=${TAG:-$(.gitlab-ci/tools/console show-next-tag --minimum-stability "$MINIMUM_STABILITY")}
     script:
         - export PROJECT_ROOT=$(pwd)
