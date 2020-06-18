@@ -4,12 +4,14 @@
 require __DIR__ . '/vendor/autoload.php';
 
 use Shopware\CI\Command\EditReleaseCommand;
+use Shopware\CI\Command\ReleaseInfoCommand;
 use Shopware\CI\Command\ReleasePackageCommand;
 use Shopware\CI\Command\ReleaseTagsCommand;
 use Shopware\CI\Command\DeleteTagsCommand;
 use Shopware\CI\Command\GenerateChangelogCommand;
 use Shopware\CI\Command\ReleasePrepareCommand;
 use Shopware\CI\Command\ShowNextTagCommand;
+use Shopware\CI\Command\ShowPlatformBranchCommand;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Dotenv\Dotenv;
 
@@ -26,5 +28,7 @@ $application->add(new DeleteTagsCommand());
 $application->add(new ReleasePrepareCommand());
 $application->add(new ReleasePackageCommand());
 $application->add(new EditReleaseCommand());
+$application->add(new ShowPlatformBranchCommand());
+$application->add(new ReleaseInfoCommand());
 
 $application->run();

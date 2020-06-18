@@ -174,9 +174,8 @@ class ReleaseServiceTest extends TestCase
 
         static::assertTrue($before->isPublic());
 
+        $this->expectErrorMessage('Release ' . $tag . ' is already public');
         $releaseService->releasePackage($tag);
-
-        static::assertTrue($before->isPublic());
     }
 
     public function testReleasePackageUnknownTag(): void
@@ -209,7 +208,7 @@ class ReleaseServiceTest extends TestCase
 
         $this->makeFakeRelease($config, 'v6.1.998');
 
-        $taggingService = new TaggingService(new VersionParser(), $config, $client);
+        $taggingService = new TaggingService($config, $client);
         $releasePrepareService = $this->createMock(ReleasePrepareService::class);
 
         $releaseService = new ReleaseService($config, $releasePrepareService, $taggingService);

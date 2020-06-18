@@ -32,7 +32,7 @@ USER sw6
 
 ADD --chown=sw6 . .
 
-RUN DATABASE_URL="" bin/console assets:install \
+RUN APP_URL="http://localhost" DATABASE_URL="" bin/console assets:install \
     && rm -Rf var/cache \
     && touch install.lock \
     && mkdir -p var/cache

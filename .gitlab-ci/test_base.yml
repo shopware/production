@@ -67,7 +67,7 @@
             alias: elasticsearch
             command: [ "bin/elasticsearch", "-Expack.security.enabled=false", "-Ediscovery.type=single-node" ]
     cache:
-        key: "e2e_$PLATFORM_BRANCH"
+        key: "e2e_$CI_COMMIT_BRANCH"
         paths:
             - .npm
             - .cypress
@@ -100,8 +100,12 @@
         # set update api base url to mock
         - >
             mysql -h mysql -u root -proot sw6_e2e_test -e 'UPDATE system_config SET configuration_value = "{\"_value\": \"http://localhost:3000\"}" WHERE configuration_key IN("core.store.apiUri", "core.update.apiUri")'
+        # migrate up to current version
+        - bin/console database:migrate --all core
         - bin/console system:generate-jwt-secret
         - bin/console assets:install
+        - bin/console dal:refresh:index
+        - bin/console cache:clear
         - npm --prefix .gitlab-ci/e2e/ ci
         # start update api mock
         - DEBUG=* UPDATE_FILE_PATH=$CI_PROJECT_DIR/artifacts/update.zip node .gitlab-ci/e2e/update-api-mock.js &

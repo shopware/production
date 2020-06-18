@@ -94,10 +94,13 @@ class ReleasePrepareService
         $release->sha1_update = $updateUpload['sha1'];
         $release->sha256_update = $updateUpload['sha256'];
 
-        if (isset($this->config['minor_branch']) && preg_match('/^\d+\.\d+(\.\d+)?$/', $this->config['minor_branch'])) {
-            $this->hashAndUpload($release->tag, 'install.tar.xz');
-            $this->hashAndUpload($release->tag, 'install.tar.xz', 'sw6/install_' . $this->config['minor_branch'] . '_next.tar.xz');
-        }
+        $this->hashAndUpload($release->tag, 'install.tar.xz');
+        $minorBranch = VersioningService::getMinorBranch($release->tag);
+        $this->hashAndUpload(
+            $release->tag,
+            'install.tar.xz',
+            'sw6/install_' . $minorBranch . '_next.tar.xz' // 6.2_next.tar.xz, 6.3.0_next.tar.xz, 6.3.1_next.tar.xz
+        );
     }
 
     public function getReleaseList(): Release
@@ -120,7 +123,7 @@ class ReleasePrepareService
     {
         $baseParams = [
             '--release-version' => (string)$release->version,
-            '--channel' => $this->getUpdateChannel($tag),
+            '--channel' => VersioningService::getUpdateChannel($tag),
         ];
 
         if (((string)$release->version_text) !== '') {
@@ -128,7 +131,7 @@ class ReleasePrepareService
         }
 
         $insertReleaseParameters = array_merge($baseParams, [
-            '--min-version' => $this->config['minimumVersion'],
+            '--min-version' => $this->config['minimumVersion'] ?? '6.2.0',
             '--install-uri' => (string)$release->download_link_install,
             '--install-size' => (string)$this->artifactsFilesystem->getSize('install.zip'),
             '--install-sha1' => (string)$release->sha1_install,
@@ -149,39 +152,20 @@ class ReleasePrepareService
 
     private function setReleaseProperties(string $tag, Release $release): void
     {
-        $release->minimum_version = $this->config['minimumVersion'];
+        $release->minimum_version = $this->config['minimumVersion'] ?? '6.2.0';
         $release->public = 0;
         $release->ea = 0;
         $release->revision = '';
-        $release->type = $this->getReleaseType($tag);
+        $release->type = VersioningService::getReleaseType($tag);
         $release->release_date = '';
         $release->tag = $tag;
         $release->github_repo = 'https://github.com/shopware/platform/tree/' . $tag;
+
         $release->upgrade_md = sprintf(
             'https://github.com/shopware/platform/blob/%s/UPGRADE-%s.md',
             $tag,
-            $this->config['minor_branch']
+            VersioningService::getMinorBranch($tag)
         );
-    }
-
-    private function getReleaseType(string $tag): string
-    {
-        if (!preg_match('/v?\d+\.\d+\.(\d+)(\.(\d+))?/', $tag, $matches)) {
-            throw new \RuntimeException('Invalid tag ' . $tag);
-        }
-
-        $minor = (int)$matches[1];
-        $patch = (int)($matches[2] ?? 0);
-
-        if ($minor === 0 && $patch === 0) {
-            return 'Major';
-        }
-
-        if ($patch === 0) {
-            return 'Minor';
-        }
-
-        return 'Patch';
     }
 
     private function hashAndUpload(string $tag, string $source, string $targetPath = null): array
@@ -206,26 +190,6 @@ class ReleasePrepareService
         $context = hash_init($alg);
         hash_update_stream($context, $this->artifactsFilesystem->readStream($path));
         return hash_final($context);
-    }
-
-    private function getUpdateChannel(string $tag): int
-    {
-        if (!preg_match('/v?\d+\.\d+\.\d+(\.\d+)?(-([^0-9]+))?/i', trim($tag), $matches)) {
-            throw new \RuntimeException('Invalid tag ' . $tag);
-        }
-
-        if (($matches[2] ?? '') === '') {
-            return 100;
-        }
-
-        switch (strtolower($matches[3] ?? '')) {
-            case 'rc': return 80;
-            case 'beta': return 60;
-            case 'alpha': return 40;
-            case 'dev':
-            default:
-                return 20;
-        }
     }
 
     private function mayAlterChangelog(Release $release): bool

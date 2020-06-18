@@ -7,6 +7,7 @@ namespace Shopware\CI\Test\Service;
 use League\Flysystem\Filesystem;
 use League\Flysystem\Memory\MemoryAdapter;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Util\Exception;
 use Shopware\CI\Service\ChangelogService;
 use Shopware\CI\Service\ReleasePrepareService;
 use Shopware\CI\Service\UpdateApiService;
@@ -41,7 +42,7 @@ class ReleasePrepareServiceTest extends TestCase
         $updateApiService = $updateApiService ?? $this->createMock(UpdateApiService::class);
         $config = $config ??
             [
-                'minor_branch' => '6.2',
+                'minimumVersion' => '6.2.0',
                 'deployFilesystem' => [
                     'publicDomain' => 'https://releases.example.com/'
                 ]
@@ -107,7 +108,13 @@ class ReleasePrepareServiceTest extends TestCase
         $releasePrepareService = $this->getReleasePrepareService(null, $changelogService);
 
         $expectedList = $releasePrepareService->getReleaseList();
-        $releasePrepareService->prepareRelease('6.2.0');
+
+        try {
+            $releasePrepareService->prepareRelease('6.2.0');
+        } catch (\Throwable $e) {
+            static::assertSame('Release 6.2.0 is already public', $e->getMessage());
+        }
+
         $actualList = $releasePrepareService->getReleaseList();
 
         static::assertEquals($expectedList, $actualList);

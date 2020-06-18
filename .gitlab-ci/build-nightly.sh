@@ -27,9 +27,10 @@ COMMIT_MSG=${COMMIT_MSG:-"Release $TAG"}
 
 prepare_repo() {
     APP_PATH=repos/${1}/Resources/app/${1}
-    if [[ -f "$APP_PATH/package.json" ]]; then
-        npm --prefix ${APP_PATH} version --no-git-tag-version ${TAG}
-    fi
+    # TODO: NPM does not support 4 digit version numbers
+    #if [[ -f "$APP_PATH/package.json" ]]; then
+        # npm --prefix ${APP_PATH} version --no-git-tag-version ${TAG}
+    #fi
 
     git -C repos/${1} add .
     git -C repos/${1} commit -m  "${COMMIT_MSG}" || true

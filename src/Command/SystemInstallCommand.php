@@ -156,8 +156,7 @@ class SystemInstallCommand extends Command
 
         $commands = array_merge($commands, [
                 [
-                    'command' => 'assets:install',
-                    '--no-cleanup' => true,
+                    'command' => 'assets:install'
                 ],
                 [
                     'command' => 'cache:clear'

@@ -10,7 +10,7 @@ Prepare release:
     only:
         refs:
             - schedules
-        # TODO: re enable
+        # TODO: re-enable
         #variables:
         #    # only run this job if it's protected
         #    - $CI_COMMIT_REF_PROTECTED == "true"
@@ -25,7 +25,7 @@ Prepare release:
         - '[[ -f /.dockerenv ]] && mkdir -p ~/.ssh/ && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
     script:
         - '[[ -e artifacts/install.zip && -e artifacts/update.zip ]]'
-        - export MINIMUM_VERSION=${MINIMUM_VERSION:-6.2.1}
+        - export MINIMUM_VERSION=${MINIMUM_VERSION:-6.2.2}
         - export TAG=$(cat artifacts/TAG)
         - .gitlab-ci/tools/console release:prepare $TAG --deploy
 
@@ -42,8 +42,7 @@ Prepare release:
     variables:
         GIT_STRATEGY: clone
         MANY_REPO_BASE_URL: "git@gitlab.shopware.com:shopware/6/product/many-repositories"
-        MANY_REPO_GITHUB_URL: "https://api.github.com/repos/shopware/"
-        TARGET_BRANCH: $PLATFORM_BRANCH
+        PLATFORM_REPO_URL: "git@gitlab.shopware.com:shopware/6/product/platform"
         CI_REPOSITORY_URL: "git@gitlab.shopware.com:/shopware/6/product/production"
     before_script:
         - apk --no-cache add openssh-client git bash jq composer php-dom php-tokenizer php-xmlwriter php-xml curl curl-dev

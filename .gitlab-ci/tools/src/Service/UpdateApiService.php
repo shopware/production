@@ -47,7 +47,7 @@ class UpdateApiService
         $returnCode = 0;
 
         // TODO: activate
-        echo $command;
+        echo $command . PHP_EOL;
         // system($command, $returnCode);
 
         if ($returnCode !== 0) {

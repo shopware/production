@@ -5,13 +5,7 @@ variables:
     # shopware 6
     WEB_DOCUMENT_ROOT: '$CI_PROJECT_DIR/public'
     MYSQL_ROOT_PASSWORD: root
-
-    # The platform branch used to split the repos - by default try using branches matching the version.
-    # The order is: $PLATFORM_BRANCH 6.$MAJOR.$MINOR.$PATCH 6.$MAJOR.$MINOR 6.$MAJOR
-    # PLATFORM_BRANCH: "6.2"
-
-    # minimum stability of the new version. Example: v6.2.0-RC2 -> if rc: v6.2.0-RC3, if stable: v6.2.0
-    MINIMUM_STABILITY: "stable"
+    DEFAULT_PLATFORM_BRANCH: master
 
 stages:
     - build
@@ -72,28 +66,13 @@ Build Test Package:
         - HASH_CHECK_LINE="ec46c5a409422bf55b26f7de1faab67c2320362934947f984872b3aedc4a9d99  $SPLITSH"
         - echo $HASH_CHECK_LINE | sha256sum -c
     script:
-        # clone platform if it's not cached
-        - export TAG=${TAG:-$(.gitlab-ci/tools/console release:show-next-tag --minimum-stability "$MINIMUM_STABILITY")}
+        # clone platform if it's not cached. We use caching to speed up the split
+        - export TAG=${TAG:-$(.gitlab-ci/tools/console release:show-next-tag)}
         - '[[ -d .platform/ ]] || git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/platform.git -b ${DEFAULT_PLATFORM_BRANCH} --bare .platform'
         - git -C .platform remote set-url origin https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/platform.git
-        - >
-           VERSION=${TAG#"v"};
-           IFS=. parts=(${VERSION%-*});
-           unset IFS;
-           BASE=${parts[0]}.${parts[1]};
-           BRANCHES="$PLATFORM_BRANCH $BASE.${parts[2]}.${parts[3]} $BASE.${parts[2]} $BASE";
-           cd .platform;
-           MATCHING_BRANCH=;
-           for branch in $BRANCHES; do
-             if git ls-remote --exit-code --heads origin $branch >/dev/null; then
-                 MATCHING_BRANCH=$branch;
-                 break;
-             else
-                 echo "Branch $branch not found";
-             fi
-           done;
-           cd $CI_PROJECT_DIR;
-           if [[ -z $MATCHING_BRANCH ]]; then echo "No matching branch found" exit 1; fi
+        # Find best matching branch. Example try: 6.3.2.1, 6.3.2, 6.3, master
+        - export MATCHING_BRANCH=$(.gitlab-ci/tools/console release:show-platform-branch $TAG .platform)
+        - if [[ -z $MATCHING_BRANCH ]]; then echo "No matching branch found" exit 1; fi
         - echo "Checkout platform branch $branch"
         # fetch newest changes from $MATCHING_BRANCH
         - git -C .platform fetch origin ${MATCHING_BRANCH}
@@ -111,9 +90,9 @@ Build Test Package:
         - docker build . -t "${CI_REGISTRY_IMAGE}:${IMAGE_TAG}"
         - mkdir artifacts || true
         - chmod 777 artifacts || true
+        # TODO: get REFERENCE_INSTALLER_URL and REFERENCE_INSTALLER_SHA256 from shopware6.xml - use MINIMUM_VERSION
         # create package archive file
         - docker run -v $PWD/artifacts:/artifacts -e REFERENCE_INSTALLER_URL -e REFERENCE_INSTALLER_SHA256 --entrypoint=bin/package.sh ${CI_REGISTRY_IMAGE}:${IMAGE_TAG}
-        - mv artifacts/install.tar.xz artifacts/install_${IMAGE_TAG}.tar.xz
         - echo ${TAG} > artifacts/TAG
     artifacts:
         expire_in: 1 week
@@ -123,19 +102,19 @@ Build Test Package:
 
 # Unit tests
 
-.Unit PHP 7.2:
+Unit PHP 7.2:
     extends: .unit_base
     image: shopware/development:7.2
 
-.Unit PHP 7.3:
+Unit PHP 7.3:
     extends: .unit_base
     image: shopware/development:7.3
 
-.Unit PHP 7.4:
+Unit PHP 7.4:
     extends: .unit_base
     image: shopware/development:7.4
 
-.Unit MySQL 5.7:
+Unit MySQL 5.7:
     extends: .unit_base
     services:
         -   name: mysql:5.7
@@ -144,7 +123,7 @@ Build Test Package:
             alias: elasticsearch
             command: [ "bin/elasticsearch", "-Expack.security.enabled=false", "-Ediscovery.type=single-node" ]
 
-.Unit MySQL 8.0:
+Unit MySQL 8.0:
     extends: .unit_base
     services:
         -   name: mysql:8.0.19
@@ -154,7 +133,7 @@ Build Test Package:
             alias: elasticsearch
             command: [ "bin/elasticsearch", "-Expack.security.enabled=false", "-Ediscovery.type=single-node" ]
 
-.Unit MariaDB 10.4:
+Unit MariaDB 10.4:
     extends: .unit_base
     services:
         -   name: mariadb:10.4
@@ -165,7 +144,7 @@ Build Test Package:
 
 # e2e install tests
 
-.Install:
+Install:
     extends: .e2e_base
     variables:
         GIT_STRATEGY: none
@@ -188,7 +167,7 @@ Build Test Package:
 
 # e2e update tests
 
-.Manual Upd 6.2.0:
+Manual Update:
     extends: .e2e_update_base
     allow_failure: true
     variables:
@@ -228,7 +207,7 @@ Build Test Package:
             - .gitlab-ci/e2e/test/artifacts/*
             - var/log/*
 
-.Update (Mysql 8.0):
+Update (Mysql 8.0):
     extends: .E2E Update
     services:
         -   name: mysql:8.0.19
@@ -241,7 +220,7 @@ Build Test Package:
         E2E_INSTALL_PACKAGE_URL: $REFERENCE_INSTALLER_URL
         E2E_TEST_DATA_FILE: "v6.1.6_test_data.tar.xz"
 
-.Update:
+Update:
     extends: .E2E Update
     variables:
         E2E_INSTALL_PACKAGE_URL: $REFERENCE_INSTALLER_URL

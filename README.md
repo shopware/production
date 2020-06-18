@@ -13,26 +13,32 @@ you should use the [development template](https://github.com/shopware/developmen
 ## Branches and stability
 
 In each commit a composer.lock is contained to ensure that the version being
-deployed is the version that was tested in our CI. We currently provide two
+deployed is the version that was tested in our CI. We currently provide the following
 branches:
-- `6.1`: stable patch releases (`v6.1.0-rc2`, `v6.1.0`, `v6.1.19`, `v6.1.*`, but not `v6.2.0`)
-- `master`: stable minor+patch releases (`v6.1.3`, `v6.1.15`, `v6.2.0`, `v6.3.0`...)
+- `6.3`: stable minor and patch releases (`v6.3.0.0-rc2`, `v6.3.0.1`, `v6.3.1.0`, `v6.1.*`, but not `v6.4.0.0`)
+- `master`: stable major, minor and patch releases (`v6.3.0.0`, `v6.3.1.0`, `v6.4.0.0`, `v6.5.0.0`...)
 
-The `6.1` branch contains all the 6.1 releases. It's stable now and only gets non-breaking bug fixes. (security issues are an exception).
+The `6.3` branch contains all the 6.3 releases. It's stable now and only gets non-breaking changes. (security issues are an exception).
 
-The `master` branch contains the newest stable minor release. That may result in plugins being incompatible, so be careful.
+The `master` branch contains the newest stable release, including major releases. That may result in plugins being incompatible, so be careful.
+
+Starting with `6.3.0.0`, we use a slightly modified version of SemVer. The pattern looks like this: 6.MAJOR.MINOR.PATCH. Examples:
+* 6.3.2.5 - Major=3, Minor=2, Patch=5
+* 6.4.1.0 - Major=4, Minor=1, Patch=0
+
+See also: https://www.shopware.com/en/news/shopware-6-versioning-strategy/
 
 ## Requirements
 
 See [https://docs.shopware.com/en/shopware-platform-dev-en/getting-started/requirements](https://docs.shopware.com/en/shopware-platform-dev-en/getting-started/requirements)
 
-NPM and Node are only required during the build process and for development. If you dont have javascript customizations, it's not required at all. Because the storefront and admin are pre-build.
+NPM and Node are only required during the build process and for development. If you don't have javascript customizations, it's not required at all. Because the storefront and admin are pre-build.
 
 If you are using a separate build server, consider having NPM and Node as build-only requirements. Your operating application server doesn't require any of these to run Shopware 6.
 
 ## Setup and install
 
-To setup the environment and install with a basic setup run the following commands:
+To set up the environment and install with a basic setup run the following commands:
 
 ```bash
 # clone newest 6.1 patch version from github 
