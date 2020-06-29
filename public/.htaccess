@@ -31,3 +31,9 @@ DirectoryIndex index.php
         RedirectMatch 302 ^/$ /index.php/
     </IfModule>
 </IfModule>
+
+<IfModule mod_headers.c>
+    <FilesMatch "\.svg$">
+        Header set Content-Security-Policy "script-src 'none'"
+    </FilesMatch>
+</IfModule>
