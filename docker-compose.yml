@@ -35,8 +35,6 @@ services:
 
   mysql:
     image: mysql:5.7
-    tmpfs:
-      - /var/lib/mysql:uid=999,gid=999
     environment:
       - MYSQL_ROOT_PASSWORD=root
 
