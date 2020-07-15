@@ -19,7 +19,7 @@ branches:
 - `6.2`: stable patch releases (`v6.2.*`)
 - `master`: stable minor+patch releases (`v6.1.3`, `v6.1.15`, `v6.2.0`, `v6.3.0`, ...)
 
-Stable patch releases are stable and only get non-breaking bug fixes. (security issues are an exception).
+Stable patch releases only get non-breaking bug fixes (security issues are an exception).
 
 The `master` branch contains the newest stable minor release. That may result in plugins being incompatible, so be careful.
 
