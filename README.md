@@ -15,18 +15,19 @@ you should use the [development template](https://github.com/shopware/developmen
 In each commit a composer.lock is contained to ensure that the version being
 deployed is the version that was tested in our CI. We currently provide two
 branches:
-- `6.1`: stable patch releases (`v6.1.0-rc2`, `v6.1.0`, `v6.1.19`, `v6.1.*`, but not `v6.2.0`)
-- `master`: stable minor+patch releases (`v6.1.3`, `v6.1.15`, `v6.2.0`, `v6.3.0`...)
+- `6.1`: stable patch releases (`v6.1.*`)
+- `6.2`: stable patch releases (`v6.2.*`)
+- `master`: stable minor+patch releases (`v6.1.3`, `v6.1.15`, `v6.2.0`, `v6.3.0`, ...)
 
-The `6.1` branch contains all the 6.1 releases. It's stable now and only gets non-breaking bug fixes. (security issues are an exception).
+Stable patch releases are stable and only get non-breaking bug fixes. (security issues are an exception).
 
 The `master` branch contains the newest stable minor release. That may result in plugins being incompatible, so be careful.
 
 ## Requirements
 
-See [https://docs.shopware.com/en/shopware-platform-dev-en/getting-started/requirements](https://docs.shopware.com/en/shopware-platform-dev-en/getting-started/requirements)
+See [https://docs.shopware.com/en/shopware-platform-dev-en/system-guide/system-requirements](https://docs.shopware.com/en/shopware-platform-dev-en/system-guide/system-requirements)
 
-NPM and Node are only required during the build process and for development. If you dont have javascript customizations, it's not required at all. Because the storefront and admin are pre-build.
+NPM and Node are only required during the build process and for development. If you don't have javascript customizations, it's not required at all. Because the storefront and admin are pre-build.
 
 If you are using a separate build server, consider having NPM and Node as build-only requirements. Your operating application server doesn't require any of these to run Shopware 6.
 
@@ -35,8 +36,8 @@ If you are using a separate build server, consider having NPM and Node as build-
 To setup the environment and install with a basic setup run the following commands:
 
 ```bash
-# clone newest 6.1 patch version from github 
-git clone --branch=6.1 https://github.com/shopware/production shopware
+# clone newest 6.2 patch version from github 
+git clone --branch=6.2 https://github.com/shopware/production shopware
 cd shopware
 
 # install shopware and dependencies according to the composer.lock 
