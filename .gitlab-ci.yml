@@ -6,6 +6,7 @@ variables:
     WEB_DOCUMENT_ROOT: '$CI_PROJECT_DIR/public'
     MYSQL_ROOT_PASSWORD: root
     DEFAULT_PLATFORM_BRANCH: master
+    LOG_STDOUT: $CI_PROJECT_DIR/stdout.log
 
 stages:
     - build
@@ -172,7 +173,6 @@ Install:
 
 Manual Update:
     extends: .e2e_update_base
-    allow_failure: true
     variables:
         E2E_INSTALL_PACKAGE_URL: $REFERENCE_INSTALLER_URL
         E2E_TEST_DATA_FILE: "v6.1.6_test_data.tar.xz"
@@ -188,14 +188,13 @@ Manual Update:
         - timeout 5m $(npm bin)/cypress run
             --browser chrome --config baseUrl=http://localhost:8000,numTestsKeptInMemory=0
             --env expectedVersion=$TAG
-            --spec cypress/integration/updater/storefront.spec.js
+            --spec cypress/integration/updater/validation/storefront.spec.js
     after_script:
         - npx mochawesome-merge .gitlab-ci/e2e/test/artifacts/mochawesome/single-reports/mochawesome*.json > .gitlab-ci/e2e/test/artifacts/mochawesome/single-reports/report-final.json
         - npx mochawesome-report-generator .gitlab-ci/e2e/test/artifacts/mochawesome/single-reports/report-final.json --cdn true --reportDir .gitlab-ci/e2e/test/artifacts/mochawesome
 
 .E2E Update:
     extends: .e2e_update_base
-    allow_failure: true
     script:
         - cd .gitlab-ci/e2e/test/
         - timeout 20m $(npm bin)/cypress run
@@ -205,17 +204,17 @@ Manual Update:
         - timeout 5m $(npm bin)/cypress run
             --browser chrome --config baseUrl=http://localhost:8000,numTestsKeptInMemory=0
             --env expectedVersion=$TAG
-            --spec cypress/integration/updater/storefront.spec.js
-        - timeout 5m $(npm bin)/cypress run
-            --browser chrome --config baseUrl=http://localhost:8000,numTestsKeptInMemory=0
-            --env expectedVersion=$TAG
-            --spec cypress/integration/updater/validation/*
+            --spec "cypress/integration/updater/validation/*"
+    retry: 2
     artifacts:
         when: always
         expire_in: 1 week
         paths:
             - .gitlab-ci/e2e/test/artifacts/*
             - var/log/*
+            - development/var/log/*
+            - $CI_PROJECT_DIR/stdout.log
+
     after_script:
         - npx mochawesome-merge .gitlab-ci/e2e/test/artifacts/mochawesome/single-reports/mochawesome*.json > .gitlab-ci/e2e/test/artifacts/mochawesome/single-reports/report-final.json
         - npx mochawesome-report-generator .gitlab-ci/e2e/test/artifacts/mochawesome/single-reports/report-final.json --cdn true --reportDir .gitlab-ci/e2e/test/artifacts/mochawesome

@@ -112,6 +112,8 @@
         # start webserver
         - /entrypoint supervisord > /dev/null 2>&1 &
         - apt-get update && apt-get install -y xvfb
+        # make sure that chrome uses latest version
+        - apt-get -fy --only-upgrade install google-chrome-stable
         # get e2e from install archive
         - mkdir .gitlab-ci/e2e/test
         - cp artifacts/install*.tar.xz .gitlab-ci/e2e/test/install.tar.xz
