@@ -59,7 +59,7 @@ Release tags:
         - export TAG=${TAG:-$(cat artifacts/TAG)}
     script:
         - export PROJECT_ROOT=$(pwd)
-        - cp artifacts/install_*.tar.xz install.tar.xz
+        - cp artifacts/install_*.tar.xz install.tar.xz || true
         # copy vendor and composer.lock from tested package
         - tar -xf install.tar.xz ./vendor ./composer.lock
         # create tags, push repos/*, update composer.lock with pushed versions, tag prod, push tag, create mr
