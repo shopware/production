@@ -103,19 +103,19 @@ Build Test Package:
 
 # Unit tests
 
-.Unit PHP 7.2:
+Unit PHP 7.2:
     extends: .unit_base
     image: shopware/development:7.2
 
-.Unit PHP 7.3:
+Unit PHP 7.3:
     extends: .unit_base
     image: shopware/development:7.3
 
-.Unit PHP 7.4:
+Unit PHP 7.4:
     extends: .unit_base
     image: shopware/development:7.4
 
-.Unit MySQL 5.7:
+Unit MySQL 5.7:
     extends: .unit_base
     services:
         -   name: mysql:5.7
@@ -124,7 +124,7 @@ Build Test Package:
             alias: elasticsearch
             command: [ "bin/elasticsearch", "-Expack.security.enabled=false", "-Ediscovery.type=single-node" ]
 
-.Unit MySQL 8.0:
+Unit MySQL 8.0:
     extends: .unit_base
     services:
         -   name: mysql:8.0.19
@@ -134,7 +134,7 @@ Build Test Package:
             alias: elasticsearch
             command: [ "bin/elasticsearch", "-Expack.security.enabled=false", "-Ediscovery.type=single-node" ]
 
-.Unit MariaDB 10.4:
+Unit MariaDB 10.4:
     extends: .unit_base
     services:
         -   name: mariadb:10.4
@@ -145,7 +145,7 @@ Build Test Package:
 
 # e2e install tests
 
-.Install:
+Install:
     extends: .e2e_base
     variables:
         GIT_STRATEGY: none
@@ -171,7 +171,7 @@ Build Test Package:
 
 # e2e update tests
 
-.Manual Update:
+Manual Update:
     extends: .e2e_update_base
     variables:
         E2E_INSTALL_PACKAGE_URL: $REFERENCE_INSTALLER_URL
@@ -219,7 +219,7 @@ Build Test Package:
         - npx mochawesome-merge .gitlab-ci/e2e/test/artifacts/mochawesome/single-reports/mochawesome*.json > .gitlab-ci/e2e/test/artifacts/mochawesome/single-reports/report-final.json
         - npx mochawesome-report-generator .gitlab-ci/e2e/test/artifacts/mochawesome/single-reports/report-final.json --cdn true --reportDir .gitlab-ci/e2e/test/artifacts/mochawesome
 
-.Update (Mysql 8.0):
+Update (Mysql 8.0):
     extends: .E2E Update
     services:
         -   name: mysql:8.0.19
@@ -232,7 +232,7 @@ Build Test Package:
         E2E_INSTALL_PACKAGE_URL: $REFERENCE_INSTALLER_URL
         E2E_TEST_DATA_FILE: "v6.1.6_test_data.tar.xz"
 
-.Update:
+Update:
     extends: .E2E Update
     variables:
         E2E_INSTALL_PACKAGE_URL: $REFERENCE_INSTALLER_URL
