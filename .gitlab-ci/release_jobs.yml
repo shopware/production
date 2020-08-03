@@ -63,7 +63,7 @@ Release tags:
         # copy vendor and composer.lock from tested package
         - tar -xf install.tar.xz ./vendor ./composer.lock
         # create tags, push repos/*, update composer.lock with pushed versions, tag prod, push tag, create mr
-        - .gitlab-ci/tools/console release:tags $TAG --deploy
+        - .gitlab-ci/tools/console release:tags $TAG
 
 Build package:
     stage: build
