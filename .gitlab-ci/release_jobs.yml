@@ -7,13 +7,13 @@
 Prepare release:
     stage: prepare-release
     image: debian:buster-slim
+    when: manual
     only:
         refs:
             - schedules
-        # TODO: re-enable
-        #variables:
-        #    # only run this job if it's protected
-        #    - $CI_COMMIT_REF_PROTECTED == "true"
+        variables:
+            # only run this job if it's protected
+            - $CI_COMMIT_REF_PROTECTED == "true"
     variables:
         GIT_STRATEGY: clone
         PACKAGE_BASE_URL: "https://releases.shopware.com/sw6/"
@@ -29,7 +29,7 @@ Prepare release:
         - export TAG=$(cat artifacts/TAG)
         - .gitlab-ci/tools/console release:prepare $TAG --deploy
 
-.Release tags:
+Release tags:
     stage: release
     image: alpine:3.10
     when: manual

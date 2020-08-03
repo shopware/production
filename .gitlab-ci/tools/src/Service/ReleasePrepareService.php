@@ -10,8 +10,7 @@ use Shopware\CI\Service\Xml\Release;
 
 class ReleasePrepareService
 {
-    // TODO: use live shopware6.xml
-    public const SHOPWARE_XML_PATH = '_meta/shopware6_test.xml';
+    public const SHOPWARE_XML_PATH = '_meta/shopware6.xml';
 
     /**
      * @var array

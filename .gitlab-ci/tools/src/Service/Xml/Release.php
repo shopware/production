@@ -94,8 +94,6 @@ class Release extends SimpleXMLElement
 
     public static function parseVersion(string $version): array
     {
-        // TODO: implement 4 digit versions in update-api
-
         if (!preg_match('/^\s*v?(\d+\.\d+\.\d+(\.\d+)?)((-|\s*)(RC(\d+)))?\s*$/i', $version, $matches)) {
             throw new \RuntimeException('Failed to parse version string ' . $version);
         }
