@@ -4,6 +4,7 @@
     only:
         refs:
             - schedules
+            - tags
     services:
         -   name: mariadb:10.3
             alias: mysql
@@ -28,7 +29,7 @@
         SHOPWARE_ES_INDEX_PREFIX: sw
         GIT_STRATEGY: none
     before_script:
-        - export TAG=$(cat artifacts/TAG)
+        - export TAG=${CI_COMMIT_TAG:-$(cat artifacts/TAG)}
         - cp artifacts/install*.tar.xz install.tar.xz
         - tar -xf install.tar.xz
         - rm install.tar.xz
@@ -86,7 +87,7 @@
         - rm -Rf $(ls -a | grep -vE '^(\.gitlab-ci|\.cypress|\.npm|artifacts|\.\.?)$') || true
         - npm config set cache $PWD/.npm
         - export CYPRESS_CACHE_FOLDER="${PWD}/.cypress"
-        - export TAG=$(cat artifacts/TAG)
+        - export TAG=${CI_COMMIT_TAG:-$(cat artifacts/TAG)}
         - '[[ -n $E2E_INSTALL_PACKAGE_URL && -n $E2E_TEST_DATA_FILE ]]'
         - curl ${E2E_INSTALL_PACKAGE_URL} --silent -o install
         - 'if [ ${E2E_INSTALL_PACKAGE_URL: -4} == ".zip" ]; then unzip -qqo install; else tar -xf install; fi'
