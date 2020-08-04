@@ -21,7 +21,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class SystemUpdateFinishCommand extends Command
 {
-    static public $defaultName = 'system:update:finish';
+    public static $defaultName = 'system:update:finish';
 
     /**
      * @var SymfonyStyle
@@ -44,7 +44,7 @@ class SystemUpdateFinishCommand extends Command
         $output = new ShopwareStyle($input, $output);
 
         $dsn = trim((string)($_SERVER['DATABASE_URL'] ?? getenv('DATABASE_URL')));
-        if ($dsn === '' || $dsn === Kernel::PLACEHOLDER_DATABASE_URL)  {
+        if ($dsn === '' || $dsn === Kernel::PLACEHOLDER_DATABASE_URL) {
             $output->note("Environment variable 'DATABASE_URL' not defined. Skipping " . $this->getName() . '...');
             return 0;
         }
@@ -89,7 +89,7 @@ class SystemUpdateFinishCommand extends Command
     private function installAssets(InputInterface $input, OutputInterface $output): int
     {
         $command = $this->getApplication()->find('assets:install');
-        return $command->run(new ArrayInput(['--no-cleanup' => true], $command->getDefinition()), $output);
+        return $command->run(new ArrayInput([], $command->getDefinition()), $output);
     }
 
     private function rebootKernelWithoutPlugins(): ContainerInterface
