@@ -167,8 +167,6 @@ class VersioningService
                 $matchingBranch = $branch;
                 break;
             }
-
-            echo "Branch $branch not found" . PHP_EOL;
         }
 
         if ($matchingBranch === null) {
@@ -241,6 +239,13 @@ class VersioningService
         if ($v['newPattern']) {
             return $v['major'] . '.' . $v['minor'] . '.' . $v['patch']; // 6.3.0, 6.3.1
         }
+
+        return $v['major'] . '.' . $v['minor']; // 6.1, 6.2
+    }
+
+    public static function getMajorBranch(string $tag): string
+    {
+        $v = self::parseTag($tag);
 
         return $v['major'] . '.' . $v['minor']; // 6.1, 6.2
     }

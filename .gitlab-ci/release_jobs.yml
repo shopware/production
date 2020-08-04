@@ -92,7 +92,6 @@ Build package:
         - mkdir artifacts || true
         - chmod 777 artifacts || true
         - docker run -v $PWD/artifacts:/artifacts -e REFERENCE_INSTALLER_URL -e REFERENCE_INSTALLER_SHA256 --entrypoint=bin/package.sh ${CI_REGISTRY_IMAGE}:${CI_COMMIT_TAG}
-        - mv artifacts/install.tar.xz artifacts/install_${CI_COMMIT_TAG}.tar.xz
     artifacts:
         paths:
             - artifacts/

@@ -4,7 +4,6 @@
 namespace Shopware\CI\Service;
 
 
-use Composer\Semver\VersionParser;
 use League\Flysystem\Filesystem;
 use Shopware\CI\Service\Xml\Release;
 
@@ -73,7 +72,11 @@ class ReleasePrepareService
             try {
                 $changelog = $this->changelogService->getChangeLog($tag);
                 $release->setLocales($changelog);
-            } catch (\Throwable $e) {}
+            } catch (\Throwable $e) {
+                var_dump($e);
+            }
+        } else {
+            echo 'May not alter changelog ' . PHP_EOL;
         }
 
         $this->storeReleaseList($releaseList);
@@ -163,7 +166,7 @@ class ReleasePrepareService
         $release->upgrade_md = sprintf(
             'https://github.com/shopware/platform/blob/%s/UPGRADE-%s.md',
             $tag,
-            VersioningService::getMinorBranch($tag)
+            VersioningService::getMajorBranch($tag)
         );
     }
 

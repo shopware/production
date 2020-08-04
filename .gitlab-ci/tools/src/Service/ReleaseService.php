@@ -177,7 +177,9 @@ class ReleaseService
 
     public function validatePackage(array $packageData, string $tag): bool
     {
-        return $packageData['version'] === $tag
+        // if the composer.json contains a version like 6.3.0.0 it's also 6.3.0.0 in the composer.lock
+        // if it it does not contain a version, but is tagged in git, the version will be v6.3.0.0
+        return ltrim($packageData['version'], 'v') === ltrim($tag, 'v')
             && ($packageData['dist']['type'] ?? null) !== 'path';
     }
 }
