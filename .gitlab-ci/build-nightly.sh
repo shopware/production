@@ -49,11 +49,44 @@ prepare_repo "elasticsearch"
 sed -i -E '/[/]?public([/]?|.*)/d' ${ADMIN_ROOT}/Resources/.gitignore
 prepare_repo "administration"
 
+ADMIN_CHECK_FILES="\
+${ADMIN_ROOT}/Resources/public/static/js/app.js
+${ADMIN_ROOT}/Resources/public/static/js/commons.js
+${ADMIN_ROOT}/Resources/public/static/js/runtime.js
+${ADMIN_ROOT}/Resources/public/static/js/vendors-node.js
+${ADMIN_ROOT}/Resources/public/static/css/app.css
+${ADMIN_ROOT}/Resources/public/static/css/vendors-node.css
+${STOREFRONT_ROOT}/Resources/public/administration/js/storefront.js
+${STOREFRONT_ROOT}/Resources/public/administration/css/storefront.css
+"
+
+for CHECK_FILE in $ADMIN_CHECK_FILES; do
+    if [[ ! -r $CHECK_FILE ]]; then
+        echo "Build result $CHECK_FILE not found!"
+        exit 1
+    fi
+done
+
 sed -i -E '/[/]?Resources[/]app[/]storefront[/]vendor([/]?|.*)/d' ${STOREFRONT_ROOT}/.gitignore
 sed -i -E '/[/]?app[/]storefront[/]dist([/]?|.*)/d' ${STOREFRONT_ROOT}/Resources/.gitignore
 sed -i -E '/[/]?public([/]?|.*)/d' ${STOREFRONT_ROOT}/Resources/.gitignore
 prepare_repo "storefront"
 
+STOREFRONT_CHECK_FILES="\
+${STOREFRONT_ROOT}/Resources/app/storefront/dist/js/runtime.js
+${STOREFRONT_ROOT}/Resources/app/storefront/dist/js/vendor-node.js
+${STOREFRONT_ROOT}/Resources/app/storefront/dist/js/vendor-shared.js
+${STOREFRONT_ROOT}/Resources/app/storefront/dist/storefront/js/storefront.js
+${STOREFRONT_ROOT}/Resources/public/administration/js/storefront.js
+${STOREFRONT_ROOT}/Resources/public/administration/css/storefront.css
+"
+
+for CHECK_FILE in $STOREFRONT_CHECK_FILES; do
+    if [[ ! -r $CHECK_FILE ]]; then
+        echo "Build result $CHECK_FILE not found!"
+        exit 1
+    fi
+done
 
 jq -s add composer.json ${CWD}/composer.nightly_override.json > composer.json.new
 mv composer.json.new composer.json
