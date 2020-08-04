@@ -1,6 +1,7 @@
 {
     "Framework": {
         "basePath": "repos\/core\/Framework\/",
+        "technicalName": "framework",
         "views": [
             "Resources\/views"
         ],
@@ -18,6 +19,7 @@
     },
     "System": {
         "basePath": "repos\/core\/System\/",
+        "technicalName": "system",
         "views": [
             "Resources\/views"
         ],
@@ -35,6 +37,7 @@
     },
     "Content": {
         "basePath": "repos\/core\/Content\/",
+        "technicalName": "content",
         "views": [
             "Resources\/views"
         ],
@@ -52,6 +55,7 @@
     },
     "Checkout": {
         "basePath": "repos\/core\/Checkout\/",
+        "technicalName": "checkout",
         "views": [
             "Resources\/views"
         ],
@@ -69,6 +73,7 @@
     },
     "Administration": {
         "basePath": "repos\/administration\/",
+        "technicalName": "administration",
         "views": [
             "Resources\/views"
         ],
@@ -86,6 +91,7 @@
     },
     "Storefront": {
         "basePath": "repos\/storefront\/",
+        "technicalName": "storefront",
         "views": [
             "Resources\/views"
         ],
@@ -106,6 +112,7 @@
     },
     "Elasticsearch": {
         "basePath": "repos\/elasticsearch\/",
+        "technicalName": "elasticsearch",
         "views": [
             "Resources\/views"
         ],
