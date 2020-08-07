@@ -9,6 +9,7 @@ source ${ENV_FILE}
 export HOST=${HOST:-"localhost"}
 export ESLINT_DISABLE
 export PORT
+export APP_URL
 
 bin/console feature:dump || true
 
