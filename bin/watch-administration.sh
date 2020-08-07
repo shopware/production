@@ -9,5 +9,6 @@ source ${ENV_FILE}
 export HOST=${HOST:-"localhost"}
 export ESLINT_DISABLE
 export PORT
+export APP_URL
 
 npm run --prefix vendor/shopware/administration/Resources/app/administration/ dev
