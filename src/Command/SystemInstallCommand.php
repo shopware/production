@@ -165,6 +165,10 @@ class SystemInstallCommand extends Command
 
         $this->runCommands($commands, $output);
 
+        if (!file_exists($this->projectDir . '/public/.htaccess')) {
+            copy($this->projectDir . '/public/.htaccess.dist', $this->projectDir . '/public/.htaccess');
+        }
+
         touch($this->projectDir . '/install.lock');
 
         return 0;

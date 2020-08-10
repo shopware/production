@@ -1,3 +1,6 @@
+# BEGIN Shopware
+# The directives (lines) between "# BEGIN Shopware" and "# END Shopware" are dynamically generated. Any changes to the directives between these markers will be overwritten.
+
 DirectoryIndex index.php
 
 <IfModule mod_negotiation.c>
@@ -37,3 +40,5 @@ DirectoryIndex index.php
         Header set Content-Security-Policy "script-src 'none'"
     </FilesMatch>
 </IfModule>
+
+# END Shopware
