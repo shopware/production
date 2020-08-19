@@ -12,7 +12,7 @@ RUN apk --no-cache add \
         php7-iconv php7-intl php7-json php7-mbstring \
         php7-mysqli php7-openssl php7-pdo_mysql \
         php7-session php7-simplexml php7-tokenizer php7-xml php7-xmlreader php7-xmlwriter \
-        php7-zip php7-zlib php7-phar git \
+        php7-zip php7-zlib php7-phar php7-opcache git \
         gnu-libiconv \
     && adduser -u 1000 -D -h $PROJECT_ROOT sw6 sw6 \
     && rm /etc/nginx/conf.d/default.conf
