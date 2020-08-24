@@ -87,7 +87,7 @@ Build package:
         - git fetch origin ${CI_COMMIT_SHA}
         - git checkout -f -q ${CI_COMMIT_SHA}
     script:
-        - composer install --ignore-platform-reqs --no-interaction
+        - composer install --no-interaction
         - docker build . -t ${CI_REGISTRY_IMAGE}:${CI_COMMIT_TAG}
         - mkdir artifacts || true
         - chmod 777 artifacts || true
