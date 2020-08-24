@@ -43,7 +43,7 @@ Build Test Package:
         policy: pull-push
     before_script:
         - apt-get update
-        - DEB_PACKAGES="git jq composer curl docker.io build-essential nodejs php-ctype php-curl php-dom php-fileinfo php-gd php-iconv php-intl php-json php-mbstring php-pdo php-simplexml php-xml php-zip"
+        - DEB_PACKAGES="git jq composer curl docker.io build-essential nodejs php-ctype php-curl php-dom php-fileinfo php-gd php-iconv php-intl php-json php-mbstring php-pdo php-mysql php-simplexml php-xml php-zip"
         # setup caching
         - rm /etc/apt/apt.conf.d/docker-clean
         - cp -a /var/cache/apt .apt
