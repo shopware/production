@@ -29,4 +29,4 @@ if (class_exists('Symfony\\Bundle\\DebugBundle\\DebugBundle')) {
     $bundles[Symfony\Bundle\DebugBundle\DebugBundle::class] = ['dev' => true, 'test' => true];
 }
 
-return $bundle;
+return $bundles;
