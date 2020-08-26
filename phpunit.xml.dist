@@ -2,12 +2,16 @@
 
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/8.0/phpunit.xsd"
-	 bootstrap="src/TestBootstrap.php"
-     cacheResult="false"
-     cacheTokens="false"
+	     bootstrap="src/TestBootstrap.php"
+         cacheResult="false"
+         cacheTokens="false"
+         executionOrder="random"
 >
     <php>
         <ini name="error_reporting" value="-1" />
+        <env name="SHELL_VERBOSITY" value="-1" />
+        <env name="APP_ENV" value="test" />
+        <env name="APP_DEBUG" value="1" />
         <env name="SHELL_VERBOSITY" value="-1" />
 
         <env name="SYMFONY_DEPRECATIONS_HELPER" value="weak" />
