@@ -15,14 +15,19 @@ RUN apk --no-cache add \
         php7-zip php7-zlib php7-phar php7-opcache git \
         gnu-libiconv \
     && adduser -u 1000 -D -h $PROJECT_ROOT sw6 sw6 \
-    && rm /etc/nginx/conf.d/default.conf
+    && rm /etc/nginx/conf.d/default.conf && \
+    mkdir -p /var/cache/composer
+
+# Install composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Copy system configs
 COPY config/etc /etc
 
 # Make sure files/folders needed by the processes are accessible when they run under the sw6
 RUN mkdir -p /var/{lib,tmp,log}/nginx && \
-  chown -R sw6.sw6 /run /var/{lib,tmp,log}/nginx
+  chown -R sw6.sw6 /run /var/{lib,tmp,log}/nginx && \
+  chown -R sw6.sw6 /var/cache/composer
 
 WORKDIR $PROJECT_ROOT
 
@@ -30,7 +35,8 @@ USER sw6
 
 ADD --chown=sw6 . .
 
-RUN APP_URL="http://localhost" DATABASE_URL="" bin/console assets:install \
+RUN composer install && \
+    APP_URL="http://localhost" DATABASE_URL="" bin/console assets:install \
     && rm -Rf var/cache \
     && touch install.lock \
     && mkdir -p var/cache
