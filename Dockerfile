@@ -15,10 +15,11 @@ RUN apk --no-cache add \
         php7-zip php7-zlib php7-phar git \
         gnu-libiconv \
     && adduser -u 1000 -D -h $PROJECT_ROOT sw6 sw6 \
-    && rm /etc/nginx/conf.d/default.conf
+    && rm /etc/nginx/conf.d/default.conf && \
+    mkdir -p /var/cache/composer
 
-# Install compose
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
+# Install composer
+COPY --from=composer /usr/bin/composer /usr/bin/composer
 
 # Copy system configs
 COPY config/etc /etc
