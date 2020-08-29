@@ -16,6 +16,9 @@ RUN apk --no-cache add \
         gnu-libiconv \
     && adduser -u 1000 -D -h $PROJECT_ROOT sw6 sw6 \
     && rm /etc/nginx/conf.d/default.conf
+    
+# Install compose 
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
 
 # Copy system configs
 COPY config/etc /etc
@@ -24,7 +27,8 @@ COPY config/etc /etc
 RUN chown -R sw6.sw6 /run && \
   chown -R sw6.sw6 /var/lib/nginx && \
   chown -R sw6.sw6 /var/tmp/nginx && \
-  chown -R sw6.sw6 /var/log/nginx
+  chown -R sw6.sw6 /var/log/nginx && \
+  chown -R sw6.sw6 /var/cache/composer
 
 WORKDIR $PROJECT_ROOT
 
