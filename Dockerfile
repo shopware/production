@@ -16,8 +16,8 @@ RUN apk --no-cache add \
         gnu-libiconv \
     && adduser -u 1000 -D -h $PROJECT_ROOT sw6 sw6 \
     && rm /etc/nginx/conf.d/default.conf
-    
-# Install compose 
+
+# Install compose
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
 
 # Copy system configs
@@ -36,7 +36,8 @@ USER sw6
 
 ADD --chown=sw6 . .
 
-RUN APP_URL="http://localhost" DATABASE_URL="" bin/console assets:install \
+RUN composer install && \
+    APP_URL="http://localhost" DATABASE_URL="" bin/console assets:install \
     && rm -Rf var/cache \
     && touch install.lock \
     && mkdir -p var/cache
