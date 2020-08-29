@@ -19,7 +19,7 @@ RUN apk --no-cache add \
     mkdir -p /var/cache/composer
 
 # Install composer
-COPY --from=composer /usr/bin/composer /usr/bin/composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Copy system configs
 COPY config/etc /etc
