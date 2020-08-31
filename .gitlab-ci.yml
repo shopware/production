@@ -17,6 +17,7 @@ stages:
 include:
     -   local: .gitlab-ci/release_jobs.yml
     -   local: .gitlab-ci/test_base.yml
+    -   local: .gitlab-ci/integration_jobs.yml
 
 Build Test Package:
     stage: build
@@ -95,6 +96,8 @@ Build Test Package:
         # create package archive file
         - docker run -v $PWD/artifacts:/artifacts -e REFERENCE_INSTALLER_URL -e REFERENCE_INSTALLER_SHA256 --entrypoint=bin/package.sh ${CI_REGISTRY_IMAGE}:${IMAGE_TAG}
         - echo ${TAG} > artifacts/TAG
+        - echo ${CI_JOB_ID} > artifacts/PACKAGE_JOB_ID
+
     artifacts:
         expire_in: 1 week
         paths:
