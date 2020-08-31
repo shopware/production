@@ -80,9 +80,30 @@
             - vendor/shopware/recovery/Test/e2e/artifacts/
             - var/log/*
 
+.e2e_install_base:
+    extends: .e2e_base
+    before_script:
+        # prepare visual testing
+        - export PERCY_TOKEN=$PERCY_TOKEN
+        - export PERCY_BUILD_NAME=$CI_PIPELINE_ID
+        - export PERCY_PARALLEL_NONCE=$PERCY_BUILD_NAME
+        - export PERCY_PARALLEL_TOTAL=-1
+        - export TAG=$(cat artifacts/TAG)
+        - export CYPRESS_CACHE_FOLDER="${PWD}/.cypress"
+        - npm config set cache $PWD/.npm
+        - npm install --save-dev @percy/cypress
+    after_script:
+        - npx mochawesome-merge .gitlab-ci/e2e/test/artifacts/mochawesome/single-reports/mochawesome*.json > .gitlab-ci/e2e/test/artifacts/mochawesome/single-reports/report-final.json
+        - npx mochawesome-report-generator .gitlab-ci/e2e/test/artifacts/mochawesome/single-reports/report-final.json --cdn true --reportDir .gitlab-ci/e2e/test/artifacts/mochawesome
+
 .e2e_update_base:
     extends: .e2e_base
     before_script:
+        # prepare visual testing
+        - export PERCY_TOKEN=$PERCY_TOKEN
+        - export PERCY_BUILD_NAME=$CI_PIPELINE_ID
+        - export PERCY_PARALLEL_NONCE=$PERCY_BUILD_NAME
+        - export PERCY_PARALLEL_TOTAL=-1
         # delete everything but the caches and the .gitlab-ci dir
         - rm -Rf $(ls -a | grep -vE '^(\.gitlab-ci|\.cypress|\.npm|artifacts|\.\.?)$') || true
         - npm config set cache $PWD/.npm

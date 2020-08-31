@@ -7,6 +7,9 @@ variables:
     MYSQL_ROOT_PASSWORD: root
     DEFAULT_PLATFORM_BRANCH: master
     LOG_STDOUT: $CI_PROJECT_DIR/stdout.log
+    CYPRESS_PERCY_USAGE: $CYPRESS_PERCY_USAGE
+    PERCY_TOKEN: $PERCY_TOKEN
+    PERCY_BUILD_NAME: '000'
 
 stages:
     - build
@@ -148,14 +151,35 @@ Unit MariaDB 10.4:
 
 # e2e install tests
 
-Install:
-    extends: .e2e_base
+Install (EN, Visual):
+    extends: .e2e_install_base
+    only:
+        refs:
+            - schedules
     variables:
         GIT_STRATEGY: none
-    before_script:
-        - export TAG=$(cat artifacts/TAG)
-        - export CYPRESS_CACHE_FOLDER="${PWD}/.cypress"
-        - npm config set cache $PWD/.npm
+    script:
+        - cp artifacts/install*.tar.xz install.tar.xz
+        - tar -xf install.tar.xz
+        - rm install.tar.xz
+        - /entrypoint supervisord > /dev/null 2>&1 &
+        - apt-get update && apt-get install -y xvfb
+        - cd vendor/shopware/recovery/Test/e2e
+        - npm clean-install
+        - echo $PERCY_BUILD_NAME
+        - timeout 20m npx percy exec -- cypress run
+            --browser chrome --config baseUrl=http://localhost:8000,numTestsKeptInMemory=0 --headless
+            --env expectedVersion=$TAG,usePercy=$CYPRESS_PERCY_USAGE
+            --spec cypress/integration/installer/basic.spec.js
+        - timeout 5m npx percy exec -- cypress run
+            --browser chrome --config baseUrl=http://localhost:8000,numTestsKeptInMemory=0 --headless
+            --env expectedVersion=$TAG,usePercy=$CYPRESS_PERCY_USAGE
+            --spec "cypress/integration/visual/*"
+
+Install (NL):
+    extends: .e2e_install_base
+    variables:
+        GIT_STRATEGY: none
     script:
         - cp artifacts/install*.tar.xz install.tar.xz
         - tar -xf install.tar.xz
@@ -165,16 +189,13 @@ Install:
         - cd vendor/shopware/recovery/Test/e2e
         - npm clean-install
         - $(npm bin)/cypress run
-            --browser chrome --config baseUrl=http://localhost:8000,numTestsKeptInMemory=0
-            --env expectedVersion=$TAG
-            --spec cypress/integration/installer/basic.spec.js
-    after_script:
-        - npx mochawesome-merge .gitlab-ci/e2e/test/artifacts/mochawesome/single-reports/mochawesome*.json > .gitlab-ci/e2e/test/artifacts/mochawesome/single-reports/report-final.json
-        - npx mochawesome-report-generator .gitlab-ci/e2e/test/artifacts/mochawesome/single-reports/report-final.json --cdn true --reportDir .gitlab-ci/e2e/test/artifacts/mochawesome
+            --browser chrome --config baseUrl=http://localhost:8000,numTestsKeptInMemory=0 --headless
+            --env expectedVersion=$TAG,locale="nl-NL"
+            --spec cypress/integration/installer/install_nl.spec.js
 
 # e2e update tests
 
-Manual Update:
+Manual Update (EN):
     extends: .e2e_update_base
     variables:
         E2E_INSTALL_PACKAGE_URL: $REFERENCE_INSTALLER_URL
@@ -184,13 +205,14 @@ Manual Update:
         - chown -R application:application $CI_PROJECT_DIR
         - cd vendor/shopware/recovery/Test/e2e/
         - npm ci
+        - npm install --save-dev @percy/cypress
         - timeout 20m $(npm bin)/cypress run
-            --browser chrome --config baseUrl=http://localhost:8000,numTestsKeptInMemory=0
+            --browser chrome --config baseUrl=http://localhost:8000,numTestsKeptInMemory=0 --headless
             --env expectedVersion=$TAG
             --spec cypress/integration/updater/manual-update.spec.js
         - timeout 5m $(npm bin)/cypress run
-            --browser chrome --config baseUrl=http://localhost:8000,numTestsKeptInMemory=0
-            --env expectedVersion=$TAG
+            --browser chrome --config baseUrl=http://localhost:8000,numTestsKeptInMemory=0 --headless
+            --env expectedVersion=$TAG,testDataUsage=true
             --spec cypress/integration/updater/validation/storefront.spec.js
     after_script:
         - npx mochawesome-merge .gitlab-ci/e2e/test/artifacts/mochawesome/single-reports/mochawesome*.json > .gitlab-ci/e2e/test/artifacts/mochawesome/single-reports/report-final.json
@@ -198,17 +220,6 @@ Manual Update:
 
 .E2E Update:
     extends: .e2e_update_base
-    script:
-        - cd .gitlab-ci/e2e/test/
-        - timeout 20m $(npm bin)/cypress run
-            --browser chrome --config baseUrl=http://localhost:8000,numTestsKeptInMemory=0
-            --env expectedVersion=$TAG
-            --spec cypress/integration/updater/auto-update.spec.js
-        - timeout 5m $(npm bin)/cypress run
-            --browser chrome --config baseUrl=http://localhost:8000,numTestsKeptInMemory=0
-            --env expectedVersion=$TAG
-            --spec "cypress/integration/updater/validation/*"
-    retry: 2
     artifacts:
         when: always
         expire_in: 1 week
@@ -217,12 +228,11 @@ Manual Update:
             - var/log/*
             - development/var/log/*
             - $CI_PROJECT_DIR/stdout.log
-
     after_script:
         - npx mochawesome-merge .gitlab-ci/e2e/test/artifacts/mochawesome/single-reports/mochawesome*.json > .gitlab-ci/e2e/test/artifacts/mochawesome/single-reports/report-final.json
         - npx mochawesome-report-generator .gitlab-ci/e2e/test/artifacts/mochawesome/single-reports/report-final.json --cdn true --reportDir .gitlab-ci/e2e/test/artifacts/mochawesome
 
-Update (Mysql 8.0):
+Update (EN, Mysql 8.0):
     extends: .E2E Update
     services:
         -   name: mysql:8.0.19
@@ -231,12 +241,52 @@ Update (Mysql 8.0):
         -   name: elastic/elasticsearch:7.1.1
             alias: elasticsearch
             command: [ "bin/elasticsearch", "-Expack.security.enabled=false", "-Ediscovery.type=single-node" ]
+    script:
+        - cd .gitlab-ci/e2e/test/
+        - timeout 20m $(npm bin)/cypress run
+            --browser chrome --config baseUrl=http://localhost:8000,numTestsKeptInMemory=0 --headless
+            --env expectedVersion=$TAG
+            --spec cypress/integration/updater/auto-update.spec.js
+        - timeout 5m $(npm bin)/cypress run
+            --browser chrome --config baseUrl=http://localhost:8000,numTestsKeptInMemory=0 --headless
+            --env expectedVersion=$TAG,testDataUsage=true
+            --spec "cypress/integration/updater/validation/*"
     variables:
         E2E_INSTALL_PACKAGE_URL: $REFERENCE_INSTALLER_URL
         E2E_TEST_DATA_FILE: "v6.1.6_test_data.tar.xz"
 
-Update:
+Update (DE, Visual):
     extends: .E2E Update
+    only:
+        refs:
+            - schedules
+    script:
+        - cd .gitlab-ci/e2e/test/
+        - echo $PERCY_BUILD_NAME
+        - timeout 20m npx percy exec -- cypress run
+            --browser chrome --config baseUrl=http://localhost:8000,numTestsKeptInMemory=0 --headless
+            --env expectedVersion=$TAG,usePercy=$CYPRESS_PERCY_USAGE,testBase="Update"
+            --spec cypress/integration/updater/auto-update.spec.js
+        - timeout 5m npx percy exec -- cypress run
+            --browser chrome --config baseUrl=http://localhost:8000,numTestsKeptInMemory=0 --headless
+            --env expectedVersion=$TAG,testDataUsage=true,testBase="Update",locale="de-DE",usePercy=$CYPRESS_PERCY_USAGE
+            --spec "cypress/integration/visual/*"
     variables:
         E2E_INSTALL_PACKAGE_URL: $REFERENCE_INSTALLER_URL
         E2E_TEST_DATA_FILE: "v6.1.6_test_data.tar.xz"
+
+Finalize Percy Build:
+    extends: .e2e_install_base
+    stage: prepare-release
+    when: always
+    only:
+        refs:
+            - schedules
+    script:
+        # finalize all visual testing jobs
+        - export PERCY_TOKEN=$PERCY_TOKEN
+        - export PERCY_BUILD_NAME=$CI_COMMIT_TIMESTAMP
+        - export PERCY_PARALLEL_NONCE=$PERCY_BUILD_NAME
+        - export PERCY_PARALLEL_TOTAL=-1
+        - npx percy finalize --all
+
