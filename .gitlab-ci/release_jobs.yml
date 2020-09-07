@@ -18,7 +18,7 @@ Prepare release:
         GIT_STRATEGY: clone
         PACKAGE_BASE_URL: "https://releases.shopware.com/sw6/"
     before_script:
-        - apt-get update && apt-get install -y git openssh-client composer php-dom
+        - apt-get update && apt-get install -y git openssh-client composer php-ctype php-curl php-dom php-fileinfo php-gd php-iconv php-intl php-json php-mbstring php-pdo php-mysql php-simplexml php-xml php-zip
         - composer install --working-dir=.gitlab-ci/tools
         - eval $(ssh-agent -s)
         - chmod 600 $SSH_PRIVATE_KEY_FILE && ssh-add $SSH_PRIVATE_KEY_FILE
@@ -45,7 +45,7 @@ Release tags:
         PLATFORM_REPO_URL: "git@gitlab.shopware.com:shopware/6/product/platform"
         CI_REPOSITORY_URL: "git@gitlab.shopware.com:/shopware/6/product/production"
     before_script:
-        - apk --no-cache add openssh-client git bash jq composer php-dom php-tokenizer php-xmlwriter php-xml curl curl-dev php-dom php-fileinfo php-simplexml
+        - apk --no-cache add openssh-client git bash jq composer php-ctype php-curl php-dom php-fileinfo php-gd php-iconv php-intl php-json php-mbstring php-pdo php-mysql php-simplexml php-xml php-zip
         - mkdir -p ~/.ssh/
         - echo -e "$SHOPWAREBOT_PRIVATE_KEY" > ~/.ssh/id_rsa
         - chmod 600 ~/.ssh/id_rsa
@@ -87,7 +87,7 @@ Build package:
         - git fetch origin ${CI_COMMIT_SHA}
         - git checkout -f -q ${CI_COMMIT_SHA}
     script:
-        - composer install --ignore-platform-reqs --no-interaction
+        - composer install --no-interaction
         - docker build . -t ${CI_REGISTRY_IMAGE}:${CI_COMMIT_TAG}
         - mkdir artifacts || true
         - chmod 777 artifacts || true
@@ -108,7 +108,7 @@ Release package:
     variables:
         GIT_STRATEGY: clone
     before_script:
-        - apt-get update && apt-get install -y git openssh-client composer php-dom
+        - apt-get update && apt-get install -y git openssh-client composer php-ctype php-curl php-dom php-fileinfo php-gd php-iconv php-intl php-json php-mbstring php-pdo php-mysql php-simplexml php-xml php-zip
         - composer install --working-dir=.gitlab-ci/tools
         - eval $(ssh-agent -s)
         - chmod 600 $SSH_PRIVATE_KEY_FILE && ssh-add $SSH_PRIVATE_KEY_FILE

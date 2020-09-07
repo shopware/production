@@ -139,7 +139,7 @@ class ReleaseService
             $cmd = 'cd ' . $dir . ' && rm -Rf vendor/shopware';
             system($cmd);
 
-            $cmd = 'composer update -vvv --working-dir=' . $dir . ' "shopware/*" --ignore-platform-reqs --no-interaction --no-scripts';
+            $cmd = 'composer update -vvv --working-dir=' . $dir . ' "shopware/*" --no-interaction --no-scripts';
             system($cmd);
 
             $composerLock = json_decode(file_get_contents($composerLockPath), true);

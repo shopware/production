@@ -3,7 +3,10 @@
     "type": "project",
     "license": "MIT",
     "config": {
-        "optimize-autoloader": true
+        "optimize-autoloader": true,
+        "platform": {
+            "php": "7.2.9"
+        }
     },
     "prefer-stable": true,
     "minimum-stability": "stable",
@@ -15,13 +18,13 @@
             "[ ! -f vendor\/autoload.php ] || bin\/console system:update:prepare"
         ],
         "post-install-cmd": [
-            "@composer install --working-dir vendor\/shopware\/recovery --ignore-platform-reqs --no-interaction --no-scripts",
-            "@composer install --working-dir=vendor\/shopware\/recovery\/Common --ignore-platform-reqs --no-interaction --optimize-autoloader --no-suggest",
+            "@composer install --working-dir vendor\/shopware\/recovery --no-interaction --no-scripts",
+            "@composer install --working-dir=vendor\/shopware\/recovery\/Common --no-interaction --optimize-autoloader --no-suggest",
             "[ ! -f install.lock ] || bin\/console system:update:finish"
         ],
         "post-update-cmd": [
-            "@composer install --working-dir vendor\/shopware\/recovery --ignore-platform-reqs --no-interaction --no-scripts",
-            "@composer install --working-dir=vendor\/shopware\/recovery\/Common --ignore-platform-reqs --no-interaction --optimize-autoloader --no-suggest",
+            "@composer install --working-dir vendor\/shopware\/recovery --no-interaction --no-scripts",
+            "@composer install --working-dir=vendor\/shopware\/recovery\/Common --no-interaction --optimize-autoloader --no-suggest",
             "[ ! -f install.lock ] || bin\/console system:update:finish"
         ]
     },
@@ -57,7 +60,7 @@
         "johnkary\/phpunit-speedtrap": "~3.1.0",
         "league\/flysystem-memory": "~1.0.2",
         "mbezhanov\/faker-provider-collection": "~1.2.1",
-        "phpunit\/phpunit": "~8.3.4",
+        "phpunit\/phpunit": "~8.5.2",
         "smalot\/pdfparser": "~0.14.0",
         "symfony\/browser-kit": "~4.4",
         "symfony\/dependency-injection": "~4.4",

@@ -16,7 +16,7 @@ export STOREFRONT_ROOT=repos/storefront/
 cd $PROJECT_ROOT
 cp ${CWD}/plugins.json var/plugins.json
 
-composer install --ignore-platform-reqs --no-interaction
+composer install --no-interaction
 
 ${PROJECT_ROOT}/bin/build-js.sh
 
@@ -92,5 +92,5 @@ jq -s add composer.json ${CWD}/composer.nightly_override.json > composer.json.ne
 mv composer.json.new composer.json
 
 rm -Rf composer.lock vendor/shopware/* vendor/autoload.php
-composer install --ignore-platform-reqs --no-interaction
+composer install --no-interaction
 
