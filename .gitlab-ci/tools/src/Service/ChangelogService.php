@@ -83,7 +83,7 @@ class ChangelogService
                 'Content-Type' => 'application/json',
             ],
             'query' => [
-                'jql' => sprintf('project=\'NEXT\' AND status=Resolved AND resolution=fixed AND fixVersion=\'%s\' AND cf[10202]=Yes ORDER BY key ASC', $version),
+                'jql' => sprintf('project=\'NEXT\' AND status=Resolved AND resolution=done AND fixVersion=\'%s\' AND cf[10202]=Yes ORDER BY key ASC', $version),
                 'fields' => 'id,key,customfield_11901,customfield_11900,customfield_12101,customfield_12100',
                 'maxResults' => 1000
             ],
