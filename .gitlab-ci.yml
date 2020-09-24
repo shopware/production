@@ -100,6 +100,7 @@ Build Test Package:
         - docker run -v $PWD/artifacts:/artifacts -e REFERENCE_INSTALLER_URL -e REFERENCE_INSTALLER_SHA256 --entrypoint=bin/package.sh ${CI_REGISTRY_IMAGE}:${IMAGE_TAG}
         - echo ${TAG} > artifacts/TAG
         - echo ${CI_JOB_ID} > artifacts/PACKAGE_JOB_ID
+        - echo ${MATCHING_BRANCH} > artifacts/PLATFORM_BRANCH
 
     artifacts:
         expire_in: 1 week
@@ -112,42 +113,6 @@ Build Test Package:
 Unit PHP 7.2:
     extends: .unit_base
     image: shopware/development:7.2
-
-Unit PHP 7.3:
-    extends: .unit_base
-    image: shopware/development:7.3
-
-Unit PHP 7.4:
-    extends: .unit_base
-    image: shopware/development:7.4
-
-Unit MySQL 5.7:
-    extends: .unit_base
-    services:
-        -   name: mysql:5.7
-            alias: mysql
-        -   name: elastic/elasticsearch:7.1.1
-            alias: elasticsearch
-            command: [ "bin/elasticsearch", "-Expack.security.enabled=false", "-Ediscovery.type=single-node" ]
-
-Unit MySQL 8.0:
-    extends: .unit_base
-    services:
-        -   name: mysql:8.0.19
-            alias: mysql
-            command: ["mysqld", "--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci", "--default-authentication-plugin=mysql_native_password"]
-        -   name: elastic/elasticsearch:7.1.1
-            alias: elasticsearch
-            command: [ "bin/elasticsearch", "-Expack.security.enabled=false", "-Ediscovery.type=single-node" ]
-
-Unit MariaDB 10.4:
-    extends: .unit_base
-    services:
-        -   name: mariadb:10.4
-            alias: mysql
-        -   name: elastic/elasticsearch:7.1.1
-            alias: elasticsearch
-            command: [ "bin/elasticsearch", "-Expack.security.enabled=false", "-Ediscovery.type=single-node" ]
 
 # e2e install tests
 

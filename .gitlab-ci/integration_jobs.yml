@@ -5,7 +5,7 @@ plugin_integration:
         refs:
             - schedules
             - tags
-    # TODO: Fix all docs plugins first
+    # TODO: Fix all plugins first
     allow_failure: true
     script:
         - PACKAGE_JOB_ID=$(cat artifacts/PACKAGE_JOB_ID)
@@ -17,3 +17,18 @@ plugin_integration:
             --form "variables[INSTALL_PACKAGE_URL]=${INSTALL_PACKAGE_URL}"
             --form "ref=master"
             "${CI_API_V4_URL}/projects/310/trigger/pipeline"
+
+platform:
+    stage: test
+    image: curlimages/curl:7.72.0
+    only:
+        refs:
+            - schedules
+    script:
+        - PLATFORM_VERSION=$(cat artifacts/TAG)
+        - PLATFORM_BRANCH=$(cat artifacts/PLATFORM_BRANCH)
+        - curl --request POST
+            --form "token=$CI_JOB_TOKEN"
+            --form "variables[PLATFORM_VERSION]=${PLATFORM_VERSION}"
+            --form "ref=$PLATFORM_BRANCH"
+            "${CI_API_V4_URL}/projects/1/trigger/pipeline"

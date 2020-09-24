@@ -7,6 +7,7 @@
 Prepare release:
     stage: prepare-release
     image: debian:buster-slim
+    needs: ['Build Test Package']
     when: manual
     only:
         refs:
@@ -92,6 +93,8 @@ Build package:
         - mkdir artifacts || true
         - chmod 777 artifacts || true
         - docker run -v $PWD/artifacts:/artifacts -e REFERENCE_INSTALLER_URL -e REFERENCE_INSTALLER_SHA256 --entrypoint=bin/package.sh ${CI_REGISTRY_IMAGE}:${CI_COMMIT_TAG}
+        - echo ${CI_COMMIT_TAG} > artifacts/TAG
+        - echo ${CI_JOB_ID} > artifacts/PACKAGE_JOB_ID
     artifacts:
         paths:
             - artifacts/

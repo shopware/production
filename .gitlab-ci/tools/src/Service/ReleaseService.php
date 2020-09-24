@@ -93,15 +93,6 @@ class ReleaseService
             $this->config['targetBranch'],
             'Release ' . $tag
         );
-
-        $platformRemote = '';
-        $platformSha = file_get_contents($this->config['projectRoot'] . '/PLATFORM_COMMIT_SHA');
-
-        $this->taggingService->tagAndPushPlatform(
-            $tag,
-            $platformSha,
-            $platformRemote
-        );
     }
 
     private function updateStability(string $composerJsonPath, string $stability): void
