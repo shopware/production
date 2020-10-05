@@ -338,7 +338,7 @@ Finalize Percy Build:
     script:
         # finalize all visual testing jobs
         - export PERCY_TOKEN=$PERCY_TOKEN
-        - export PERCY_BUILD_NAME=$CI_COMMIT_TIMESTAMP
+        - export PERCY_BUILD_NAME=$CI_PIPELINE_ID
         - export PERCY_PARALLEL_NONCE=$PERCY_BUILD_NAME
         - export PERCY_PARALLEL_TOTAL=-1
         - npx percy finalize --all
