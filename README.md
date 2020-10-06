@@ -41,8 +41,8 @@ If you are using a separate build server, consider having NPM and Node as build-
 To set up the environment and install with a basic setup run the following commands:
 
 ```bash
-# clone newest 6.1 patch version from github 
-git clone --branch=6.1 https://github.com/shopware/production shopware
+# clone newest 6.3 patch version from github 
+git clone --branch=6.3 https://github.com/shopware/production shopware
 cd shopware
 
 # install shopware and dependencies according to the composer.lock 
