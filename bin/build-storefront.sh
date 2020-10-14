@@ -11,3 +11,4 @@ npm --prefix ${STOREFRONT_ROOT}/Resources/app/storefront clean-install
 node ${STOREFRONT_ROOT}/Resources/app/storefront/copy-to-vendor.js
 npm --prefix ${STOREFRONT_ROOT}/Resources/app/storefront run production
 [[ ${CI} ]] || "${CWD}/console" asset:install
+[[ ${CI} ]] || "${CWD}/console" theme:compile
