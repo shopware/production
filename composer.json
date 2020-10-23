@@ -1,42 +1,43 @@
 {
-    "name": "shopware\/production",
+    "name": "shopware/production",
     "type": "project",
     "license": "MIT",
     "config": {
         "optimize-autoloader": true,
         "platform": {
             "php": "7.2.9"
-        }
+        },
+        "sort-packages": true
     },
     "prefer-stable": true,
     "minimum-stability": "stable",
     "scripts": {
         "pre-install-cmd": [
-            "[ ! -f vendor\/autoload.php ] || bin\/console system:update:prepare"
+            "[ ! -f vendor/autoload.php ] || bin/console system:update:prepare"
         ],
         "pre-update-cmd": [
-            "[ ! -f vendor\/autoload.php ] || bin\/console system:update:prepare"
+            "[ ! -f vendor/autoload.php ] || bin/console system:update:prepare"
         ],
         "post-install-cmd": [
-            "@composer install --working-dir vendor\/shopware\/recovery --no-interaction --no-scripts",
-            "@composer install --working-dir=vendor\/shopware\/recovery\/Common --no-interaction --optimize-autoloader --no-suggest",
-            "[ ! -f install.lock ] || bin\/console system:update:finish"
+            "@composer install --working-dir vendor/shopware/recovery --no-interaction --no-scripts",
+            "@composer install --working-dir=vendor/shopware/recovery/Common --no-interaction --optimize-autoloader --no-suggest",
+            "[ ! -f install.lock ] || bin/console system:update:finish"
         ],
         "post-update-cmd": [
-            "@composer install --working-dir vendor\/shopware\/recovery --no-interaction --no-scripts",
-            "@composer install --working-dir=vendor\/shopware\/recovery\/Common --no-interaction --optimize-autoloader --no-suggest",
-            "[ ! -f install.lock ] || bin\/console system:update:finish"
+            "@composer install --working-dir vendor/shopware/recovery --no-interaction --no-scripts",
+            "@composer install --working-dir=vendor/shopware/recovery/Common --no-interaction --optimize-autoloader --no-suggest",
+            "[ ! -f install.lock ] || bin/console system:update:finish"
         ]
     },
     "autoload": {
         "psr-4": {
-            "Shopware\\Production\\": "src\/"
+            "Shopware\\Production\\": "src/"
         }
     },
     "repositories": [
         {
             "type": "path",
-            "url": "custom\/static-plugins\/*",
+            "url": "custom/static-plugins/*",
             "options": {
                 "symlink": true
             }
@@ -45,32 +46,32 @@
     "require": {
         "php": "~7.2",
         "composer/package-versions-deprecated": "1.8.0",
-        "shopware\/core": "~v6.3.0",
-        "shopware\/administration": "~v6.3.0",
-        "shopware\/storefront": "~v6.3.0",
-        "shopware\/elasticsearch": "~v6.3.0",
-        "shopware\/recovery": "~v6.3.0"
+        "shopware/core": "~v6.3.0",
+        "shopware/administration": "~v6.3.0",
+        "shopware/storefront": "~v6.3.0",
+        "shopware/elasticsearch": "~v6.3.0",
+        "shopware/recovery": "~v6.3.0"
     },
     "require-dev": {
+        "ext-openssl": "*",
         "ext-tokenizer": "*",
         "ext-xmlwriter": "*",
-        "ext-openssl": "*",
-        "bheller\/images-generator": "~1.0.1",
-        "fzaninotto\/faker": "~1.9.1",
-        "johnkary\/phpunit-speedtrap": "~3.1.0",
-        "league\/flysystem-memory": "~1.0.2",
-        "mbezhanov\/faker-provider-collection": "~1.2.1",
+        "bheller/images-generator": "~1.0.1",
+        "defuse/php-encryption": "~2.2.1",
+        "fzaninotto/faker": "~1.9.1",
+        "johnkary/phpunit-speedtrap": "~3.1.0",
+        "league/flysystem-memory": "~1.0.2",
+        "mbezhanov/faker-provider-collection": "~1.2.1",
         "nikic/php-parser": "~4.3.0",
         "opis/json-schema": "~1.0.19",
-        "phpunit\/phpunit": "~8.5.2",
-        "smalot\/pdfparser": "~0.14.0",
-        "symfony\/browser-kit": "~4.4",
-        "symfony\/dependency-injection": "~4.4",
-        "symfony\/phpunit-bridge": "~4.4",
-        "symfony\/stopwatch": "~4.4",
-        "symfony\/var-dumper": "~4.4",
-        "symfony\/web-profiler-bundle": "~4.4",
-        "defuse\/php-encryption": "~2.2.1",
-        "symfony\/dom-crawler": "~4.4"
+        "phpunit/phpunit": "~8.5.2",
+        "smalot/pdfparser": "~0.14.0",
+        "symfony/browser-kit": "~4.4",
+        "symfony/dependency-injection": "~4.4",
+        "symfony/dom-crawler": "~4.4",
+        "symfony/phpunit-bridge": "~4.4",
+        "symfony/stopwatch": "~4.4",
+        "symfony/var-dumper": "~4.4",
+        "symfony/web-profiler-bundle": "~4.4"
     }
 }
