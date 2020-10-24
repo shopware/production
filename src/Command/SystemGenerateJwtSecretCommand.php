@@ -18,7 +18,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class SystemGenerateJwtSecretCommand extends Command
 {
-    static public $defaultName = 'system:generate-jwt-secret';
+    public static $defaultName = 'system:generate-jwt-secret';
+
     /**
      * @var string
      */
@@ -29,16 +30,6 @@ class SystemGenerateJwtSecretCommand extends Command
         parent::__construct();
         $this->projectDir = $projectDir;
     }
-
-    protected function configure(): void
-    {
-        $this->addOption('private-key-path', null, InputOption::VALUE_OPTIONAL, 'JWT public key path')
-            ->addOption('public-key-path', null, InputOption::VALUE_OPTIONAL, 'JWT public key path')
-            ->addOption('jwt-passphrase', null, InputOption::VALUE_OPTIONAL, 'JWT private key passphrase', 'shopware')
-            ->addOption('force', 'f', InputOption::VALUE_NONE, 'Force recreation')
-        ;
-    }
-
 
     public function execute(InputInterface $input, OutputInterface $output): int
     {
@@ -75,7 +66,7 @@ class SystemGenerateJwtSecretCommand extends Command
             'digest_alg' => 'aes256',
             'private_key_type' => OPENSSL_KEYTYPE_RSA,
             'encrypt_key' => $passphrase,
-            'encrypt_key_cipher' => OPENSSL_CIPHER_AES_256_CBC
+            'encrypt_key_cipher' => OPENSSL_CIPHER_AES_256_CBC,
         ]);
 
         // export private key
@@ -90,5 +81,14 @@ class SystemGenerateJwtSecretCommand extends Command
         }
 
         return 0;
+    }
+
+    protected function configure(): void
+    {
+        $this->addOption('private-key-path', null, InputOption::VALUE_OPTIONAL, 'JWT public key path')
+            ->addOption('public-key-path', null, InputOption::VALUE_OPTIONAL, 'JWT public key path')
+            ->addOption('jwt-passphrase', null, InputOption::VALUE_OPTIONAL, 'JWT private key passphrase', 'shopware')
+            ->addOption('force', 'f', InputOption::VALUE_NONE, 'Force recreation')
+        ;
     }
 }

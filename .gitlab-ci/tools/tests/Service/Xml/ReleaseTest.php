@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 
 namespace Shopware\CI\Test\Service\Xml;
@@ -32,7 +32,7 @@ class ReleaseTest extends TestCase
      */
     public function testParseVersion(string $tag, string $version, int $rc, string $versionText): void
     {
-        $parsed  = Release::parseVersion($tag);
+        $parsed = Release::parseVersion($tag);
 
         static::assertSame($version, $parsed['version']);
         static::assertSame($rc, $parsed['rc']);

@@ -1,8 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 
 
 namespace Shopware\CI\Test\Service;
-
 
 use League\Flysystem\Filesystem;
 use League\Flysystem\Memory\MemoryAdapter;
@@ -34,21 +33,6 @@ class ReleasePrepareServiceTest extends TestCase
         $this->artifactsFilesystem->put('install.zip', random_bytes(1024 * 1024 * 2 + 11));
         $this->artifactsFilesystem->put('install.tar.xz', random_bytes(1024 + 11));
         $this->artifactsFilesystem->put('update.zip', random_bytes(1024 * 1024 + 13));
-    }
-
-    private function getReleasePrepareService(array $config = null, ChangelogService $changeLogService = null, UpdateApiService $updateApiService = null)
-    {
-        $changelogService = $changeLogService ?? $this->createMock(ChangelogService::class);
-        $updateApiService = $updateApiService ?? $this->createMock(UpdateApiService::class);
-        $config = $config ??
-            [
-                'minimumVersion' => '6.2.0',
-                'deployFilesystem' => [
-                    'publicDomain' => 'https://releases.example.com/'
-                ]
-            ];
-
-        return new ReleasePrepareService($config, $this->deployFilesystem, $this->artifactsFilesystem, $changelogService, $updateApiService);
     }
 
     public function testStoreReleaseListShouldChangeXmlWithoutChanges(): void
@@ -158,8 +142,6 @@ NEXT-1235 - EN bar
 ',
             (string)$release->locales->en->changelog
         );
-
-
     }
 
     public function testPrepareReleaseWithExistingVersion(): void
@@ -203,8 +185,6 @@ NEXT-1235 - EN bar
 ',
             (string)$release->locales->en->changelog
         );
-
-
     }
 
     public function testManualChangelogIsNotOverwritten(): void
@@ -245,5 +225,20 @@ NEXT-1235 - DE Bar
         );
 
         static::assertEmpty((string)$release->locales->en->changelog);
+    }
+
+    private function getReleasePrepareService(?array $config = null, ?ChangelogService $changeLogService = null, ?UpdateApiService $updateApiService = null)
+    {
+        $changelogService = $changeLogService ?? $this->createMock(ChangelogService::class);
+        $updateApiService = $updateApiService ?? $this->createMock(UpdateApiService::class);
+        $config = $config ??
+            [
+                'minimumVersion' => '6.2.0',
+                'deployFilesystem' => [
+                    'publicDomain' => 'https://releases.example.com/',
+                ],
+            ];
+
+        return new ReleasePrepareService($config, $this->deployFilesystem, $this->artifactsFilesystem, $changelogService, $updateApiService);
     }
 }

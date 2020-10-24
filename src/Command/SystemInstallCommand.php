@@ -18,17 +18,17 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class SystemInstallCommand extends Command
 {
-    static public $defaultName = 'system:install';
-
-    /**
-     * @var string
-     */
-    private $projectDir;
+    public static $defaultName = 'system:install';
 
     /**
      * @var SymfonyStyle
      */
     protected $io;
+
+    /**
+     * @var string
+     */
+    private $projectDir;
 
     public function __construct(string $projectDir)
     {
@@ -57,13 +57,15 @@ class SystemInstallCommand extends Command
         $_ENV['BLUE_GREEN_DEPLOYMENT'] = 1;
 
         $dsn = trim((string)($_ENV['DATABASE_URL'] ?? $_SERVER['DATABASE_URL'] ?? getenv('DATABASE_URL')));
-        if ($dsn === '' || $dsn === Kernel::PLACEHOLDER_DATABASE_URL)  {
+        if ($dsn === '' || $dsn === Kernel::PLACEHOLDER_DATABASE_URL) {
             $output->error("Environment variable 'DATABASE_URL' not defined.");
+
             return 1;
         }
 
         if (!$input->getOption('force') && file_exists($this->projectDir . '/install.lock')) {
             $output->comment('install.lock already exists. Delete it or pass --force to do it anyway.');
+
             return 1;
         }
 
@@ -113,20 +115,20 @@ class SystemInstallCommand extends Command
 
         $commands = [
             [
-                'command' =>'database:migrate',
+                'command' => 'database:migrate',
                 'identifier' => 'core',
-                '--all'  => true,
+                '--all' => true,
             ],
             [
                 'command' => 'database:migrate-destructive',
                 'identifier' => 'core',
-                '--all'  => true,
+                '--all' => true,
             ],
             [
-                'command' => 'dal:refresh:index'
+                'command' => 'dal:refresh:index',
             ],
             [
-                'command' => 'theme:refresh'
+                'command' => 'theme:refresh',
             ],
             [
                 'command' => 'theme:compile',
@@ -150,17 +152,17 @@ class SystemInstallCommand extends Command
             $commands[] = [
                 'command' => 'theme:change',
                 '--all' => true,
-                'theme-name' => 'Storefront'
+                'theme-name' => 'Storefront',
             ];
         }
 
         $commands = array_merge($commands, [
-                [
-                    'command' => 'assets:install'
-                ],
-                [
-                    'command' => 'cache:clear'
-                ]
+            [
+                'command' => 'assets:install',
+            ],
+            [
+                'command' => 'cache:clear',
+            ],
         ]);
 
         $this->runCommands($commands, $output);
@@ -176,11 +178,10 @@ class SystemInstallCommand extends Command
 
     /**
      * @param array<string, array<string, string>> $commands
-     * @return int
      */
     private function runCommands(array $commands, OutputInterface $output): int
     {
-        foreach($commands as $parameters) {
+        foreach ($commands as $parameters) {
             $output->writeln('');
 
             $command = $this->getApplication()->find($parameters['command']);
@@ -198,7 +199,7 @@ class SystemInstallCommand extends Command
     {
         $paths = [
             'vendor/shopware/core/schema.sql',
-            'vendor/shopware/platform/src/Core/schema.sql'
+            'vendor/shopware/platform/src/Core/schema.sql',
         ];
 
         foreach ($paths as $path) {

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Shopware\CI\Service\Xml;
 
@@ -101,7 +101,7 @@ class Release extends SimpleXMLElement
         return [
             'version' => $matches[1],
             'version_text' => $matches[5] ?? '',
-            'rc' =>  (int)($matches[6] ?? 0)
+            'rc' => (int)($matches[6] ?? 0),
         ];
     }
 
@@ -234,20 +234,11 @@ class Release extends SimpleXMLElement
     {
         if (isset($data['changelog'])) {
             $this->locales->$lang->changelog = '';
-            $this->addCDataToNode($this->locales->$lang->changelog, PHP_EOL. $data['changelog'] . PHP_EOL);
+            $this->addCDataToNode($this->locales->$lang->changelog, PHP_EOL . $data['changelog'] . PHP_EOL);
         }
         if (isset($data['important_changes'])) {
             $this->locales->$lang->important_changes = '';
-            $this->addCDataToNode($this->locales->$lang->important_changes, PHP_EOL. $data['important_changes'] . PHP_EOL);
-        }
-    }
-
-    private function addCDataToNode(SimpleXMLElement $node, $value)
-    {
-        if ($domElement = dom_import_simplexml($node))
-        {
-            $domOwner = $domElement->ownerDocument;
-            $domElement->appendChild($domOwner->createCDATASection((string)$value));
+            $this->addCDataToNode($this->locales->$lang->important_changes, PHP_EOL . $data['important_changes'] . PHP_EOL);
         }
     }
 
@@ -264,6 +255,14 @@ class Release extends SimpleXMLElement
             }
 
             $this->setLocale($lang, $data);
+        }
+    }
+
+    private function addCDataToNode(SimpleXMLElement $node, $value): void
+    {
+        if ($domElement = dom_import_simplexml($node)) {
+            $domOwner = $domElement->ownerDocument;
+            $domElement->appendChild($domOwner->createCDATASection((string)$value));
         }
     }
 }

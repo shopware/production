@@ -46,6 +46,7 @@ class SystemUpdateFinishCommand extends Command
         $dsn = trim((string)($_SERVER['DATABASE_URL'] ?? getenv('DATABASE_URL')));
         if ($dsn === '' || $dsn === Kernel::PLACEHOLDER_DATABASE_URL) {
             $output->note("Environment variable 'DATABASE_URL' not defined. Skipping " . $this->getName() . '...');
+
             return 0;
         }
 
@@ -80,15 +81,17 @@ class SystemUpdateFinishCommand extends Command
 
         $arguments = [
             'identifier' => 'core',
-            '--all'  => true,
+            '--all' => true,
         ];
         $arrayInput = new ArrayInput($arguments, $command->getDefinition());
+
         return $command->run($arrayInput, $output);
     }
 
     private function installAssets(InputInterface $input, OutputInterface $output): int
     {
         $command = $this->getApplication()->find('assets:install');
+
         return $command->run(new ArrayInput([], $command->getDefinition()), $output);
     }
 

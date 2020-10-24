@@ -13,6 +13,7 @@ variables:
 
 stages:
     - build
+    - analyze
     - test
     - prepare-release
     - release
@@ -107,6 +108,16 @@ Build Test Package:
         paths:
             - artifacts/
             - repos/
+
+Static Analysis:
+    stage: analyze
+    image: shopware/development:latest
+    only:
+        refs:
+            - merge_requests
+    script:
+        - composer install -d .gitlab-ci/tools
+        - php .gitlab-ci/tools/vendor/bin/ecs check --config easy-coding-standard.php
 
 # Unit tests
 
@@ -230,7 +241,7 @@ Update (EN, Mysql 8.0):
     services:
         -   name: mysql:8.0.19
             alias: mysql
-            command: ["mysqld", "--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci", "--default-authentication-plugin=mysql_native_password"]
+            command: [ "mysqld", "--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci", "--default-authentication-plugin=mysql_native_password" ]
         -   name: elastic/elasticsearch:7.1.1
             alias: elasticsearch
             command: [ "bin/elasticsearch", "-Expack.security.enabled=false", "-Ediscovery.type=single-node" ]

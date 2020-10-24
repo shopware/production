@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Shopware\CI\Test\Service;
 
@@ -42,11 +42,10 @@ CODE;
             $remotePath
         );
 
-        $tagSha = exec('git -C '  . $remotePath . ' rev-parse ' . escapeshellarg('v6.3.0.1-dev^{}'));
+        $tagSha = exec('git -C ' . $remotePath . ' rev-parse ' . escapeshellarg('v6.3.0.1-dev^{}'));
 
         static::assertSame($commitSha, $tagSha, 'Test repo: ' . $remotePath);
 
         system('rm -Rf ' . $remotePath);
     }
-
 }

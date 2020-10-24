@@ -11,7 +11,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class SystemGenerateAppSecretCommand extends Command
 {
-    static public $defaultName = 'system:generate-app-secret';
+    public static $defaultName = 'system:generate-app-secret';
 
     public function execute(InputInterface $input, OutputInterface $output): int
     {

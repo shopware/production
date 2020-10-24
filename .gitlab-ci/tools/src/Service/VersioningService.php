@@ -1,8 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 
 
 namespace Shopware\CI\Service;
-
 
 use Composer\Semver\Constraint\Constraint;
 use Composer\Semver\Constraint\MultiConstraint;
@@ -15,7 +14,7 @@ class VersioningService
     /**
      * @var array
      */
-    private static $stabilities = array('stable', 'RC', 'beta', 'alpha', 'dev');
+    private static $stabilities = ['stable', 'RC', 'beta', 'alpha', 'dev'];
 
     /**
      * @var VersionParser
@@ -73,7 +72,7 @@ class VersioningService
             'patch' => $patch,
             'build' => $build,
             'stability' => $stability,
-            'preReleaseVersion' => $preReleaseVersion
+            'preReleaseVersion' => $preReleaseVersion,
         ];
     }
 
@@ -88,7 +87,7 @@ class VersioningService
         return Semver::sort($versions);
     }
 
-    public function getNextTag(string $constraint, string $lastVersion = null, bool $isMinorRelease = false): string
+    public function getNextTag(string $constraint, ?string $lastVersion = null, bool $isMinorRelease = false): string
     {
         if ($lastVersion === null) {
             return $this->getInitialMinorTag($constraint);
@@ -124,32 +123,6 @@ class VersioningService
         return sprintf('v%d.%d.%d-%s%d', $v['major'], $v['minor'], $v['patch'], $v['stability'], $preReleaseVersion);
     }
 
-    private function getInitialMinorTag(string $constraint): string
-    {
-        $parsedConstraint = $this->versionParser->parseConstraints($constraint);
-        if (!$parsedConstraint instanceof MultiConstraint) {
-            throw new \RuntimeException('constrain should be a range like >= 6.1.0 && < 6.2.0');
-        }
-
-        /** @var Constraint $lowerBound */
-        $lowerBound = $parsedConstraint->getConstraints()[0];
-
-        $tag = preg_replace('/^>=/', '', (string) $lowerBound);
-        $v = self::parseTag($tag);
-
-        $suffix = '';
-        if ($this->minimumStability !== 'stable') {
-            $suffix = '-' . $this->minimumStability . '1';
-        }
-
-        if ($v['newPattern']) {
-            return sprintf('v%d.%d.%d.0%s', $v['major'], $v['minor'], $v['patch'], $suffix);
-        }
-
-        return sprintf('v%d.%d.0%s', $v['major'], $v['minor'], $suffix);
-    }
-
-
     public function getBestMatchingBranch(string $tag, string $repositoryPath): string
     {
         if (!is_dir($repositoryPath)) {
@@ -165,6 +138,7 @@ class VersioningService
         foreach ($branches as $branch) {
             if ($this->branchExists($branch, $repositoryPath)) {
                 $matchingBranch = $branch;
+
                 break;
             }
         }
@@ -174,32 +148,6 @@ class VersioningService
         }
 
         return $matchingBranch;
-    }
-
-    private function getBranchesOfTag(string $tag): array
-    {
-        $v = self::parseTag($tag);
-
-        return [
-            $v['major'] . '.' . $v['minor'] . '.' . $v['patch'] . '.' . $v['build'],
-            $v['major'] . '.' . $v['minor'] . '.' . $v['patch'],
-            $v['major'] . '.' . $v['minor'],
-        ];
-    }
-
-    private function branchExists(string $branch, string $repositoryPath, string $remote = 'origin'): bool
-    {
-        $cmd = sprintf(
-            'git -C %s ls-remote --exit-code --heads %s %s >/dev/null',
-            escapeshellarg($repositoryPath),
-            escapeshellarg($remote),
-            escapeshellarg($branch)
-        );
-
-        $returnCode = 0;
-        system($cmd, $returnCode);
-
-        return $returnCode === 0;
     }
 
     public static function getUpdateChannel(string $tag): int
@@ -248,5 +196,56 @@ class VersioningService
         $v = self::parseTag($tag);
 
         return $v['major'] . '.' . $v['minor']; // 6.1, 6.2
+    }
+
+    private function getInitialMinorTag(string $constraint): string
+    {
+        $parsedConstraint = $this->versionParser->parseConstraints($constraint);
+        if (!$parsedConstraint instanceof MultiConstraint) {
+            throw new \RuntimeException('constrain should be a range like >= 6.1.0 && < 6.2.0');
+        }
+
+        /** @var Constraint $lowerBound */
+        $lowerBound = $parsedConstraint->getConstraints()[0];
+
+        $tag = preg_replace('/^>=/', '', (string) $lowerBound);
+        $v = self::parseTag($tag);
+
+        $suffix = '';
+        if ($this->minimumStability !== 'stable') {
+            $suffix = '-' . $this->minimumStability . '1';
+        }
+
+        if ($v['newPattern']) {
+            return sprintf('v%d.%d.%d.0%s', $v['major'], $v['minor'], $v['patch'], $suffix);
+        }
+
+        return sprintf('v%d.%d.0%s', $v['major'], $v['minor'], $suffix);
+    }
+
+    private function getBranchesOfTag(string $tag): array
+    {
+        $v = self::parseTag($tag);
+
+        return [
+            $v['major'] . '.' . $v['minor'] . '.' . $v['patch'] . '.' . $v['build'],
+            $v['major'] . '.' . $v['minor'] . '.' . $v['patch'],
+            $v['major'] . '.' . $v['minor'],
+        ];
+    }
+
+    private function branchExists(string $branch, string $repositoryPath, string $remote = 'origin'): bool
+    {
+        $cmd = sprintf(
+            'git -C %s ls-remote --exit-code --heads %s %s >/dev/null',
+            escapeshellarg($repositoryPath),
+            escapeshellarg($remote),
+            escapeshellarg($branch)
+        );
+
+        $returnCode = 0;
+        system($cmd, $returnCode);
+
+        return $returnCode === 0;
     }
 }

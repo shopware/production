@@ -3,16 +3,17 @@
     "description": "Internal Shopware ci tools",
     "type": "project",
     "require": {
-        "composer/semver": "^1.5",
-        "symfony/console": "^5.0",
-        "guzzlehttp/guzzle": "^6.5",
         "ext-json": "*",
-        "symfony/dotenv": "^5.0",
+        "composer/semver": "^1.5",
+        "guzzlehttp/guzzle": "^6.5",
         "league/flysystem-aws-s3-v3": "^1.0",
-        "league/flysystem-memory": "^1.0"
+        "league/flysystem-memory": "^1.0",
+        "symfony/console": "^5.0",
+        "symfony/dotenv": "^5.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "8.5.2"
+        "phpunit/phpunit": "8.5.8",
+        "symplify/easy-coding-standard-prefixed": "8.3.45"
     },
     "license": "MIT",
     "authors": [
@@ -31,5 +32,8 @@
         "psr-4": {
             "Shopware\\CI\\Test\\": "tests/"
         }
+    },
+    "config": {
+        "sort-packages": true
     }
 }

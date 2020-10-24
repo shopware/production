@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use Shopware\Core\Framework\Test\TestCaseBase\KernelLifecycleManager;
 use Symfony\Component\Dotenv\Dotenv;
@@ -15,7 +15,7 @@ $testEnv = [
     'BLUE_GREEN_DEPLOYMENT' => 1,
     'SHOPWARE_ES_INDEXING_ENABLED' => '',
     'JWT_PRIVATE_KEY_PASSPHRASE' => 'shopware',
-    'VERSION' => $_SERVER['VERSION'] ?? $_SERVER['BUILD_VERSION'] ?? 'v6.1.0'
+    'VERSION' => $_SERVER['VERSION'] ?? $_SERVER['BUILD_VERSION'] ?? 'v6.1.0',
 ];
 
 foreach ($testEnv as $key => $value) {
@@ -33,7 +33,7 @@ $key = openssl_pkey_new([
     'digest_alg' => 'aes256',
     'private_key_type' => OPENSSL_KEYTYPE_RSA,
     'encrypt_key_cipher' => OPENSSL_CIPHER_AES_256_CBC,
-    'encrypt_key' => $_SERVER['JWT_PRIVATE_KEY_PASSPHRASE']
+    'encrypt_key' => $_SERVER['JWT_PRIVATE_KEY_PASSPHRASE'],
 ]);
 
 // export private key

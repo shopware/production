@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Shopware\CI\Test\Service;
 
@@ -10,15 +10,25 @@ use Shopware\CI\Service\VersioningService;
 
 class VersioningServiceTest extends TestCase
 {
-
     /**
      * @var string
      */
     private $localTestRepoPath;
+
     /**
      * @var string
      */
     private $remoteTestRepoPath;
+
+    public function tearDown(): void
+    {
+        if ($this->localTestRepoPath) {
+            system('rm -Rf ' . escapeshellarg($this->localTestRepoPath));
+        }
+        if ($this->remoteTestRepoPath) {
+            system('rm -Rf ' . escapeshellarg($this->remoteTestRepoPath));
+        }
+    }
 
     public function invalidTagsProvider(): array
     {
@@ -28,7 +38,7 @@ class VersioningServiceTest extends TestCase
             ['7.1.0'],
             ['6.4.0-ea'],
             ['test'],
-            ['']
+            [''],
         ];
     }
 
@@ -138,7 +148,6 @@ class VersioningServiceTest extends TestCase
         static::assertSame($expected, $versioningService->getNextTag($constraint, $lastVersion, $doMinor));
     }
 
-
     public function getMatchingVersionsProvider()
     {
         return [
@@ -173,7 +182,7 @@ class VersioningServiceTest extends TestCase
                 'stable',
             ],
             [
-                ['v6.1.0-rc1','v6.1.0-rc2','v6.1.0','v6.1.1'],
+                ['v6.1.0-rc1', 'v6.1.0-rc2', 'v6.1.0', 'v6.1.1'],
                 ['v6.1.0', 'v6.1.1', 'v6.1.0-rc1', 'v6.1.0-rc2', 'v6.1.0-beta1', 'v6.1.0-alpha2', 'v6.1.0-dev'],
                 '~6.1.0',
                 'rc',
@@ -292,54 +301,54 @@ class VersioningServiceTest extends TestCase
             [
                 'expectedBranch' => '6.2',
                 'branches' => ['6.2'],
-                'tag' => '6.2.4'
+                'tag' => '6.2.4',
             ],
             [
                 'expectedBranch' => '6.2',
                 'branches' => ['6.2'],
-                'tag' => '6.2.0-rc2'
+                'tag' => '6.2.0-rc2',
             ],
             [
                 'expectedBranch' => '6.2.4',
                 'branches' => ['6.2', '6.2.4'],
-                'tag' => '6.2.4'
+                'tag' => '6.2.4',
             ],
 
             [
                 'expectedBranch' => '6.3',
                 'branches' => ['6.3'],
-                'tag' => '6.3.0.0'
+                'tag' => '6.3.0.0',
             ],
             [
                 'expectedBranch' => '6.3.0',
                 'branches' => ['6.3', '6.3.0'],
-                'tag' => '6.3.0.0'
+                'tag' => '6.3.0.0',
             ],
             [
                 'expectedBranch' => '6.3.0.0',
                 'branches' => ['6.3', '6.3.0', '6.3.0.0'],
-                'tag' => '6.3.0.0'
+                'tag' => '6.3.0.0',
             ],
 
             [
                 'expectedBranch' => '6.3',
                 'branches' => ['6.3'],
-                'tag' => '6.3.2.0'
+                'tag' => '6.3.2.0',
             ],
             [
                 'expectedBranch' => '6.3',
                 'branches' => ['6.3', '6.3.0'],
-                'tag' => '6.3.2.0'
+                'tag' => '6.3.2.0',
             ],
             [
                 'expectedBranch' => '6.3',
                 'branches' => ['6.3', '6.3.0', '6.3.0.0'],
-                'tag' => '6.3.2.0'
+                'tag' => '6.3.2.0',
             ],
             [
                 'expectedBranch' => 'master',
                 'branches' => ['master', '6.3.1', '6.3.3', '6.3.2.1'],
-                'tag' => '6.3.2.0'
+                'tag' => '6.3.2.0',
             ],
         ];
     }
@@ -359,7 +368,7 @@ class VersioningServiceTest extends TestCase
         static::assertSame(
             $expectedBranch,
             $versioningService->getBestMatchingBranch($tag, $local),
-            'Expected ' . $expectedBranch . ' with branches ' . print_r($branches, true). ' and tag ' . $tag
+            'Expected ' . $expectedBranch . ' with branches ' . print_r($branches, true) . ' and tag ' . $tag
         );
     }
 
@@ -389,26 +398,16 @@ CODE;
         ];
     }
 
-    public function tearDown(): void
+    private function mt_shuffle_array($array)
     {
-        if ($this->localTestRepoPath) {
-            system('rm -Rf ' . escapeshellarg($this->localTestRepoPath));
-        }
-        if ($this->remoteTestRepoPath) {
-            system('rm -Rf ' . escapeshellarg($this->remoteTestRepoPath));
-        }
-    }
-
-
-    private function mt_shuffle_array($array) {
         $shuffled_array = [];
         $arr_length = count($array);
 
-        if($arr_length < 2) {
+        if ($arr_length < 2) {
             return $array;
         }
 
-        while($arr_length) {
+        while ($arr_length) {
             --$arr_length;
             $rand_key = array_keys($array)[mt_rand(0, $arr_length)];
 
