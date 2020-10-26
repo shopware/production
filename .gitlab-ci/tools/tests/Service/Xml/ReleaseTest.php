@@ -53,7 +53,7 @@ class ReleaseTest extends TestCase
     /**
      * @dataProvider invalidVersionsProvider
      */
-    public function testParseInvalidVersionThrowsException($version): void
+    public function testParseInvalidVersionThrowsException(string $version): void
     {
         $this->expectException(\RuntimeException::class);
         Release::parseVersion($version);

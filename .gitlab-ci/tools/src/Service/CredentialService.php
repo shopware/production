@@ -10,7 +10,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class CredentialService
 {
-    public function getCredentials(InputInterface $input, OutputInterface $output)
+    public function getCredentials(InputInterface $input, OutputInterface $output): array
     {
         $io = new SymfonyStyle($input, $output);
 

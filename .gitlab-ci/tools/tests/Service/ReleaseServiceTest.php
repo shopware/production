@@ -288,7 +288,7 @@ class ReleaseServiceTest extends TestCase
         }
     }
 
-    private function makeFakeRelease($config, string $tag): void
+    private function makeFakeRelease(array $config, string $tag): void
     {
         foreach ($config['repos'] as $repo => $repoData) {
             file_put_contents($repoData['path'] . '/PLATFORM_COMMIT_SHA', self::FAKE_PLATFORM_COMMIT_SHA);
@@ -385,7 +385,7 @@ class ReleaseServiceTest extends TestCase
 
         $cmd = 'git ';
         foreach ($arguments as $key => $value) {
-            if (!is_int($key)) {
+            if (!\is_int($key)) {
                 $cmd .= $key;
                 $cmd .= strpos($key, '--') !== 0 ? ' ' : '=';
             }
@@ -395,7 +395,9 @@ class ReleaseServiceTest extends TestCase
 
         $result = exec($cmd, $output, $retCode);
         if ($retCode !== 0) {
-            new \RuntimeException(sprintf('Err code: %d, Failed to execute: %s, output: %s', $retCode, $cmd, implode(PHP_EOL, $output)));
+            throw new \RuntimeException(
+                sprintf('Error code: %d, Failed to execute: %s, output: %s', $retCode, $cmd, implode(PHP_EOL, $output))
+            );
         }
 
         return $result;

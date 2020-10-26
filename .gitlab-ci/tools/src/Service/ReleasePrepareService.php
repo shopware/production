@@ -107,7 +107,10 @@ class ReleasePrepareService
     {
         $content = $this->deployFilesystem->read(self::SHOPWARE_XML_PATH);
 
-        return simplexml_load_string($content, Release::class);
+        /** @var Release $release */
+        $release = simplexml_load_string($content, Release::class);
+
+        return $release;
     }
 
     public function storeReleaseList(Release $release): void
@@ -154,7 +157,7 @@ class ReleasePrepareService
     private function setReleaseProperties(string $tag, Release $release): void
     {
         $release->minimum_version = $this->config['minimumVersion'] ?? '6.2.0';
-        $release->public = 0;
+        $release->public = '0';
         $release->ea = 0;
         $release->revision = '';
         $release->type = VersioningService::getReleaseType($tag);

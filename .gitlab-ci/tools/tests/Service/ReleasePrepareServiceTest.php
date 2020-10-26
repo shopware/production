@@ -224,8 +224,11 @@ NEXT-1235 - DE Bar
         static::assertEmpty((string) $release->locales->en->changelog);
     }
 
-    private function getReleasePrepareService(?array $config = null, ?ChangelogService $changeLogService = null, ?UpdateApiService $updateApiService = null)
-    {
+    private function getReleasePrepareService(
+        ?array $config = null,
+        ?ChangelogService $changeLogService = null,
+        ?UpdateApiService $updateApiService = null
+    ): ReleasePrepareService {
         $changelogService = $changeLogService ?? $this->createMock(ChangelogService::class);
         $updateApiService = $updateApiService ?? $this->createMock(UpdateApiService::class);
         $config = $config ??

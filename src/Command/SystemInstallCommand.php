@@ -177,7 +177,7 @@ class SystemInstallCommand extends Command
     }
 
     /**
-     * @param array<string, array<string, string>> $commands
+     * @param array<array-key, array<string, string>> $commands
      */
     private function runCommands(array $commands, OutputInterface $output): int
     {

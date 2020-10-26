@@ -66,8 +66,8 @@ class Release extends SimpleXMLElement
     /** @var string */
     public $sha256_update = '';
 
-    /** @var array */
-    public $locales = [];
+    /** @var object */
+    public $locales;
 
     public function addRelease(string $version): Release
     {
@@ -235,7 +235,7 @@ class Release extends SimpleXMLElement
         return (array) $this->locales;
     }
 
-    public function setLocale(string $lang, $data): void
+    public function setLocale(string $lang, array $data): void
     {
         if (isset($data['changelog'])) {
             $this->locales->$lang->changelog = '';
@@ -263,11 +263,17 @@ class Release extends SimpleXMLElement
         }
     }
 
-    private function addCDataToNode(SimpleXMLElement $node, $value): void
+    /**
+     * @param SimpleXMLElement|string $node
+     */
+    private function addCDataToNode($node, string $value): void
     {
-        if ($domElement = dom_import_simplexml($node)) {
-            $domOwner = $domElement->ownerDocument;
-            $domElement->appendChild($domOwner->createCDATASection((string) $value));
+        $domElement = dom_import_simplexml($node);
+        if ($domElement === false) {
+            return;
         }
+
+        $domOwner = $domElement->ownerDocument;
+        $domElement->appendChild($domOwner->createCDATASection($value));
     }
 }

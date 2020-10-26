@@ -70,7 +70,7 @@ class ChangelogService
         throw new \RuntimeException('Version "' . $version . '" not found');
     }
 
-    public function fetchFixedIssues(string $version)
+    public function fetchFixedIssues(string $version): array
     {
         $version = $this->findVersion($version);
         $response = $this->client->request('GET', 'search', [

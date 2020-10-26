@@ -42,14 +42,13 @@ class UpdateApiService
             implode(' ', $escapedParameters)
         );
 
-        $returnCode = 0;
-
-        // TODO: activate
         echo $command . PHP_EOL;
-        // system($command, $returnCode);
+        // TODO: activate
+//        $returnCode = 0;
+//        system($command, $returnCode);
 
-        if ($returnCode !== 0) {
-            throw new \RuntimeException('Failed to execute "' . $command . '". Return code: ' . $returnCode);
-        }
+//        if ($returnCode !== 0) {
+//            throw new \RuntimeException('Failed to execute "' . $command . '". Return code: ' . $returnCode);
+//        }
     }
 }

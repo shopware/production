@@ -27,7 +27,7 @@ abstract class ReleaseCommand extends Command
     private $config;
 
     /**
-     * @var Filesystem
+     * @var Filesystem|null
      */
     private $deployFilesystem;
 

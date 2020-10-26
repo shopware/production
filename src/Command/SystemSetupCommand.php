@@ -118,7 +118,7 @@ class SystemSetupCommand extends Command
         return 0;
     }
 
-    private function getDsn(InputInterface $input, OutputInterface $io): string
+    private function getDsn(InputInterface $input, SymfonyStyle $io): string
     {
         $emptyValidation = static function ($value) {
             if (trim((string) $value) === '') {
@@ -143,7 +143,7 @@ class SystemSetupCommand extends Command
             $dbUser = $io->ask('Database user', 'app', $emptyValidation);
             $dbPass = $io->askHidden('Database password');
             $dbHost = $io->ask('Database host', 'localhost', $emptyValidation);
-            $dbPort = $io->ask('Database port', 3306, $emptyValidation);
+            $dbPort = $io->ask('Database port', '3306', $emptyValidation);
             $dbName = $io->ask('Database name', 'shopware', $emptyValidation);
 
             $dsnWithoutDb = sprintf(

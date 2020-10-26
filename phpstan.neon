@@ -1,0 +1,9 @@
+parameters:
+    level: 6
+    checkMissingIterableValueType: false
+    paths:
+        - src
+        - .gitlab-ci/tools/src
+        - .gitlab-ci/tools/tests
+    featureToggles:
+        unusedClassElements: true

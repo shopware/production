@@ -147,7 +147,7 @@ class VersioningServiceTest extends TestCase
         static::assertSame($expected, $versioningService->getNextTag($constraint, $lastVersion, $doMinor));
     }
 
-    public function getMatchingVersionsProvider()
+    public function getMatchingVersionsProvider(): array
     {
         return [
             [
@@ -397,7 +397,7 @@ CODE;
         ];
     }
 
-    private function mt_shuffle_array($array)
+    private function mt_shuffle_array(array $array): array
     {
         $shuffled_array = [];
         $arr_length = count($array);
