@@ -80,7 +80,7 @@ class Release extends SimpleXMLElement
 
         $parsedVersion = self::parseVersion($version);
         foreach ($parsedVersion as $key => $value) {
-            $release->$key = $value;
+            $release->$key = (string) $value;
         }
 
         $dom = dom_import_simplexml($this);
