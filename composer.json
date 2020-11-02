@@ -46,11 +46,11 @@
     "require": {
         "php": "~7.2",
         "composer/package-versions-deprecated": "1.8.0",
-        "shopware/core": "~v6.3.0",
-        "shopware/administration": "~v6.3.0",
-        "shopware/storefront": "~v6.3.0",
-        "shopware/elasticsearch": "~v6.3.0",
-        "shopware/recovery": "~v6.3.0"
+        "shopware/core": "~v6.4.0",
+        "shopware/administration": "~v6.4.0",
+        "shopware/storefront": "~v6.4.0",
+        "shopware/elasticsearch": "~v6.4.0",
+        "shopware/recovery": "~v6.4.0"
     },
     "require-dev": {
         "ext-openssl": "*",
