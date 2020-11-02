@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Shopware\CI\Service\Xml;
 
@@ -101,7 +101,7 @@ class Release extends SimpleXMLElement
         return [
             'version' => $matches[1],
             'version_text' => $matches[5] ?? '',
-            'rc' => (int)($matches[6] ?? 0),
+            'rc' => (int) ($matches[6] ?? 0),
         ];
     }
 
@@ -135,29 +135,34 @@ class Release extends SimpleXMLElement
         }
     }
 
+    public function getTag(): string
+    {
+        return (string) $this->tag;
+    }
+
     public function getVersion(): string
     {
-        return (string)$this->version;
+        return (string) $this->version;
     }
 
     public function getVersionText(): string
     {
-        return (string)$this->version_text;
+        return (string) $this->version_text;
     }
 
     public function getMinimumVersion(): string
     {
-        return (string)$this->minimum_version;
+        return (string) $this->minimum_version;
     }
 
     public function getSecurityUpdate(): string
     {
-        return (string)$this->security_update;
+        return (string) $this->security_update;
     }
 
     public function isPublic(): bool
     {
-        return (string)$this->public === '1';
+        return (string) $this->public === '1';
     }
 
     public function makePublic(): void
@@ -172,62 +177,62 @@ class Release extends SimpleXMLElement
 
     public function getRc(): int
     {
-        return (int)$this->rc;
+        return (int) $this->rc;
     }
 
     public function getEa(): int
     {
-        return (int)$this->ea;
+        return (int) $this->ea;
     }
 
     public function getRevision(): string
     {
-        return (string)$this->revision;
+        return (string) $this->revision;
     }
 
     public function getReleaseDate(): string
     {
-        return (string)$this->release_date;
+        return (string) $this->release_date;
     }
 
     public function getGithubRepo(): string
     {
-        return (string)$this->github_repo;
+        return (string) $this->github_repo;
     }
 
     public function getUpgradeMd(): string
     {
-        return (string)$this->upgrade_md;
+        return (string) $this->upgrade_md;
     }
 
     public function getDownloadLinkInstall(): string
     {
-        return (string)$this->download_link_install;
+        return (string) $this->download_link_install;
     }
 
     public function getDownloadLinkUpdate(): string
     {
-        return (string)$this->download_link_update;
+        return (string) $this->download_link_update;
     }
 
     public function getSha256Install(): string
     {
-        return (string)$this->sha256_install;
+        return (string) $this->sha256_install;
     }
 
     public function getSha256Update(): string
     {
-        return (string)$this->sha256_update;
+        return (string) $this->sha256_update;
     }
 
     public function getType(): string
     {
-        return (string)$this->type;
+        return (string) $this->type;
     }
 
     public function getLocales(): array
     {
-        return (array)$this->locales;
+        return (array) $this->locales;
     }
 
     public function setLocale(string $lang, $data): void
@@ -262,7 +267,7 @@ class Release extends SimpleXMLElement
     {
         if ($domElement = dom_import_simplexml($node)) {
             $domOwner = $domElement->ownerDocument;
-            $domElement->appendChild($domOwner->createCDATASection((string)$value));
+            $domElement->appendChild($domOwner->createCDATASection((string) $value));
         }
     }
 }

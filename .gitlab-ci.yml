@@ -13,7 +13,7 @@ variables:
 
 stages:
     - build
-#    - analyze
+    - analyze
     - test
     - prepare-release
     - release
@@ -109,15 +109,15 @@ Build Test Package:
             - artifacts/
             - repos/
 
-#Static Analysis:
-#    stage: analyze
-#    image: shopware/development:latest
-#    only:
-#        refs:
-#            - merge_requests
-#    script:
-#        - composer install -d .gitlab-ci/tools
-#       - php .gitlab-ci/tools/vendor/bin/ecs check --config easy-coding-standard.php
+Static Analysis:
+    stage: analyze
+    image: shopware/development:latest
+    only:
+        refs:
+            - merge_requests
+    script:
+        - composer install -d .gitlab-ci/tools
+        - php .gitlab-ci/tools/vendor/bin/ecs check --config easy-coding-standard.php
 
 # Unit tests
 

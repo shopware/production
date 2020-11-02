@@ -1,12 +1,10 @@
 <?php declare(strict_types=1);
 
-
 namespace Shopware\CI\Test\Service;
 
 use League\Flysystem\Filesystem;
 use League\Flysystem\Memory\MemoryAdapter;
 use PHPUnit\Framework\TestCase;
-use PHPUnit\Util\Exception;
 use Shopware\CI\Service\ChangelogService;
 use Shopware\CI\Service\ReleasePrepareService;
 use Shopware\CI\Service\UpdateApiService;
@@ -103,7 +101,6 @@ class ReleasePrepareServiceTest extends TestCase
 
         static::assertEquals($expectedList, $actualList);
 
-
         $actualHash = sha1($this->deployFilesystem->read(ReleasePrepareService::SHOPWARE_XML_PATH));
         static::assertSame($expectedHash, $actualHash);
     }
@@ -132,7 +129,7 @@ class ReleasePrepareServiceTest extends TestCase
 NEXT-1234 - DE Foo
 NEXT-1235 - DE Bar
 ',
-            (string)$release->locales->de->changelog
+            (string) $release->locales->de->changelog
         );
 
         static::assertSame(
@@ -140,7 +137,7 @@ NEXT-1235 - DE Bar
 NEXT-1234 - EN Foo
 NEXT-1235 - EN bar
 ',
-            (string)$release->locales->en->changelog
+            (string) $release->locales->en->changelog
         );
     }
 
@@ -175,7 +172,7 @@ NEXT-1235 - EN bar
 NEXT-1234 - DE Foo
 NEXT-1235 - DE Bar
 ',
-            (string)$release->locales->de->changelog
+            (string) $release->locales->de->changelog
         );
 
         static::assertSame(
@@ -183,7 +180,7 @@ NEXT-1235 - DE Bar
 NEXT-1234 - EN Foo
 NEXT-1235 - EN bar
 ',
-            (string)$release->locales->en->changelog
+            (string) $release->locales->en->changelog
         );
     }
 
@@ -217,14 +214,14 @@ NEXT-1235 - DE Bar
         $release = $releaseList->getRelease('v6.2.2-RC1');
 
         static::assertSame(
-            (string)$release->locales->de->changelog,
+            (string) $release->locales->de->changelog,
             '<![CDATA[
 NEXT-1234 - DE Foo
 NEXT-1235 - DE Bar
 ]]>'
         );
 
-        static::assertEmpty((string)$release->locales->en->changelog);
+        static::assertEmpty((string) $release->locales->en->changelog);
     }
 
     private function getReleasePrepareService(?array $config = null, ?ChangelogService $changeLogService = null, ?UpdateApiService $updateApiService = null)

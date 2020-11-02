@@ -1,5 +1,4 @@
-<?php
-
+<?php declare(strict_types=1);
 
 namespace Shopware\CI\Service;
 
@@ -84,20 +83,21 @@ class ReleasePrepareService
 
     public function uploadArchives(Release $release): void
     {
-        $installUpload = $this->hashAndUpload($release->tag, 'install.zip');
+        $releaseTag = $release->getTag();
+        $installUpload = $this->hashAndUpload($releaseTag, 'install.zip');
         $release->download_link_install = $installUpload['url'];
         $release->sha1_install = $installUpload['sha1'];
         $release->sha256_install = $installUpload['sha256'];
 
-        $updateUpload = $this->hashAndUpload($release->tag, 'update.zip');
+        $updateUpload = $this->hashAndUpload($releaseTag, 'update.zip');
         $release->download_link_update = $updateUpload['url'];
         $release->sha1_update = $updateUpload['sha1'];
         $release->sha256_update = $updateUpload['sha256'];
 
-        $this->hashAndUpload($release->tag, 'install.tar.xz');
-        $minorBranch = VersioningService::getMinorBranch($release->tag);
+        $this->hashAndUpload($releaseTag, 'install.tar.xz');
+        $minorBranch = VersioningService::getMinorBranch($releaseTag);
         $this->hashAndUpload(
-            $release->tag,
+            $releaseTag,
             'install.tar.xz',
             'sw6/install_' . $minorBranch . '_next.tar.xz' // 6.2_next.tar.xz, 6.3.0_next.tar.xz, 6.3.1_next.tar.xz
         );
@@ -123,24 +123,24 @@ class ReleasePrepareService
     public function registerUpdate(string $tag, Release $release): void
     {
         $baseParams = [
-            '--release-version' => (string)$release->version,
+            '--release-version' => (string) $release->version,
             '--channel' => VersioningService::getUpdateChannel($tag),
         ];
 
-        if (((string)$release->version_text) !== '') {
-            $baseParams['--version-text'] = (string)$release->version_text;
+        if (((string) $release->version_text) !== '') {
+            $baseParams['--version-text'] = (string) $release->version_text;
         }
 
         $insertReleaseParameters = array_merge($baseParams, [
             '--min-version' => $this->config['minimumVersion'] ?? '6.2.0',
-            '--install-uri' => (string)$release->download_link_install,
-            '--install-size' => (string)$this->artifactsFilesystem->getSize('install.zip'),
-            '--install-sha1' => (string)$release->sha1_install,
-            '--install-sha256' => (string)$release->sha256_install,
-            '--update-uri' => (string)$release->download_link_update,
-            '--update-size' => (string)$this->artifactsFilesystem->getSize('update.zip'),
-            '--update-sha1' => (string)$release->sha1_update,
-            '--update-sha256' => (string)$release->sha256_update,
+            '--install-uri' => (string) $release->download_link_install,
+            '--install-size' => (string) $this->artifactsFilesystem->getSize('install.zip'),
+            '--install-sha1' => (string) $release->sha1_install,
+            '--install-sha256' => (string) $release->sha256_install,
+            '--update-uri' => (string) $release->download_link_update,
+            '--update-size' => (string) $this->artifactsFilesystem->getSize('update.zip'),
+            '--update-sha1' => (string) $release->sha1_update,
+            '--update-sha256' => (string) $release->sha256_update,
         ]);
 
         $this->updateApiService->insertReleaseData($insertReleaseParameters);
@@ -198,6 +198,6 @@ class ReleasePrepareService
     private function mayAlterChangelog(Release $release): bool
     {
         return !$release->isPublic()
-            && ((bool)($release->manual ?? false)) !== true;
+            && ((bool) ($release->manual ?? false)) !== true;
     }
 }

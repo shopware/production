@@ -2,7 +2,6 @@
 
 namespace Shopware\CI\Test\Service;
 
-use Composer\Semver\VersionParser;
 use GuzzleHttp\Client;
 use PHPUnit\Framework\TestCase;
 use Shopware\CI\Service\TaggingService;

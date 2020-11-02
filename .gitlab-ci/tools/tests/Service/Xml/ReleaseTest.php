@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-
 namespace Shopware\CI\Test\Service\Xml;
 
 use PHPUnit\Framework\TestCase;

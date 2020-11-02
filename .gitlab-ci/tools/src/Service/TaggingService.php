@@ -1,15 +1,9 @@
-<?php
-
+<?php declare(strict_types=1);
 
 namespace Shopware\CI\Service;
 
-use Composer\Semver\Constraint\Constraint;
-use Composer\Semver\Constraint\MultiConstraint;
-use Composer\Semver\Semver;
-use Composer\Semver\VersionParser;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
-use function Symfony\Component\VarDumper\Dumper\esc;
 
 class TaggingService
 {

@@ -1,5 +1,4 @@
-<?php
-
+<?php declare(strict_types=1);
 
 namespace Shopware\CI\Service;
 
@@ -86,7 +85,7 @@ class ReleaseService
         );
 
         $this->taggingService->openMergeRequest(
-            $this->config['projectId'],
+            (string) $this->config['projectId'],
             'release/' . $tag,
             $this->config['targetBranch'],
             'Release ' . $tag

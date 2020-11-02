@@ -1,14 +1,10 @@
 <?php declare(strict_types=1);
 
-
 namespace Shopware\CI\Test\Service;
 
 use Composer\Semver\VersionParser;
 use GuzzleHttp\Client;
-use GuzzleHttp\ClientInterface;
-use League\Flysystem\Filesystem;
 use PHPUnit\Framework\TestCase;
-use Shopware\CI\Service\ChangelogService;
 use Shopware\CI\Service\ReleasePrepareService;
 use Shopware\CI\Service\ReleaseService;
 use Shopware\CI\Service\TaggingService;
@@ -19,7 +15,7 @@ class ReleaseServiceTest extends TestCase
     public const FAKE_PLATFORM_COMMIT_SHA = '01c209a305adaabaf894e6929290c69cdeadbeef';
 
     /**
-     * @var string
+     * @var int|null
      */
     private $daemonPid;
 
@@ -276,7 +272,7 @@ class ReleaseServiceTest extends TestCase
 
         echo $daemonCmd;
 
-        $this->daemonPid = exec($daemonCmd, $output, $returnCode);
+        $this->daemonPid = (int) exec($daemonCmd, $output, $returnCode);
     }
 
     private function stopGitServer(): void
@@ -284,7 +280,7 @@ class ReleaseServiceTest extends TestCase
         if ($this->daemonPid) {
             posix_kill($this->daemonPid, 9);
 
-            $pgrepPid = exec('pgrep git-daemon');
+            $pgrepPid = (int) exec('pgrep git-daemon');
             if ($pgrepPid) {
                 posix_kill($pgrepPid, 9);
             }
@@ -306,7 +302,7 @@ class ReleaseServiceTest extends TestCase
 
         $base = $this->fakeProd;
         exec('cp ' . $base . '/composer.dev.json ' . $base . '/composer.json');
-        exec('composer update shopware/* --working-dir=' . escapeshellarg($this->fakeProd));
+        exec('composer update --working-dir=' . escapeshellarg($this->fakeProd));
         exec('cp ' . $base . '/composer.stable.json ' . $base . '/composer.json');
     }
 

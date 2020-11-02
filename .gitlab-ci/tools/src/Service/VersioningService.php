@@ -1,5 +1,4 @@
-<?php
-
+<?php declare(strict_types=1);
 
 namespace Shopware\CI\Service;
 
@@ -54,15 +53,15 @@ class VersioningService
         }
 
         $major = 6;
-        $minor = (int)$matches[1];
-        $patch = (int)$matches[2];
-        $build = (int)($matches[4] ?? 0);
+        $minor = (int) $matches[1];
+        $patch = (int) $matches[2];
+        $build = (int) ($matches[4] ?? 0);
 
         $stability = 'stable';
         $preReleaseVersion = 0;
         if (isset($matches[6])) {
             $stability = VersionParser::normalizeStability($matches[6]);
-            $preReleaseVersion = (int)($matches[7] ?? 0);
+            $preReleaseVersion = (int) ($matches[7] ?? 0);
         }
 
         return [
@@ -97,7 +96,7 @@ class VersioningService
         if (!in_array($stability, $this->allowedStabilities, true)) {
             return $this->getInitialMinorTag($constraint);
         }
-        $normalizedVersion = (string)$this->versionParser->parseConstraints($lastVersion);
+        $normalizedVersion = (string) $this->versionParser->parseConstraints($lastVersion);
 
         $v = self::parseTag(ltrim($normalizedVersion, '= '));
         if ($v['stability'] === 'stable') {

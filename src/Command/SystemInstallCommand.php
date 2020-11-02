@@ -48,7 +48,7 @@ class SystemInstallCommand extends Command
     {
         $output = new ShopwareStyle($input, $output);
 
-        /**
+        /*
          * Needs to be set because migration for testsuite needs the trigger.
          * Because there are some tests that work directly on the db and so ignore the indexer
          */
@@ -56,7 +56,7 @@ class SystemInstallCommand extends Command
 
         $_ENV['BLUE_GREEN_DEPLOYMENT'] = 1;
 
-        $dsn = trim((string)($_ENV['DATABASE_URL'] ?? $_SERVER['DATABASE_URL'] ?? getenv('DATABASE_URL')));
+        $dsn = trim((string) ($_ENV['DATABASE_URL'] ?? $_SERVER['DATABASE_URL'] ?? getenv('DATABASE_URL')));
         if ($dsn === '' || $dsn === Kernel::PLACEHOLDER_DATABASE_URL) {
             $output->error("Environment variable 'DATABASE_URL' not defined.");
 

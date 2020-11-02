@@ -1,5 +1,4 @@
-<?php
-
+<?php declare(strict_types=1);
 
 namespace Shopware\CI\Service;
 
@@ -55,7 +54,6 @@ class ChangelogService
 
     /**
      * Normalizes the version and tries to find it
-     *
      */
     public function findVersion(string $version): string
     {
@@ -64,7 +62,7 @@ class ChangelogService
             return $version;
         }
 
-        $version = (string)str_replace('-', ' ', ltrim(trim($version), 'v'));
+        $version = (string) str_replace('-', ' ', ltrim(trim($version), 'v'));
         if (in_array($version, $versions, true)) {
             return $version;
         }

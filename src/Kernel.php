@@ -4,13 +4,7 @@ declare(strict_types=1);
 
 namespace Shopware\Production;
 
-use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\FetchMode;
-use Shopware\Core\Framework\Migration\MigrationStep;
 use Shopware\Core\Framework\Plugin\KernelPluginLoader\KernelPluginLoader;
-use Symfony\Component\DependencyInjection\ContainerAwareTrait;
-use Symfony\Component\HttpKernel\Bundle\Bundle;
-use Symfony\Component\Routing\RouteCollectionBuilder;
 
 class Kernel extends \Shopware\Core\Kernel
 {

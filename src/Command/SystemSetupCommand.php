@@ -173,7 +173,6 @@ class SystemSetupCommand extends Command
         $envVars = '';
         $envFile = $this->projectDir . '/.env';
 
-
         foreach ($configuration as $key => $value) {
             $envVars .= $key . '="' . str_replace('"', '\\"', $value) . '"' . PHP_EOL;
         }
@@ -225,8 +224,6 @@ class SystemSetupCommand extends Command
         }
 
         $ret = $command->run(new ArrayInput($parameters, $command->getDefinition()), $io);
-
-
 
         return $ret;
     }

@@ -1,5 +1,4 @@
-<?php
-
+<?php declare(strict_types=1);
 
 namespace Shopware\CI\Command;
 
@@ -63,8 +62,6 @@ abstract class ReleaseCommand extends Command
             'isMinorRelease' => $_SERVER['MINOR_RELEASE'] ?? false,
             'platformBranch' => $_SERVER['PLATFORM_BRANCH'] ?? null,
         ];
-
-
 
         if (isset($_SERVER['CI_API_V4_URL'])) {
             $config['gitlabBaseUri'] = rtrim($_SERVER['CI_API_V4_URL'] ?? '', '/') . '/'; // guzzle needs the slash
@@ -142,7 +139,6 @@ abstract class ReleaseCommand extends Command
     protected function getReleasePrepareService(InputInterface $input, OutputInterface $output): ReleasePrepareService
     {
         $config = $this->getConfig($input, $output);
-
 
         $artifactFilesystem = new Filesystem(new Local($config['projectRoot'] . '/artifacts'));
 
