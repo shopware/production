@@ -194,8 +194,8 @@ You only need to require the things you want. If you only want to run shopware 6
         }
     },
     "require": {
-        "php": "~7.2",
-        "ocramius/package-versions": "1.4.0",
+        "php": "~7.4",
+        "composer/package-versions-deprecated": "^1.8.0",
         "shopware/core": "~v6.1.0"
     }
 }

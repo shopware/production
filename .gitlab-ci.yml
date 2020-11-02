@@ -121,9 +121,9 @@ Build Test Package:
 
 # Unit tests
 
-Unit PHP 7.2:
+Unit PHP 7.4:
     extends: .unit_base
-    image: shopware/development:7.2
+    image: shopware/development:7.4
 
 # e2e install tests
 

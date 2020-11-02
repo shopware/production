@@ -42,7 +42,7 @@ app.get('/v1/release/update', (req, res) => {
             },
             {
                 type: 'phpversion',
-                value: '7.2.0',
+                value: '7.4.0',
                 level: 20,
             },
             {

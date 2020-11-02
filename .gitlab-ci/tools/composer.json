@@ -3,6 +3,7 @@
     "description": "Internal Shopware ci tools",
     "type": "project",
     "require": {
+        "php": "~7.4",
         "ext-json": "*",
         "composer/semver": "^1.5",
         "guzzlehttp/guzzle": "^6.5",
