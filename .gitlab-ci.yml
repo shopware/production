@@ -96,9 +96,10 @@ Build Test Package:
         - docker build . -t "${CI_REGISTRY_IMAGE}:${IMAGE_TAG}"
         - mkdir artifacts || true
         - chmod 777 artifacts || true
+        - .gitlab-ci/changed-files.sh > artifacts/additional_update_files
         # TODO: get REFERENCE_INSTALLER_URL and REFERENCE_INSTALLER_SHA256 from shopware6.xml - use MINIMUM_VERSION
         # create package archive file
-        - docker run -v $PWD/artifacts:/artifacts -e REFERENCE_INSTALLER_URL -e REFERENCE_INSTALLER_SHA256 --entrypoint=bin/package.sh ${CI_REGISTRY_IMAGE}:${IMAGE_TAG}
+        - docker run -v $PWD/artifacts:/artifacts -e REFERENCE_INSTALLER_URL -e REFERENCE_INSTALLER_SHA256 --entrypoint=bin/package.sh ${CI_REGISTRY_IMAGE}:${IMAGE_TAG} /artifacts/additional_update_files
         - echo ${TAG} > artifacts/TAG
         - echo ${CI_JOB_ID} > artifacts/PACKAGE_JOB_ID
         - echo ${MATCHING_BRANCH} > artifacts/PLATFORM_BRANCH

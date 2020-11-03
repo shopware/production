@@ -4,6 +4,8 @@ BIN_DIR="$(cd -P -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 export PROJECT_ROOT="${PROJECT_ROOT:-"$(dirname "$BIN_DIR")"}"
 export ARTIFACTS_DIR="${ARTIFACTS_DIR:-"$PROJECT_ROOT/artifacts"}"
 
+ADDIONAL_UPDATE_FILES=$1
+
 set -o errexit
 
 # cleanup
@@ -54,6 +56,11 @@ if [ -n "$REFERENCE_INSTALLER_URL" ]; then
 
     # copy files that changed between the reference and the new version
     rsync -rvcmq --compare-dest="$REFERENCE_TEMP_DIR" "$PROJECT_ROOT/" "$UPDATE_TEMP_DIR/"
+
+    if [ -r "$ADDIONAL_UPDATE_FILES" ]; then
+        rsync -av --files-from="$ADDIONAL_UPDATE_FILES" "$PROJECT_ROOT/" "$UPDATE_TEMP_DIR/"
+    fi
+
     cd "$UPDATE_TEMP_DIR"
 
     # add update meta information
