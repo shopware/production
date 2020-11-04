@@ -33,7 +33,7 @@ class UpdateApiService
     {
         $escapedParameters = [];
         foreach ($parameters as $key => $value) {
-            $escapedParameters[] = $key . '=' . escapeshellarg($value);
+            $escapedParameters[] = $key . '=' . escapeshellarg((string) $value);
         }
         $command = sprintf(
             'ssh shopware@%s php /var/www/shopware-update-api/bin/console %s %s',
