@@ -16,7 +16,7 @@ class GenerateChangelogCommand extends ReleaseCommand
     public static $defaultName = 'release:generate-changelog';
 
     /**
-     * @var ChangelogService|null
+     * @var ChangelogService
      */
     private $changeLogService;
 
@@ -52,7 +52,7 @@ class GenerateChangelogCommand extends ReleaseCommand
         if (empty($version)) {
             $unreleasedVersions = $this->changeLogService->getVersions(true);
             $question = new ChoiceQuestion('Jira version', $unreleasedVersions, $unreleasedVersions[0]);
-            $question->setValidator(static function ($value) {
+            $question->setValidator(static function (string $value): string {
                 if (trim($value) === '') {
                     throw new InvalidOptionException('The release-version cannot be empty');
                 }
@@ -62,7 +62,7 @@ class GenerateChangelogCommand extends ReleaseCommand
 
             $version = $io->askQuestion($question);
         }
-        $version = is_array($version) ? $version[0] : $version;
+        $version = \is_array($version) ? $version[0] : $version;
         $version = $this->changeLogService->findVersion($version);
 
         return $version;

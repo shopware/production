@@ -37,7 +37,10 @@ $key = openssl_pkey_new([
 ]);
 
 // export private key
-openssl_pkey_export_to_file($key, $jwtDir . '/private.pem');
+$result = openssl_pkey_export_to_file($key, $jwtDir . '/private.pem');
+if ($result === false) {
+    throw new RuntimeException('Could not export private key to file');
+}
 
 // export public key
 $keyData = openssl_pkey_get_details($key);

@@ -50,12 +50,15 @@ class ShowNextTagCommand extends ReleaseCommand
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $repository = $input->getArgument('repository') ?? getcwd();
+        if (!\is_string($repository)) {
+            throw new \RuntimeException('Invalid repository path given');
+        }
 
         $rootPath = self::getRootPath($repository);
         $composerJson = \json_decode(file_get_contents($rootPath . '/composer.json'), true);
 
         $constraint = $input->getOption('constraint');
-        if (!$constraint) {
+        if (!\is_string($constraint)) {
             $constraint = $composerJson['require']['shopware/core'];
         }
 

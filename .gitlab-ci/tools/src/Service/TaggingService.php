@@ -30,7 +30,7 @@ class TaggingService
         $tag = escapeshellarg($tag);
         $privateToken = $this->config['gitlabApiToken'];
 
-        foreach ($repos as $repo => $repoData) {
+        foreach ($repos as $repoData) {
             $path = escapeshellarg($repoData['path']);
             $githubUrl = $repoData['githubUrl'];
 
@@ -56,7 +56,7 @@ CODE;
         $tag = escapeshellarg($tag);
         $commitMsg = escapeshellarg('Release ' . $tag);
 
-        foreach ($repos as $repo => $repoData) {
+        foreach ($repos as $repoData) {
             $path = escapeshellarg($repoData['path']);
             $remote = escapeshellarg($repoData['remoteUrl']);
 

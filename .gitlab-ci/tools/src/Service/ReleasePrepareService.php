@@ -56,6 +56,9 @@ class ReleasePrepareService
         if ($release === null) {
             $release = $releaseList->addRelease($tag);
         }
+        if ($release === null) {
+            throw new \RuntimeException('Still no release. Something went really wrong there');
+        }
 
         if ($release->isPublic()) {
             throw new \RuntimeException('Release ' . $tag . ' is already public');
@@ -106,6 +109,9 @@ class ReleasePrepareService
     public function getReleaseList(): Release
     {
         $content = $this->deployFilesystem->read(self::SHOPWARE_XML_PATH);
+        if ($content === false) {
+            throw new \RuntimeException('Could not read Shopware xml file');
+        }
 
         /** @var Release $release */
         $release = simplexml_load_string($content, Release::class);
@@ -118,7 +124,11 @@ class ReleasePrepareService
         $dom = new \DOMDocument('1.0');
         $dom->preserveWhiteSpace = false;
         $dom->formatOutput = true;
-        $dom->loadXML($release->asXML());
+        $releaseXml = $release->asXML();
+        if ($releaseXml === false) {
+            throw new \RuntimeException('Release XML file is invalid');
+        }
+        $dom->loadXML($releaseXml);
 
         $this->deployFilesystem->put(self::SHOPWARE_XML_PATH, $dom->saveXML());
     }
@@ -181,7 +191,11 @@ class ReleasePrepareService
         $parts = explode('.', $basename, 2);
 
         $targetPath = $targetPath ?: 'sw6/' . $parts[0] . '_' . $tag . '_' . $sha1 . '.' . $parts[1];
-        $this->deployFilesystem->putStream($targetPath, $this->artifactsFilesystem->readStream($source));
+        $sourceStream = $this->artifactsFilesystem->readStream($source);
+        if ($sourceStream === false) {
+            throw new \RuntimeException(sprintf('Could not read from source: "%s"', $source));
+        }
+        $this->deployFilesystem->putStream($targetPath, $sourceStream);
 
         return [
             'url' => $this->config['deployFilesystem']['publicDomain'] . '/' . $targetPath,
@@ -193,14 +207,17 @@ class ReleasePrepareService
     private function hashFile(string $alg, string $path): string
     {
         $context = hash_init($alg);
-        hash_update_stream($context, $this->artifactsFilesystem->readStream($path));
+        $pathStream = $this->artifactsFilesystem->readStream($path);
+        if ($pathStream === false) {
+            throw new \RuntimeException(sprintf('Could not read from path: "%s"', $path));
+        }
+        $_bytesAdded = hash_update_stream($context, $pathStream);
 
         return hash_final($context);
     }
 
     private function mayAlterChangelog(Release $release): bool
     {
-        return !$release->isPublic()
-            && ((bool) ($release->manual ?? false)) !== true;
+        return !$release->isPublic() && !$release->isManual();
     }
 }

@@ -16,10 +16,14 @@ class DeleteTagsCommand extends ReleaseCommand
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $config = $this->getConfig($input, $output);
+        $tag = $input->getArgument('tag');
+        if (!\is_string($tag)) {
+            throw new \RuntimeException('Invalid tag given');
+        }
 
+        $config = $this->getConfig($input, $output);
         $taggingService = $this->getTaggingService($input, $output);
-        $taggingService->deleteTag($input->getArgument('tag'), $config['repos']);
+        $taggingService->deleteTag($tag, $config['repos']);
 
         return 0;
     }

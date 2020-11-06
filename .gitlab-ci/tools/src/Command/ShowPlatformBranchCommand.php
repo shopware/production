@@ -28,10 +28,17 @@ class ShowPlatformBranchCommand extends ReleaseCommand
             return 0;
         }
 
-        $repository = $input->getArgument('repository') ?? (getcwd() . '/platform');
+        $tag = $input->getArgument('tag');
+        if (!\is_string($tag)) {
+            throw new \RuntimeException('Invalid tag given');
+        }
 
-        $versioningService = $this->getVersioningService($input, $output);
-        $matchingBranch = $versioningService->getBestMatchingBranch($input->getArgument('tag'), $repository);
+        $repository = $input->getArgument('repository') ?? (getcwd() . '/platform');
+        if (!\is_string($repository)) {
+            throw new \RuntimeException('Invalid repository path given');
+        }
+
+        $matchingBranch = $this->getVersioningService($input, $output)->getBestMatchingBranch($tag, $repository);
 
         $output->writeln($matchingBranch);
 

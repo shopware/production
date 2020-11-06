@@ -39,11 +39,8 @@ class VersioningService
             throw new \InvalidArgumentException('minimal stability dev is not supported. Use at least alpha');
         }
 
-        $this->allowedStabilities = array_slice(
-            self::$stabilities,
-            0,
-            1 + array_search($this->minimumStability, self::$stabilities, true)
-        );
+        $sliceLength = 1 + (int) array_search($this->minimumStability, self::$stabilities, true);
+        $this->allowedStabilities = \array_slice(self::$stabilities, 0, $sliceLength);
     }
 
     public static function parseTag(string $tag): array

@@ -82,6 +82,9 @@ abstract class ReleaseCommand extends Command
 
         if ($input->hasArgument('tag')) {
             $tag = $input->getArgument('tag');
+            if (!\is_string($tag)) {
+                throw new \RuntimeException('Invalid tag given');
+            }
             $config['tag'] = $tag;
             $stability = $stability ?? VersionParser::parseStability($config['tag']);
         }

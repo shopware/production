@@ -49,16 +49,15 @@ class SystemUpdatePrepareCommand extends Command
         // TODO: get new version (from composer.lock?)
         $newVersion = '';
 
+        /** @var EventDispatcherInterface $eventDispatcher */
         $eventDispatcher = $this->container->get('event_dispatcher');
         $eventDispatcher->dispatch(new UpdatePrePrepareEvent($context, $currentVersion, $newVersion));
 
-        $containerWithoutPlugins = $this->rebootKernelWithoutPlugins();
-
-        /** @var EventDispatcherInterface $eventDispatcher */
-        $eventDispatcher = $containerWithoutPlugins->get('event_dispatcher');
+        /** @var EventDispatcherInterface $eventDispatcherWithoutPlugins */
+        $eventDispatcherWithoutPlugins = $this->rebootKernelWithoutPlugins()->get('event_dispatcher');
 
         // @internal plugins are deactivated
-        $eventDispatcher->dispatch(new UpdatePostPrepareEvent($context, $currentVersion, $newVersion));
+        $eventDispatcherWithoutPlugins->dispatch(new UpdatePostPrepareEvent($context, $currentVersion, $newVersion));
 
         return 0;
     }

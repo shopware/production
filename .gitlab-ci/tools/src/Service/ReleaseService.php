@@ -161,7 +161,7 @@ class ReleaseService
         }
     }
 
-    private function getPackageFromComposerLock(array $composerLock, string $packageName): ?array
+    private function getPackageFromComposerLock(array $composerLock, string $packageName): array
     {
         foreach ($composerLock['packages'] as $package) {
             if ($package['name'] === $packageName) {
@@ -169,6 +169,6 @@ class ReleaseService
             }
         }
 
-        return null;
+        throw new \RuntimeException(sprintf('Package "%s" not found', $packageName));
     }
 }

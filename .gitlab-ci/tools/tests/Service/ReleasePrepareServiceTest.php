@@ -36,12 +36,16 @@ class ReleasePrepareServiceTest extends TestCase
     public function testStoreReleaseListShouldChangeXmlWithoutChanges(): void
     {
         $releasePrepareService = $this->getReleasePrepareService();
-        $expectedHash = sha1($this->deployFilesystem->read(ReleasePrepareService::SHOPWARE_XML_PATH));
+        $shopwareXml = $this->deployFilesystem->read(ReleasePrepareService::SHOPWARE_XML_PATH);
+        static::assertNotFalse($shopwareXml);
+        $expectedHash = sha1($shopwareXml);
 
         $release = $releasePrepareService->getReleaseList();
         $releasePrepareService->storeReleaseList($release);
 
-        $actualHash = sha1($this->deployFilesystem->read(ReleasePrepareService::SHOPWARE_XML_PATH));
+        $shopwareXml = $this->deployFilesystem->read(ReleasePrepareService::SHOPWARE_XML_PATH);
+        static::assertNotFalse($shopwareXml);
+        $actualHash = sha1($shopwareXml);
         static::assertSame($expectedHash, $actualHash);
     }
 
@@ -55,6 +59,7 @@ class ReleasePrepareServiceTest extends TestCase
         static::assertNull($releaseFirstRead);
 
         $releaseFirstRead = $listFirstRead->addRelease('v6.2.2');
+        static::assertNotNull($releaseFirstRead);
         $releaseFirstRead->makePublic();
         $releaseFirstRead->download_link_install = 'https://example.com/install.zip';
 
@@ -67,8 +72,11 @@ class ReleasePrepareServiceTest extends TestCase
         static::assertEquals($listFirstRead, $listSecondRead);
 
         $releaseSecondRead = $listSecondRead->getRelease('v6.2.2');
+        static::assertNotNull($releaseSecondRead);
         static::assertEquals($releaseFirstRead, $releaseSecondRead);
-        static::assertEquals($releaseSecondRead, $listSecondRead->release[0], 'Should be first');
+        $secondReadReleases = $listSecondRead->releases;
+        static::assertNotNull($secondReadReleases);
+        static::assertEquals($releaseSecondRead, $secondReadReleases[0], 'Should be first');
 
         static::assertTrue($releaseSecondRead->isPublic());
         static::assertSame('https://example.com/install.zip', $releaseSecondRead->getDownloadLinkInstall());
@@ -78,7 +86,9 @@ class ReleasePrepareServiceTest extends TestCase
     {
         $changelogService = $this->createMock(ChangelogService::class);
 
-        $expectedHash = sha1($this->deployFilesystem->read(ReleasePrepareService::SHOPWARE_XML_PATH));
+        $shopwareXml = $this->deployFilesystem->read(ReleasePrepareService::SHOPWARE_XML_PATH);
+        static::assertNotFalse($shopwareXml);
+        $expectedHash = sha1($shopwareXml);
 
         $changelogService
             ->method('getChangeLog')
@@ -101,7 +111,9 @@ class ReleasePrepareServiceTest extends TestCase
 
         static::assertEquals($expectedList, $actualList);
 
-        $actualHash = sha1($this->deployFilesystem->read(ReleasePrepareService::SHOPWARE_XML_PATH));
+        $shopwareXml = $this->deployFilesystem->read(ReleasePrepareService::SHOPWARE_XML_PATH);
+        static::assertNotFalse($shopwareXml);
+        $actualHash = sha1($shopwareXml);
         static::assertSame($expectedHash, $actualHash);
     }
 
@@ -123,6 +135,8 @@ class ReleasePrepareServiceTest extends TestCase
         $releaseList = $releasePrepareService->getReleaseList();
 
         $release = $releaseList->getRelease('v6.2.2');
+        static::assertNotNull($release);
+        static::assertNotNull($release->locales);
 
         static::assertSame(
             '
@@ -156,6 +170,7 @@ NEXT-1235 - EN bar
 
         $releaseList = $releasePrepareService->getReleaseList();
         $release = $releaseList->addRelease('6.2.2');
+        static::assertNotNull($release);
 
         static::assertEmpty($release->locales);
 
@@ -166,6 +181,8 @@ NEXT-1235 - EN bar
         $releaseList = $releasePrepareService->getReleaseList();
 
         $release = $releaseList->getRelease('v6.2.2');
+        static::assertNotNull($release);
+        static::assertNotNull($release->locales);
 
         static::assertSame(
             '
@@ -199,6 +216,9 @@ NEXT-1235 - EN bar
 
         $releaseList = $releasePrepareService->getReleaseList();
         $release = $releaseList->addRelease('6.2.2-RC1');
+        static::assertNotNull($release);
+        static::assertNotNull($release->locales);
+
         $release->manual = true;
         $release->locales->de->changelog = '<![CDATA[
 NEXT-1234 - DE Foo
@@ -212,6 +232,8 @@ NEXT-1235 - DE Bar
         $releaseList = $releasePrepareService->getReleaseList();
 
         $release = $releaseList->getRelease('v6.2.2-RC1');
+        static::assertNotNull($release);
+        static::assertNotNull($release->locales);
 
         static::assertSame(
             (string) $release->locales->de->changelog,

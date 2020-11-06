@@ -20,13 +20,12 @@ class ReleaseInfoCommand extends ReleaseCommand
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $releaseService = $this->getReleasePrepareService($input, $output);
+        $tag = $input->getArgument('tag');
+        if (!\is_string($tag)) {
+            throw new \RuntimeException('Invalid tag given');
+        }
 
-        $list = $releaseService->getReleaseList();
-
-        $release = $list->getRelease($input->getArgument('tag'));
-
-        echo \json_encode($release);
+        echo \json_encode($this->getReleasePrepareService($input, $output)->getReleaseList()->getRelease($tag));
 
         return 0;
     }

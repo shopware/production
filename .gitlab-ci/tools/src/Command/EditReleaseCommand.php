@@ -12,9 +12,9 @@ class EditReleaseCommand extends ReleaseCommand
 {
     public static $defaultName = 'release:edit';
 
-    public function execute(InputInterface $input, OutputInterface $io): int
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
-        $io = new SymfonyStyle($input, $io);
+        $io = new SymfonyStyle($input, $output);
 
         if (!$input->isInteractive()) {
             $io->error('This command can only be run interactively');
@@ -26,7 +26,14 @@ class EditReleaseCommand extends ReleaseCommand
 
         $tempFilePath = tempnam('/tmp', ReleasePrepareService::SHOPWARE_XML_PATH . '.cur_');
         $tempFileHandle = fopen($tempFilePath, 'wb');
-        stream_copy_to_stream($deployFilesystem->readStream(ReleasePrepareService::SHOPWARE_XML_PATH), $tempFileHandle);
+        $shopwareXml = $deployFilesystem->readStream(ReleasePrepareService::SHOPWARE_XML_PATH);
+        if ($shopwareXml === false) {
+            throw new \RuntimeException('Could not read Shopware xml file');
+        }
+        $copyResult = stream_copy_to_stream($shopwareXml, $tempFileHandle);
+        if ($copyResult === false) {
+            throw new \RuntimeException('Could not copy Shopware xml');
+        }
         fclose($tempFileHandle);
 
         $tempFilePathNew = tempnam('/tmp', ReleasePrepareService::SHOPWARE_XML_PATH . '.new_');

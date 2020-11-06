@@ -110,19 +110,14 @@ class ReleaseServiceTest extends TestCase
     /**
      * @dataProvider validatePackageProvider
      */
-    public function testValidatePackage(bool $expected, array $packageData, string $tag, ?string $expectedException = null, ?string $msg = null): void
+    public function testValidatePackage(bool $expected, array $packageData, string $tag): void
     {
         $releaseService = new ReleaseService(
             [],
             $this->createMock(ReleasePrepareService::class),
             $this->createMock(TaggingService::class)
         );
-        if ($expectedException) {
-            $this->expectException($expectedException);
-            if ($msg) {
-                $this->expectExceptionMessage($msg);
-            }
-        }
+
         $actual = $releaseService->validatePackage($packageData, $tag);
         static::assertSame($expected, $actual);
     }
@@ -145,6 +140,7 @@ class ReleaseServiceTest extends TestCase
         $releasePrepareService->method('getReleaseList')->willReturn($list);
 
         $before = $list->getRelease($tag);
+        static::assertNotNull($before);
 
         $releasePrepareService->expects(static::once())->method('uploadArchives')->with($before);
         $releasePrepareService->expects(static::once())->method('storeReleaseList')->with($list);
@@ -175,6 +171,7 @@ class ReleaseServiceTest extends TestCase
         $releasePrepareService->method('getReleaseList')->willReturn($list);
 
         $before = $list->getRelease($tag);
+        static::assertNotNull($before);
         $before->makePublic();
 
         $releasePrepareService->expects(static::never())->method('uploadArchives');
@@ -290,7 +287,7 @@ class ReleaseServiceTest extends TestCase
 
     private function makeFakeRelease(array $config, string $tag): void
     {
-        foreach ($config['repos'] as $repo => $repoData) {
+        foreach ($config['repos'] as $repoData) {
             file_put_contents($repoData['path'] . '/PLATFORM_COMMIT_SHA', self::FAKE_PLATFORM_COMMIT_SHA);
 
             $this->execGit(['remote', 'remove', 'origin'], $repoData['path']);

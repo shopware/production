@@ -156,13 +156,10 @@ class SystemInstallCommand extends Command
             ];
         }
 
-        $commands = array_merge($commands, [
-            [
-                'command' => 'assets:install',
-            ],
-            [
-                'command' => 'cache:clear',
-            ],
+        array_push($commands, [
+            'command' => 'assets:install',
+        ], [
+            'command' => 'cache:clear',
         ]);
 
         $this->runCommands($commands, $output);
@@ -177,14 +174,19 @@ class SystemInstallCommand extends Command
     }
 
     /**
-     * @param array<array-key, array<string, string>> $commands
+     * @param array<int, array<string, string|bool>> $commands
      */
     private function runCommands(array $commands, OutputInterface $output): int
     {
+        $application = $this->getApplication();
+        if ($application === null) {
+            throw new \RuntimeException('No application initialised');
+        }
+
         foreach ($commands as $parameters) {
             $output->writeln('');
 
-            $command = $this->getApplication()->find($parameters['command']);
+            $command = $application->find($parameters['command']);
             unset($parameters['command']);
             $returnCode = $command->run(new ArrayInput($parameters, $command->getDefinition()), $output);
             if ($returnCode !== 0) {

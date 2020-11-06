@@ -21,9 +21,12 @@ class ReleasePrepareCommand extends ReleaseCommand
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $releaseService = $this->getReleasePrepareService($input, $output);
+        $tag = $input->getArgument('tag');
+        if (!\is_string($tag)) {
+            throw new \RuntimeException('Invalid tag given');
+        }
 
-        $releaseService->prepareRelease($input->getArgument('tag'));
+        $this->getReleasePrepareService($input, $output)->prepareRelease($tag);
 
         return 0;
     }

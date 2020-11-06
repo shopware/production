@@ -70,7 +70,7 @@ class SystemSetupCommand extends Command
         $env['APP_ENV'] = $io->choice('Application environment', ['prod', 'dev'], 'prod');
 
         // TODO: optionally check http connection (create test file in public and request)
-        $env['APP_URL'] = $io->ask('URL to your /public folder', 'http://shopware.local', static function ($value) {
+        $env['APP_URL'] = $io->ask('URL to your /public folder', 'http://shopware.local', static function (string $value): string {
             $value = trim($value);
 
             if ($value === '') {
@@ -120,8 +120,8 @@ class SystemSetupCommand extends Command
 
     private function getDsn(InputInterface $input, SymfonyStyle $io): string
     {
-        $emptyValidation = static function ($value) {
-            if (trim((string) $value) === '') {
+        $emptyValidation = static function (string $value): string {
+            if (trim($value) === '') {
                 throw new \RuntimeException('This value is required.');
             }
 
@@ -129,7 +129,7 @@ class SystemSetupCommand extends Command
         };
 
         $dsn = $input->getOption('database-url');
-        if ($dsn) {
+        if (\is_string($dsn)) {
             $params = parse_url($dsn);
             $dsnWithoutDb = sprintf(
                 '%s://%s:%s@%s:%s',
@@ -210,7 +210,11 @@ class SystemSetupCommand extends Command
             return 0;
         }
 
-        $command = $this->getApplication()->find('system:generate-jwt-secret');
+        $application = $this->getApplication();
+        if ($application === null) {
+            throw new \RuntimeException('No application initialised');
+        }
+        $command = $application->find('system:generate-jwt-secret');
         $parameters = [
             '--private-key-path' => $jwtDir . '/private.pem',
             '--public-key-path' => $jwtDir . '/public.pem',

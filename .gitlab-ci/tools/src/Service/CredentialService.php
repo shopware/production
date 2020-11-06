@@ -18,7 +18,7 @@ class CredentialService
         if (empty($username)) {
             $question = new Question('Shopware username');
             $question->setMaxAttempts(2);
-            $question->setValidator(static function ($value) {
+            $question->setValidator(static function (string $value): string {
                 if (trim($value) === '') {
                     throw new InvalidOptionException('The username cannot be empty');
                 }
@@ -33,7 +33,7 @@ class CredentialService
         if (empty($password)) {
             $question = new Question('Shopware password');
             $question->setHidden(true);
-            $question->setValidator(static function ($value) {
+            $question->setValidator(static function (string $value): string {
                 if (trim($value) === '') {
                     throw new InvalidOptionException('The password cannot be empty');
                 }

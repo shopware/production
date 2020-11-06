@@ -10,7 +10,7 @@ class TaggingServiceTest extends TestCase
 {
     public function testTagAndPushPlatform(): void
     {
-        $config['stability'] = 'alpha';
+        $config = ['stability' => 'alpha'];
         $gitlabClient = $this->createMock(Client::class);
         $taggingService = new TaggingService($config, $gitlabClient);
 
@@ -19,7 +19,6 @@ class TaggingServiceTest extends TestCase
 
         $remotePath = escapeshellarg($remotePath);
 
-        $commitMsg = 'Test commit';
         $shellCode = <<<CODE
     cd $remotePath
     git init .
