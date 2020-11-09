@@ -10,6 +10,8 @@ class TaggingServiceTest extends TestCase
 {
     public function testTagAndPushPlatform(): void
     {
+        static::markTestSkipped('NEXT-11764');
+
         $config = ['stability' => 'alpha'];
         $gitlabClient = $this->createMock(Client::class);
         $taggingService = new TaggingService($config, $gitlabClient);

@@ -4,6 +4,8 @@ namespace Shopware\CI\Test\Service;
 
 use League\Flysystem\Filesystem;
 use League\Flysystem\Memory\MemoryAdapter;
+use PHPUnit\Framework\MockObject\Builder\InvocationStubber;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\CI\Service\ChangelogService;
 use Shopware\CI\Service\ReleasePrepareService;
@@ -75,7 +77,7 @@ class ReleasePrepareServiceTest extends TestCase
         $releaseSecondRead = $listSecondRead->getRelease('v6.2.2');
         static::assertNotNull($releaseSecondRead);
         static::assertEquals($releaseFirstRead, $releaseSecondRead);
-        $secondReadReleases = $listSecondRead->releases;
+        $secondReadReleases = $listSecondRead->release;
         static::assertNotNull($secondReadReleases);
         static::assertEquals($releaseSecondRead, $secondReadReleases[0], 'Should be first');
 
@@ -249,72 +251,134 @@ NEXT-1235 - DE Bar
 
     public function testUpsertSbpVersion(): void
     {
+        $versions = [
+            'parentVersion' => [
+                'id' => 1,
+                'name' => '6.3',
+                'public' => false,
+                'releaseDate' => null,
+            ],
+        ];
         $sbpClient = $this->createMock(SbpClient::class);
+        $this->mockSbpClientVersions($sbpClient, $versions);
+
+        $releasePrepareService = $this->getReleasePrepareService(null, null, null, $sbpClient);
+        $releaseDate = new \DateTime();
+        $releaseDate->setTimestamp(strtotime('first monday of next month'));
+
+        $sbpClient->expects(static::once())
+            ->method('upsertVersion')
+            ->with('6.3.0.0', 1, $releaseDate->format('Y-m-d'), false);
+
+        $releasePrepareService->upsertSbpVersion('v6.3.0.0');
+    }
+
+    public function testUpsertSbpVersionWithExisting(): void
+    {
+        $versions = [
+            'parentVersion' => [
+                'id' => 1,
+                'name' => '6.3',
+                'public' => false,
+                'releaseDate' => null,
+            ],
+            'version' => [
+                'id' => 2,
+                'name' => '6.3.0.0',
+                'public' => false,
+            ],
+        ];
+        $sbpClient = $this->createMock(SbpClient::class);
+        $this->mockSbpClientVersions($sbpClient, $versions);
         $releasePrepareService = $this->getReleasePrepareService(null, null, null, $sbpClient);
 
-        $parentVersion = [
-            'id' => 1,
-            'name' => '6.3',
-            'public' => false,
-            'releaseDate' => null,
-        ];
-        $version = [
-            'id' => 2,
-            'name' => '6.3.0.0',
-            'parent' => 1,
-            'public' => false,
-            'releaseDate' => null,
-        ];
-        $sbpClient->method('getVersion')->with(1)->willReturn($parentVersion);
-        $sbpClient->method('getVersion')->with(2)->willReturn($version);
-        $sbpClient->method('getVersionByName')->with('6.3')->willReturn($parentVersion);
-        $sbpClient->method('getVersionByName')->with('6.3.0')->willReturn(null);
-        $sbpClient->method('getVersionByName')->with('6.3.0.0')->willReturn($version);
-
-        $sbpClient->expects($this->once())
+        $releaseDate = new \DateTime();
+        $releaseDate->setTimestamp(strtotime('first monday of next month'));
+        $sbpClient->expects(static::once())
             ->method('upsertVersion')
-            ->with('6.3.0.0', 1, '2020-12-01', false);
+            ->with('6.3.0.0', 1, $releaseDate->format('Y-m-d'), false);
+
+        $releasePrepareService->upsertSbpVersion('v6.3.0.0');
+    }
+
+    public function testUpsertSbpVersionWithExistingAndReleaseDate(): void
+    {
+        $releaseDate = (new \DateTimeImmutable())->format('Y-m-d');
+        $versions = [
+            'parentVersion' => [
+                'id' => 1,
+                'name' => '6.3',
+                'public' => false,
+                'releaseDate' => null,
+            ],
+            'version' => [
+                'id' => 2,
+                'name' => '6.3.0.0',
+                'public' => false,
+                'releaseDate' => $releaseDate,
+            ],
+        ];
+        $sbpClient = $this->createMock(SbpClient::class);
+        $this->mockSbpClientVersions($sbpClient, $versions);
+        $releasePrepareService = $this->getReleasePrepareService(null, null, null, $sbpClient);
+
+        $sbpClient->expects(static::once())
+            ->method('upsertVersion')
+            ->with('6.3.0.0', 1, $releaseDate, false);
 
         $releasePrepareService->upsertSbpVersion('v6.3.0.0');
     }
 
     public function testUpsertSbpVersionUseMostSpecificVersion(): void
     {
+        $versions = [
+            'parentParentVersion' => [
+                'id' => 1,
+                'name' => '6.3',
+                'public' => false,
+                'releaseDate' => null,
+            ],
+            'parentVersion' => [
+                'id' => 2,
+                'name' => '6.3.0',
+                'parent' => 1,
+                'public' => false,
+                'releaseDate' => null,
+            ],
+        ];
+
         $sbpClient = $this->createMock(SbpClient::class);
+        $this->mockSbpClientVersions($sbpClient, $versions);
         $releasePrepareService = $this->getReleasePrepareService(null, null, null, $sbpClient);
 
-        $parentParentVersion = [
-            'id' => 1,
-            'name' => '6.3',
-            'public' => false,
-            'releaseDate' => null,
-        ];
-        $parentVersion = [
-            'id' => 2,
-            'name' => '6.3.0',
-            'parent' => $parentParentVersion['id'],
-            'public' => false,
-            'releaseDate' => null,
-        ];
-        $version = [
-            'id' => 3,
-            'name' => '6.3.0.0',
-            'parent' => 1,
-            'public' => false,
-            'releaseDate' => null,
-        ];
-        $sbpClient->method('getVersion')->with($parentParentVersion['id'])->willReturn($parentParentVersion);
-        $sbpClient->method('getVersion')->with($parentVersion['id'])->willReturn($parentVersion);
-        $sbpClient->method('getVersion')->with($version['id'])->willReturn($version);
-        $sbpClient->method('getVersionByName')->with($parentParentVersion['name'])->willReturn($parentParentVersion);
-        $sbpClient->method('getVersionByName')->with($parentVersion['name'])->willReturn($parentVersion);
-        $sbpClient->method('getVersionByName')->with($version['name'])->willReturn($version);
+        $releaseDate = new \DateTime();
+        $releaseDate->setTimestamp(strtotime('first monday of next month'));
 
-        $sbpClient->expects($this->once())
+        $sbpClient->expects(static::once())
             ->method('upsertVersion')
-            ->with('6.3.0.0', 1, '2020-12-01', false);
+            ->with('6.3.0.0', 2, $releaseDate->format('Y-m-d'), false);
 
         $releasePrepareService->upsertSbpVersion('v6.3.0.0');
+    }
+
+    private function mockSbpClientVersions(MockObject $mock, array $versions): void
+    {
+        $indexedByName = array_column($versions, null, 'name');
+        $indexedById = array_column($versions, null, 'id');
+
+        $mock->method('getVersions')->willReturn(array_values($versions));
+
+        /** @var InvocationStubber $getVersionByName */
+        $getVersionByName = $mock->method('getVersionByName');
+        $getVersionByName->willReturnCallback(function (string $name) use ($indexedByName) {
+            return $indexedByName[$name] ?? null;
+        });
+
+        /** @var InvocationStubber $getVersion */
+        $getVersion = $mock->method('getVersion');
+        $getVersion->willReturnCallback(function (int $id) use ($indexedById) {
+            return $indexedById[$id] ?? null;
+        });
     }
 
     private function getReleasePrepareService(

@@ -24,7 +24,7 @@ class SbpClientTest extends TestCase
         }
 
         if (!isset($_SERVER['SBP_API_PASSWORD'])) {
-            static::markTestSkipped('define SBP_API_USER');
+            static::markTestSkipped('define SBP_API_PASSWORD');
         }
 
         $this->sbpClient = new SbpClient(

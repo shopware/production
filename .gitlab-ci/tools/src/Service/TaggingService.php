@@ -17,10 +17,16 @@ class TaggingService
      */
     private $gitlabApiClient;
 
-    public function __construct(array $config, Client $gitlabApiClient)
+    /**
+     * @var bool
+     */
+    private $sign;
+
+    public function __construct(array $config, Client $gitlabApiClient, bool $sign = false)
     {
         $this->config = $config;
         $this->gitlabApiClient = $gitlabApiClient;
+        $this->sign = $sign;
     }
 
     public function deleteTag(string $tag, array $repos): void
@@ -60,8 +66,10 @@ CODE;
             $path = escapeshellarg($repoData['path']);
             $remote = escapeshellarg($repoData['remoteUrl']);
 
+            $sign = $this->sign ? '--sign' : '--no-sign';
+
             $shellCode = <<<CODE
-    git -C $path tag $tag -a -m $commitMsg || true
+    git -C $path tag $tag $sign -a -m $commitMsg || true
     git -C $path remote add release  $remote
     git -C $path push release $ref
 CODE;
@@ -83,13 +91,15 @@ CODE;
 
         $path = escapeshellarg($path);
 
+        $sign = $this->sign ? '--sign' : '--no-sign';
+
         $commitMsg = 'Release ' . $tag;
         $shellCode = <<<CODE
     git -C $path init --bare
     git -C $path remote add origin $remote
     git -C $path fetch --depth=1 origin $commitRef
     git -C $path reset --soft FETCH_HEAD
-    git -C $path tag $tag -a -m "$commitMsg"
+    git -C $path tag $tag -a -m "$commitMsg" $sign
     git -C $path push origin refs/tags/$tag
 CODE;
 
@@ -109,11 +119,14 @@ CODE;
         $escapedTag = escapeshellarg($tag);
         $gitRemoteUrl = escapeshellarg($gitRemoteUrl);
 
+        $sign = $this->sign ? '--gpg-sign' : '--no-gpg-sign';
+        $signTag = $this->sign ? '--sign' : '--no-sign';
+
         $shellCode = <<<CODE
             set -e
             git -C $repository add PLATFORM_COMMIT_SHA composer.json composer.lock public/recovery/install/data/version
-            git -C $repository commit -m $commitMsg
-            git -C $repository tag $escapedTag -a -m $commitMsg
+            git -C $repository commit -m $commitMsg $sign
+            git -C $repository tag $escapedTag -a -m $commitMsg $signTag
             git -C $repository remote add release $gitRemoteUrl
             git -C $repository push release --tags
 CODE;

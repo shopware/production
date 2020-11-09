@@ -41,6 +41,8 @@ class SbpClient
 
     public function getVersionByName(string $name): ?array
     {
+        $name = ltrim($name, 'v ');
+
         $versions = $this->getVersions();
         foreach ($versions as $version) {
             if ($version['name'] === $name) {
@@ -72,20 +74,23 @@ class SbpClient
             ]
         );
 
-        return array_map(function ($v) {
-            $v['parent'] = isset($v['parent']) ? ((int)$v['parent']) : null;
+        return array_map(function (array $v) {
+            $v['parent'] = isset($v['parent']) ? ((int) $v['parent']) : null;
+
             return $v;
         }, json_decode($response->getBody()->getContents(), true));
     }
 
-    public function upsertVersion(string $name, ?int $parentId, ?string $releaseDate, ?bool $public): void
+    public function upsertVersion(string $versionName, ?int $parentId, ?string $releaseDate, ?bool $public): void
     {
+        $name = ltrim($versionName, 'v ');
+
         $current = $this->getVersionByName($name);
 
         $parent = null;
         if ($parentId === null && $current !== null) {
             $parent = $this->getVersion($current['parent']);
-        } else if ($parentId !== null) {
+        } elseif ($parentId !== null) {
             $parent = $this->getVersion($parentId);
         }
         if ($parent === null) {

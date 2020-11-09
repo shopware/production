@@ -116,17 +116,15 @@ class ReleasePrepareService
         }
 
         if ($parent === null) {
-            echo 'failed to get sbp version. parent not found';
-
-            return;
+            throw new \RuntimeException('failed to get sbp version. parent not found');
         }
 
         $current = $this->sbpClient->getVersionByName($version);
-        if ($current === null) {
+        if (isset($current['releaseDate'])) {
+            $releaseDate = new \DateTimeImmutable(isset($current['releaseDate']['date']) ? $current['releaseDate']['date'] : $current['releaseDate']);
+        } else {
             $releaseDate = new \DateTime();
             $releaseDate->setTimestamp(strtotime('first monday of next month'));
-        } else {
-            $releaseDate = new \DateTimeImmutable($current['releaseDate']['date']);
         }
 
         $this->sbpClient->upsertVersion($version, $parent['id'], $releaseDate->format('Y-m-d'), null);

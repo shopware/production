@@ -152,13 +152,7 @@ abstract class ReleaseCommand extends Command
             $artifactFilesystem,
             $this->getChangelogService($input, $output),
             new UpdateApiService($config['updateApiHost']),
-            new SbpClient(new Client([
-                'base_uri' => $_SERVER['SBP_API_BASE_URI'],
-                'headers' => [
-                    'Content-Type' => 'application/json',
-                    'User-Agent' => 'gitlab.shopware.com',
-                ],
-            ]))
+            $this->getSbpClient($input, $output)
         );
     }
 
@@ -167,6 +161,17 @@ abstract class ReleaseCommand extends Command
         $config = $this->getConfig($input, $output);
 
         return new VersioningService(new VersionParser(), $config['stability']);
+    }
+
+    protected function getSbpClient(InputInterface $input, OutputInterface $output): SbpClient
+    {
+        return new SbpClient(new Client([
+            'base_uri' => $_SERVER['SBP_API_BASE_URI'],
+            'headers' => [
+                'Content-Type' => 'application/json',
+                'User-Agent' => 'gitlab.shopware.com',
+            ],
+        ]));
     }
 
     protected function getTaggingService(InputInterface $input, OutputInterface $output): TaggingService
@@ -190,7 +195,8 @@ abstract class ReleaseCommand extends Command
         return new ReleaseService(
             $config,
             $this->getReleasePrepareService($input, $output),
-            $this->getTaggingService($input, $output)
+            $this->getTaggingService($input, $output),
+            $this->getSbpClient($input, $output)
         );
     }
 }

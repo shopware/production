@@ -4,9 +4,12 @@ namespace Shopware\CI\Test\Service;
 
 use Composer\Semver\VersionParser;
 use GuzzleHttp\Client;
+use PHPUnit\Framework\MockObject\Builder\InvocationStubber;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\CI\Service\ReleasePrepareService;
 use Shopware\CI\Service\ReleaseService;
+use Shopware\CI\Service\SbpClient;
 use Shopware\CI\Service\TaggingService;
 use Shopware\CI\Service\Xml\Release;
 
@@ -115,7 +118,8 @@ class ReleaseServiceTest extends TestCase
         $releaseService = new ReleaseService(
             [],
             $this->createMock(ReleasePrepareService::class),
-            $this->createMock(TaggingService::class)
+            $this->createMock(TaggingService::class),
+            $this->createMock(SbpClient::class)
         );
 
         $actual = $releaseService->validatePackage($packageData, $tag);
@@ -129,7 +133,8 @@ class ReleaseServiceTest extends TestCase
         $releaseService = new ReleaseService(
             [],
             $releasePrepareService,
-            $taggingService
+            $taggingService,
+            $this->createMock(SbpClient::class)
         );
         $content = file_get_contents(__DIR__ . '/fixtures/shopware6.xml');
         /** @var Release $list */
@@ -160,7 +165,8 @@ class ReleaseServiceTest extends TestCase
         $releaseService = new ReleaseService(
             [],
             $releasePrepareService,
-            $taggingService
+            $taggingService,
+            $this->createMock(SbpClient::class)
         );
         $content = file_get_contents(__DIR__ . '/fixtures/shopware6.xml');
         /** @var Release $list */
@@ -191,7 +197,8 @@ class ReleaseServiceTest extends TestCase
         $releaseService = new ReleaseService(
             [],
             $releasePrepareService,
-            $taggingService
+            $taggingService,
+            $this->createMock(SbpClient::class)
         );
         $releasePrepareService->method('getReleaseList')->willReturn(new Release('<Release/>'));
 
@@ -203,20 +210,22 @@ class ReleaseServiceTest extends TestCase
 
     public function testReleaseTags(): void
     {
+        static::markTestSkipped('NEXT-11764');
+
         $client = $this->createMock(Client::class);
         $client->expects(static::once())->method('request');
 
         $this->setUpRepos();
 
         $config = $this->getBaseConfig();
-        $tag = $config['tag'] = 'v6.1.999';
+        $tag = $config['tag'] = 'v6.3.999';
 
-        $this->makeFakeRelease($config, 'v6.1.998');
+        $this->makeFakeRelease($config, 'v6.3.998');
 
         $taggingService = new TaggingService($config, $client);
         $releasePrepareService = $this->createMock(ReleasePrepareService::class);
 
-        $releaseService = new ReleaseService($config, $releasePrepareService, $taggingService);
+        $releaseService = new ReleaseService($config, $releasePrepareService, $taggingService, $this->createMock(SbpClient::class));
 
         $this->startGitServer();
         $releaseService->releaseTags($tag);
@@ -258,6 +267,103 @@ class ReleaseServiceTest extends TestCase
         $this->stopGitServer();
     }
 
+    public function testReleaseSbpVersionNew(): void
+    {
+        $versions = [
+            'parentParentVersion' => [
+                'id' => 1,
+                'name' => '6.3',
+                'public' => false,
+                'releaseDate' => null,
+            ],
+            'parentVersion' => [
+                'id' => 2,
+                'name' => '6.3.0',
+                'parent' => 1,
+                'public' => false,
+                'releaseDate' => null,
+            ],
+        ];
+
+        $sbpClient = $this->createMock(SbpClient::class);
+        $this->mockSbpClientVersions($sbpClient, $versions);
+        $releaseService = new ReleaseService(
+            [],
+            $this->createMock(ReleasePrepareService::class),
+            $this->createMock(TaggingService::class),
+            $sbpClient
+        );
+
+        $releaseDate = new \DateTime();
+        $sbpClient->expects(static::once())
+            ->method('upsertVersion')
+            ->with('v6.3.0.0', null, $releaseDate->format('Y-m-d'), true);
+
+        $releaseService->releaseSbpVersion('v6.3.0.0');
+    }
+
+    public function testReleaseSbpVersionExisting(): void
+    {
+        $versions = [
+            'parentParentVersion' => [
+                'id' => 1,
+                'name' => '6.3',
+                'public' => false,
+                'releaseDate' => null,
+            ],
+            'parentVersion' => [
+                'id' => 2,
+                'name' => '6.3.0',
+                'parent' => 1,
+                'public' => false,
+                'releaseDate' => null,
+            ],
+            'version' => [
+                'id' => 23,
+                'name' => '6.3.0.0',
+                'parent' => 2,
+                'public' => false,
+                'releaseDate' => '2020-03-03',
+            ],
+        ];
+
+        $sbpClient = $this->createMock(SbpClient::class);
+        $this->mockSbpClientVersions($sbpClient, $versions);
+        $releaseService = new ReleaseService(
+            [],
+            $this->createMock(ReleasePrepareService::class),
+            $this->createMock(TaggingService::class),
+            $sbpClient
+        );
+
+        $releaseDate = new \DateTime();
+        $sbpClient->expects(static::once())
+            ->method('upsertVersion')
+            ->with('v6.3.0.0', null, $releaseDate->format('Y-m-d'), true);
+
+        $releaseService->releaseSbpVersion('v6.3.0.0');
+    }
+
+    private function mockSbpClientVersions(MockObject $mock, array $versions): void
+    {
+        $indexedByName = array_column($versions, null, 'name');
+        $indexedById = array_column($versions, null, 'id');
+
+        $mock->method('getVersions')->willReturn(array_values($versions));
+
+        /** @var InvocationStubber $getVersionByName */
+        $getVersionByName = $mock->method('getVersionByName');
+        $getVersionByName->willReturnCallback(function (string $name) use ($indexedByName) {
+            return $indexedByName[$name] ?? null;
+        });
+
+        /** @var InvocationStubber $getVersion */
+        $getVersion = $mock->method('getVersion');
+        $getVersion->willReturnCallback(function (int $id) use ($indexedById) {
+            return $indexedById[$id] ?? null;
+        });
+    }
+
     private function startGitServer(): void
     {
         $path = escapeshellarg($this->fakeRemoteRepos);
@@ -292,8 +398,8 @@ class ReleaseServiceTest extends TestCase
 
             $this->execGit(['remote', 'remove', 'origin'], $repoData['path']);
             $this->execGit(['add', 'PLATFORM_COMMIT_SHA'], $repoData['path']);
-            $this->execGit(['commit', '--message' => 'test commit'], $repoData['path']);
-            $this->execGit(['tag', $tag, '-a', '--message' => 'test commit ' . $tag], $repoData['path']);
+            $this->execGit(['commit', '--message' => 'test commit', '--no-gpg-sign'], $repoData['path']);
+            $this->execGit(['tag', $tag, '-a', '--message' => 'test commit ' . $tag, '--no-sign'], $repoData['path']);
             $this->execGit(['checkout', $tag], $repoData['path']);
         }
 
@@ -350,7 +456,7 @@ class ReleaseServiceTest extends TestCase
 
         $this->execGit(['init'], $this->fakeRemoteRepos . '/prod');
         $this->execGit(['add', '.'], $this->fakeRemoteRepos . '/prod');
-        $this->execGit(['commit', '--message' => 'initial commit'], $this->fakeRemoteRepos . '/prod');
+        $this->execGit(['commit', '--message' => 'initial commit', '--no-gpg-sign'], $this->fakeRemoteRepos . '/prod');
         $this->execGit(['clone', $this->fakeRemoteRepos . '/prod', $this->fakeProd]);
 
         exec('mkdir ' . escapeshellarg($this->fakeProd . '/repos'));

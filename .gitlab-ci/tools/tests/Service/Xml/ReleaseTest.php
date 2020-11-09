@@ -129,13 +129,13 @@ class ReleaseTest extends TestCase
 
         static::assertNull($releaseRoot->getRelease('v6.2.2'));
 
-        $releases = $releaseRoot->releases;
+        $releases = $releaseRoot->release;
         static::assertNotNull($releases);
         $count = \count($releases);
 
         $newRelease = $releaseRoot->addRelease('v6.2.2');
         static::assertInstanceOf(Release::class, $newRelease);
-        $releases = $releaseRoot->releases;
+        $releases = $releaseRoot->release;
         static::assertNotNull($releases);
         static::assertCount($count + 1, $releases);
 
@@ -148,7 +148,7 @@ class ReleaseTest extends TestCase
 
         $newRelease->makePublic();
 
-        $releases = $releaseRoot->releases;
+        $releases = $releaseRoot->release;
         static::assertNotNull($releases);
         static::assertEquals($newRelease, $releases[0]);
     }

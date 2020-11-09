@@ -21,14 +21,21 @@ class ReleaseService
      */
     private $releasePrepareService;
 
+    /**
+     * @var SbpClient
+     */
+    private $sbpClient;
+
     public function __construct(
         array $config,
         ReleasePrepareService $releasePrepareService,
-        TaggingService $taggingService
+        TaggingService $taggingService,
+        SbpClient $sbpClient
     ) {
         $this->config = $config;
         $this->taggingService = $taggingService;
         $this->releasePrepareService = $releasePrepareService;
+        $this->sbpClient = $sbpClient;
     }
 
     public function releasePackage(string $tag): void
@@ -90,6 +97,19 @@ class ReleaseService
             $this->config['targetBranch'],
             'Release ' . $tag
         );
+
+        try {
+            $this->releaseSbpVersion($tag);
+        } catch (\Throwable $e) {
+        }
+    }
+
+    public function releaseSbpVersion(string $tag): void
+    {
+        $current = $this->sbpClient->getVersionByName($tag);
+        $releaseDate = new \DateTimeImmutable();
+
+        $this->sbpClient->upsertVersion($tag, $current['parent'] ?? null, $releaseDate->format('Y-m-d'), true);
     }
 
     public function validatePackage(array $packageData, string $tag): bool

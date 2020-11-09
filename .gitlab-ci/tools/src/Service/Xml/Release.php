@@ -9,6 +9,9 @@ class Release extends SimpleXMLElement
     /** @var Release[]|null */
     public $releases;
 
+    /** @var Release[]|null */
+    public $release;
+
     /** @var string */
     public $tag = '';
 
@@ -116,13 +119,13 @@ class Release extends SimpleXMLElement
     {
         $parsed = self::parseVersion($version);
 
+        /** @var Release|null $matching */
         $matching = null;
-        $releases = $this->releases;
-        if ($releases === null) {
+        if ($this->release === null) {
             return null;
         }
 
-        foreach ($releases as $r) {
+        foreach ($this->release as $r) {
             if ($r->getVersion() !== $parsed['version'] || $r->getRc() !== $parsed['rc']) {
                 continue;
             }
@@ -142,7 +145,7 @@ class Release extends SimpleXMLElement
      */
     public function getReleases(): \Generator
     {
-        yield from $this->releases;
+        yield from $this->release;
     }
 
     public function getTag(): string
@@ -252,12 +255,17 @@ class Release extends SimpleXMLElement
         }
 
         if (isset($data['changelog'])) {
-            $this->locales->$lang->changelog = new SimpleXMLElement('');
-            $this->addCDataToNode($this->locales->$lang->changelog, PHP_EOL . $data['changelog'] . PHP_EOL);
+            $this->locales->$lang->changelog = '';
+
+            /** @var SimpleXMLElement $changelog */
+            $changelog = $this->locales->$lang->changelog;
+            $this->addCDataToNode($changelog, PHP_EOL . $data['changelog'] . PHP_EOL);
         }
         if (isset($data['important_changes'])) {
-            $this->locales->$lang->important_changes = new SimpleXMLElement('');
-            $this->addCDataToNode($this->locales->$lang->important_changes, PHP_EOL . $data['important_changes'] . PHP_EOL);
+            $this->locales->$lang->important_changes = '';
+            /** @var SimpleXMLElement $importantChanges */
+            $importantChanges = $this->locales->$lang->important_changes;
+            $this->addCDataToNode($importantChanges, PHP_EOL . $data['important_changes'] . PHP_EOL);
         }
     }
 
