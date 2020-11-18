@@ -10,6 +10,7 @@ use League\Flysystem\AwsS3v3\AwsS3Adapter;
 use League\Flysystem\Filesystem;
 use Shopware\CI\Service\ChangelogService;
 use Shopware\CI\Service\CredentialService;
+use Shopware\CI\Service\ProcessBuilder;
 use Shopware\CI\Service\ReleasePrepareService;
 use Shopware\CI\Service\ReleaseService;
 use Shopware\CI\Service\SbpClient;
@@ -62,7 +63,14 @@ abstract class ReleaseCommand extends Command
             'gitlabApiToken' => $_SERVER['BOT_API_TOKEN'] ?? '',
             'isMinorRelease' => $_SERVER['MINOR_RELEASE'] ?? false,
             'platformBranch' => $_SERVER['PLATFORM_BRANCH'] ?? null,
+            'platformRemoteUrl' => $_SERVER['PLATFORM_REMOTE_URL'] ?? '',
+            'developmentRemoteUrl' => $_SERVER['DEVELOPMENT_REMOTE_URL'] ?? '',
+            'sshPrivateKeyFile' => $_SERVER['SSH_PRIVATE_KEY_FILE'] ?? '',
         ];
+
+        if ($config['sshPrivateKeyFile'] !== '') {
+            ProcessBuilder::loadSshKey($config['sshPrivateKeyFile']);
+        }
 
         if (isset($_SERVER['CI_API_V4_URL'])) {
             $config['gitlabBaseUri'] = rtrim($_SERVER['CI_API_V4_URL'] ?? '', '/') . '/'; // guzzle needs the slash
@@ -185,7 +193,7 @@ abstract class ReleaseCommand extends Command
             ],
         ]);
 
-        return new TaggingService($config, $gitlabApiClient);
+        return new TaggingService($config, $gitlabApiClient, false, $output);
     }
 
     protected function getReleaseService(InputInterface $input, OutputInterface $output): ReleaseService
@@ -196,7 +204,8 @@ abstract class ReleaseCommand extends Command
             $config,
             $this->getReleasePrepareService($input, $output),
             $this->getTaggingService($input, $output),
-            $this->getSbpClient($input, $output)
+            $this->getSbpClient($input, $output),
+            $output
         );
     }
 }

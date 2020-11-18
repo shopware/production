@@ -124,25 +124,6 @@ class SbpClient
         }
     }
 
-    public function loadPlugins(int $offset): array
-    {
-        $response = $this->client->get(
-            'https://api.shopware.com/plugins',
-            [
-                'headers' => $this->getHeaders(),
-                'query' => [
-                    'filter' => '[{"property":"lifecycleStatus","value":"readyforstore","operator":"="},{"property":"certificationNotSet","value":false,"operator":"="},{"property":"hasNoPluginSuccessor","value":false,"operator":"="}]',
-                    'limit' => 100,
-                    'offset' => $offset,
-                    'orderby' => 'id',
-                    'ordersequence' => 'desc',
-                ],
-            ]
-        );
-
-        return json_decode($response->getBody()->getContents());
-    }
-
     private function getHeaders(): array
     {
         return array_merge(

@@ -7,11 +7,14 @@ use GuzzleHttp\Client;
 use PHPUnit\Framework\MockObject\Builder\InvocationStubber;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Shopware\CI\Service\ProcessBuilder as Builder;
 use Shopware\CI\Service\ReleasePrepareService;
 use Shopware\CI\Service\ReleaseService;
 use Shopware\CI\Service\SbpClient;
 use Shopware\CI\Service\TaggingService;
 use Shopware\CI\Service\Xml\Release;
+use Symfony\Component\Console\Output\ConsoleOutput;
+use Symfony\Component\Console\Output\NullOutput;
 
 class ReleaseServiceTest extends TestCase
 {
@@ -32,9 +35,20 @@ class ReleaseServiceTest extends TestCase
      */
     private $fakeRemoteRepos;
 
+    /**
+     * @var array
+     */
+    private $tmpDirs = [];
+
     public function tearDown(): void
     {
         $this->stopGitServer();
+
+        foreach ($this->tmpDirs as $tmpDir) {
+            (new Builder())
+                ->with('dir', $tmpDir)
+                ->run('rm -Rf {{ $dir }}');
+        }
 
         if ($this->fakeProd && trim($this->fakeProd) !== '/') {
             exec('rm -Rf ' . escapeshellarg($this->fakeProd));
@@ -210,22 +224,29 @@ class ReleaseServiceTest extends TestCase
 
     public function testReleaseTags(): void
     {
-        static::markTestSkipped('NEXT-11764');
-
-        $client = $this->createMock(Client::class);
-        $client->expects(static::once())->method('request');
+        if (!isset($_SERVER['SSH_PRIVATE_KEY_FILE'])) {
+            static::markTestSkipped('Define env var SSH_PRIVATE_KEY_FILE');
+        } else {
+            Builder::loadSshKey($_SERVER['SSH_PRIVATE_KEY_FILE']);
+        }
 
         $this->setUpRepos();
 
         $config = $this->getBaseConfig();
-        $tag = $config['tag'] = 'v6.3.999';
+        $tag = $config['tag'] = 'v6.1.999';
 
-        $this->makeFakeRelease($config, 'v6.3.998');
+        $this->makeFakeRelease($config, 'v6.1.998');
 
-        $taggingService = new TaggingService($config, $client);
+        $output = new ConsoleOutput();
+        $taggingService = new TaggingService($config, $this->createMock(Client::class), false, $output);
         $releasePrepareService = $this->createMock(ReleasePrepareService::class);
 
-        $releaseService = new ReleaseService($config, $releasePrepareService, $taggingService, $this->createMock(SbpClient::class));
+        $releaseService = new ReleaseService(
+            $config,
+            $releasePrepareService,
+            $taggingService,
+            $this->createMock(SbpClient::class)
+        );
 
         $this->startGitServer();
         $releaseService->releaseTags($tag);
@@ -344,6 +365,108 @@ class ReleaseServiceTest extends TestCase
         $releaseService->releaseSbpVersion('v6.3.0.0');
     }
 
+    public function testTagPlatform(): void
+    {
+        $expectedRemoteUrl = 'http://example.com/remote';
+        $taggingService = $this->createMock(TaggingService::class);
+        $releaseService = new ReleaseService(
+            [
+                'platformRemoteUrl' => $expectedRemoteUrl,
+            ],
+            $this->createMock(ReleasePrepareService::class),
+            $taggingService,
+            $this->createMock(SbpClient::class),
+            new NullOutput()
+        );
+
+        $expectedTag = 'v6.3.9.0';
+        $expectedCommitSha = 'deadbeefdeadbeef';
+        $expectedMessage = 'My test release';
+        $taggingService->expects(static::once())
+            ->method('fetchTagPush')
+            ->with($expectedTag, $expectedCommitSha, 'release', null, $expectedRemoteUrl, $expectedMessage);
+
+        $releaseService->tagAndPushPlatform(
+            $expectedTag,
+            $expectedCommitSha,
+            $expectedMessage
+        );
+    }
+
+    public function testTagAndPushDevelopment(): void
+    {
+        $output = new ConsoleOutput();
+        $upstreamRepoPath = $this->getTmpDir();
+        (new Builder())
+            ->output($output)
+            ->in($upstreamRepoPath)
+            ->with('branch', 'master')
+            ->run(
+                '
+                git clone --no-tags --depth=1 --branch={{ $branch }} https://github.com/shopware/development .
+                git remote remove origin'
+            )->throw();
+
+        $projectDir = $_SERVER['PROJECT_ROOT'];
+        $config = [
+            'projectRoot' => $projectDir,
+            'developmentRemoteUrl' => 'file://' . $upstreamRepoPath,
+            'composerUpdateWaitTime' => 1,
+        ];
+        $taggingService = new TaggingService($config, $this->createMock(Client::class), false, $output);
+        $releaseService = new ReleaseService(
+            $config,
+            $this->createMock(ReleasePrepareService::class),
+            $taggingService,
+            $this->createMock(SbpClient::class),
+            $output
+        );
+
+        $composerLockData = json_decode(file_get_contents($projectDir . '/composer.lock'), true);
+        $packageData = $releaseService->getPackageFromComposerLock($composerLockData, 'shopware/core');
+
+        $nonExistingTag = 'v6.9.9.99';
+        $actualException = null;
+
+        try {
+            $releaseService->tagAndPushDevelopment(
+                $nonExistingTag,
+                'master'
+            );
+        } catch (\Throwable $e) {
+            $actualException = $e;
+        }
+        static::assertNotNull($actualException);
+
+        $currentPlatformTag = 'v' . ltrim($packageData['version'], 'v');
+        $releaseService->tagAndPushDevelopment(
+            $currentPlatformTag,
+            'master'
+        );
+
+        (new Builder())
+            ->in($upstreamRepoPath)
+            ->with('tag', $currentPlatformTag)
+            ->run('git checkout {{ $tag }}')
+            ->throw()
+            ->output();
+
+        $upstreamComposerLockData = json_decode(file_get_contents($upstreamRepoPath . '/composer.lock'), true);
+        $upstreamPlatformData = $releaseService->getPackageFromComposerLock($upstreamComposerLockData, 'shopware/platform');
+
+        static::assertTrue($releaseService->validatePackage($upstreamPlatformData, $currentPlatformTag));
+    }
+
+    private function getTmpDir(): string
+    {
+        $tmpDir = sys_get_temp_dir() . '/TaggingServiceTest_' . bin2hex(random_bytes(16));
+        mkdir($tmpDir);
+
+        $this->tmpDirs[] = $tmpDir;
+
+        return $tmpDir;
+    }
+
     private function mockSbpClientVersions(MockObject $mock, array $versions): void
     {
         $indexedByName = array_column($versions, null, 'name');
@@ -446,36 +569,60 @@ class ReleaseServiceTest extends TestCase
         $this->fakeProd = $tmpBasePath . '/fake-prod';
         $this->fakeRemoteRepos = $tmpBasePath . '/fake-remote-repos';
 
-        exec('rm -Rf ' . escapeshellarg($this->fakeProd));
-        exec('rm -Rf ' . escapeshellarg($this->fakeRemoteRepos) . '/*');
-        exec(
-            'cp -a '
-            . escapeshellarg(__DIR__ . '/fixtures/fake-prod-template') . ' '
-            . escapeshellarg($this->fakeRemoteRepos . '/prod')
-        );
+        (new Builder())
+            ->in($tmpBasePath)
+            ->with('fakeProd', $this->fakeProd)
+            ->run('rm -Rf {{ $fakeProd }}');
+        (new Builder())
+            ->in($tmpBasePath)
+            ->with('fakeRemoteRepos', $this->fakeRemoteRepos)
+            ->run('rm -Rf {{ $fakeRemoteRepos }}/*');
 
-        $this->execGit(['init'], $this->fakeRemoteRepos . '/prod');
-        $this->execGit(['add', '.'], $this->fakeRemoteRepos . '/prod');
-        $this->execGit(['commit', '--message' => 'initial commit', '--no-gpg-sign'], $this->fakeRemoteRepos . '/prod');
-        $this->execGit(['clone', $this->fakeRemoteRepos . '/prod', $this->fakeProd]);
+        (new Builder())
+            ->in(__DIR__)
+            ->with('template', 'fixtures/fake-prod-template')
+            ->with('prod', $this->fakeRemoteRepos . '/prod')
+            ->run('cp -a {{ $template }} {{ $prod }}');
 
-        exec('mkdir ' . escapeshellarg($this->fakeProd . '/repos'));
+        (new Builder())
+            ->in($this->fakeRemoteRepos . '/prod')
+            ->run(
+                '
+                git init .
+                git add .
+                git commit --message "test commit" --no-gpg-sign
+                '
+            );
+
+        (new Builder())
+            ->in($tmpBasePath)
+            ->with('prodRemote', $this->fakeRemoteRepos . '/prod')
+            ->with('prod', $this->fakeProd)
+            ->run('git clone {{ $prodRemote }} {{ $prod }}')
+            ->throw();
+
+        exec('mkdir -p ' . escapeshellarg($this->fakeProd . '/repos'));
 
         $baseUrl = 'git@gitlab.shopware.com:shopware/6/product/many-repositories';
 
         $repos = ['core', 'storefront'];
         foreach ($repos as $repo) {
-            $this->execGit(['clone',
-                '--branch' => 'v6.1.0', '--bare',
-                $baseUrl . '/' . $repo,
-                $this->fakeRemoteRepos . '/' . $repo,
-            ]);
+            (new Builder())
+                ->output(new ConsoleOutput())
+                ->with('remoteUrl', $baseUrl . '/' . $repo)
+                ->with('repo', $this->fakeRemoteRepos . '/' . $repo)
+                ->timeout(5)
+                ->run('git clone --bare --branch=v6.1.0 {{ $remoteUrl }} {{ $repo }}')
+                ->throw();
+
             touch($this->fakeRemoteRepos . '/' . $repo . '/git-daemon-export-ok');
 
-            $this->execGit(['clone',
-                $this->fakeRemoteRepos . '/' . $repo,
-                $this->fakeProd . '/repos/' . $repo,
-            ]);
+            (new Builder())
+                ->output(new ConsoleOutput())
+                ->with('remoteUrl', $this->fakeRemoteRepos . '/' . $repo)
+                ->with('repo', $this->fakeProd . '/repos/' . $repo)
+                ->timeout(5)
+                ->run('git clone {{ $remoteUrl }} {{ $repo }}');
         }
     }
 

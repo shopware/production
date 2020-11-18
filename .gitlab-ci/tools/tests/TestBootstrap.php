@@ -7,3 +7,7 @@ use Symfony\Component\Dotenv\Dotenv;
 if (is_readable(__DIR__ . '/../.env.test')) {
     (new Dotenv(false))->load(__DIR__ . '/../.env.test');
 }
+
+if (!isset($_SERVER['PROJECT_ROOT'])) {
+    $_SERVER['PROJECT_ROOT'] = dirname(__DIR__, 3);
+}

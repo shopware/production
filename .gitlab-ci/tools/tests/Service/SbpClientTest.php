@@ -15,28 +15,28 @@ class SbpClientTest extends TestCase
 
     public function setUp(): void
     {
-        if (!isset($_SERVER['SBP_API_BASE_URI'])) {
-            static::markTestSkipped('define SBP_API_BASE_URI');
+        if (!isset($_SERVER['TEST_SBP_API_BASE_URI'])) {
+            static::markTestSkipped('define TEST_SBP_API_BASE_URI');
         }
 
-        if (!isset($_SERVER['SBP_API_USER'])) {
-            static::markTestSkipped('define SBP_API_USER');
+        if (!isset($_SERVER['TEST_SBP_API_USER'])) {
+            static::markTestSkipped('define TEST_SBP_API_USER');
         }
 
-        if (!isset($_SERVER['SBP_API_PASSWORD'])) {
-            static::markTestSkipped('define SBP_API_PASSWORD');
+        if (!isset($_SERVER['TEST_SBP_API_PASSWORD'])) {
+            static::markTestSkipped('define TEST_SBP_API_PASSWORD');
         }
 
         $this->sbpClient = new SbpClient(
             new Client([
-                'base_uri' => $_SERVER['SBP_API_BASE_URI'],
+                'base_uri' => $_SERVER['TEST_SBP_API_BASE_URI'],
                 'headers' => [
                     'Content-Type' => 'application/json',
                     'User-Agent' => 'gitlab.shopware.com',
                 ],
             ])
         );
-        $this->sbpClient->login($_SERVER['SBP_API_USER'], $_SERVER['SBP_API_PASSWORD']);
+        $this->sbpClient->login($_SERVER['TEST_SBP_API_USER'], $_SERVER['TEST_SBP_API_PASSWORD']);
     }
 
     public function testGetVersions(): void

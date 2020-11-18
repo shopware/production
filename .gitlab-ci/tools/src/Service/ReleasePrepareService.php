@@ -4,6 +4,8 @@ namespace Shopware\CI\Service;
 
 use League\Flysystem\Filesystem;
 use Shopware\CI\Service\Xml\Release;
+use Symfony\Component\Console\Output\NullOutput;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class ReleasePrepareService
 {
@@ -39,13 +41,19 @@ class ReleasePrepareService
      */
     private $sbpClient;
 
+    /**
+     * @var OutputInterface
+     */
+    private $stdout;
+
     public function __construct(
         array $config,
         Filesystem $deployFilesystem,
         FileSystem $artifactsFilesystem,
         ChangelogService $changelogService,
         UpdateApiService $updateApiService,
-        SbpClient $sbpClient
+        SbpClient $sbpClient,
+        ?OutputInterface $stdout = null
     ) {
         $this->config = $config;
         $this->deployFilesystem = $deployFilesystem;
@@ -53,6 +61,7 @@ class ReleasePrepareService
         $this->artifactsFilesystem = $artifactsFilesystem;
         $this->updateApiService = $updateApiService;
         $this->sbpClient = $sbpClient;
+        $this->stdout = $stdout ?? new NullOutput();
     }
 
     public function prepareRelease(string $tag): void
@@ -80,10 +89,10 @@ class ReleasePrepareService
                 $changelog = $this->changelogService->getChangeLog($tag);
                 $release->setLocales($changelog);
             } catch (\Throwable $e) {
-                var_dump($e);
+                $this->stdout->writeln('Failed to write changelog: ' . $e->getMessage());
             }
         } else {
-            echo 'May not alter changelog ' . PHP_EOL;
+            $this->stdout->writeln('May not alter changelog');
         }
 
         $this->storeReleaseList($releaseList);
@@ -93,6 +102,7 @@ class ReleasePrepareService
         try {
             $this->upsertSbpVersion($tag);
         } catch (\Throwable $e) {
+            $this->stdout->writeln('Failed to upsertSbpVersion for tag ' . $tag . ' error: ' . $e->getMessage());
         }
     }
 
@@ -111,6 +121,8 @@ class ReleasePrepareService
         foreach ($nextParentVersions as $nextParentVersion) {
             $parent = $this->sbpClient->getVersionByName((string) $nextParentVersion);
             if ($parent !== null) {
+                $this->stdout->writeln('Found parent ' . $parent['name'] . ' for ' . $version);
+
                 break;
             }
         }
@@ -127,6 +139,7 @@ class ReleasePrepareService
             $releaseDate->setTimestamp(strtotime('first monday of next month'));
         }
 
+        $this->stdout->writeln('Upserting sbp version ' . $version . ' with release date ' . $releaseDate->format('Y-m-d'));
         $this->sbpClient->upsertVersion($version, $parent['id'], $releaseDate->format('Y-m-d'), null);
     }
 
@@ -241,6 +254,11 @@ class ReleasePrepareService
         if ($sourceStream === false) {
             throw new \RuntimeException(sprintf('Could not read from source: "%s"', $source));
         }
+
+        $this->stdout->writeln('Uploading ' . $basename . ' to ' . $targetPath);
+        $this->stdout->writeln('sha1: ' . $sha1);
+        $this->stdout->writeln('sha256: ' . $sha256);
+
         $this->deployFilesystem->putStream($targetPath, $sourceStream);
 
         return [

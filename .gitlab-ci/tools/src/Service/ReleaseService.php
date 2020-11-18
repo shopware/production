@@ -3,6 +3,9 @@
 namespace Shopware\CI\Service;
 
 use Composer\Semver\VersionParser;
+use Shopware\CI\Service\ProcessBuilder as Builder;
+use Symfony\Component\Console\Output\NullOutput;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class ReleaseService
 {
@@ -26,20 +29,28 @@ class ReleaseService
      */
     private $sbpClient;
 
+    /**
+     * @var OutputInterface
+     */
+    private $stdout;
+
     public function __construct(
         array $config,
         ReleasePrepareService $releasePrepareService,
         TaggingService $taggingService,
-        SbpClient $sbpClient
+        SbpClient $sbpClient,
+        ?OutputInterface $stdout = null
     ) {
         $this->config = $config;
         $this->taggingService = $taggingService;
         $this->releasePrepareService = $releasePrepareService;
         $this->sbpClient = $sbpClient;
+        $this->stdout = $stdout ?? new NullOutput();
     }
 
     public function releasePackage(string $tag): void
     {
+        $this->stdout->writeln('Fetching release list');
         $releaseList = $this->releasePrepareService->getReleaseList();
 
         $release = $releaseList->getRelease($tag);
@@ -51,12 +62,16 @@ class ReleaseService
             throw new \RuntimeException('Release ' . $tag . ' is already public');
         }
 
+        $this->stdout->writeln('Make release public in xml');
         $release->makePublic();
+        $release->release_date = (new \DateTime())->format('Y-m-d H:i');
 
         $this->releasePrepareService->uploadArchives($release);
 
+        $this->stdout->writeln('Storing release list');
         $this->releasePrepareService->storeReleaseList($releaseList);
 
+        $this->stdout->writeln('Register update in update api');
         $this->releasePrepareService->registerUpdate($tag, $release);
     }
 
@@ -70,7 +85,15 @@ class ReleaseService
             $this->config['projectRoot'] . '/PLATFORM_COMMIT_SHA'
         );
 
-        $this->taggingService->tagAndPushRepos($tag, $this->config['repos']);
+        $platformCommitSha = trim(file_get_contents($this->config['projectRoot'] . '/PLATFORM_COMMIT_SHA'));
+
+        $this->tagAndPushManyRepos($tag, $this->config['repos']);
+
+        try {
+            $this->tagAndPushPlatform($tag, $platformCommitSha);
+        } catch (\Throwable $e) {
+            $this->stdout->writeln('Failed to tag and push platform for tag ' . $tag . '. Error: ' . $e->getMessage());
+        }
 
         $this->updateStability(
             $this->config['projectRoot'] . '/composer.json',
@@ -91,16 +114,25 @@ class ReleaseService
             $this->config['gitlabRemoteUrl']
         );
 
-        $this->taggingService->openMergeRequest(
+        // TODO: does not work, because the branch is not created anymore. maybe push branch directly
+        /* $this->taggingService->openMergeRequest(
             (string) $this->config['projectId'],
             'release/' . $tag,
             $this->config['targetBranch'],
             'Release ' . $tag
         );
+         */
+
+        try {
+            $this->tagAndPushDevelopment($tag);
+        } catch (\Throwable $e) {
+            $this->stdout->writeln('Failed to tagAndPushDevelopment for tag ' . $tag . ' error: ' . $e->getMessage());
+        }
 
         try {
             $this->releaseSbpVersion($tag);
         } catch (\Throwable $e) {
+            $this->stdout->writeln('Failed to upsertSbpVersion for tag ' . $tag . ' error: ' . $e->getMessage());
         }
     }
 
@@ -112,12 +144,109 @@ class ReleaseService
         $this->sbpClient->upsertVersion($tag, $current['parent'] ?? null, $releaseDate->format('Y-m-d'), true);
     }
 
-    public function validatePackage(array $packageData, string $tag): bool
+    public function validatePackage(array $packageData, string $tag, ?string $reference = null): bool
     {
         // if the composer.json contains a version like 6.3.0.0 it's also 6.3.0.0 in the composer.lock
         // if it it does not contain a version, but is tagged in git, the version will be v6.3.0.0
         return ltrim($packageData['version'], 'v') === ltrim($tag, 'v')
-            && ($packageData['dist']['type'] ?? null) !== 'path';
+            && ($packageData['dist']['type'] ?? null) !== 'path'
+            && ($reference === null || ($packageData['source']['reference'] ?? null) === trim($reference));
+    }
+
+    public function tagAndPushPlatform(string $tag, string $platformCommitSha, ?string $message = null): void
+    {
+        $this->taggingService->fetchTagPush(
+            $tag,
+            $platformCommitSha,
+            'release',
+            null,
+            $this->config['platformRemoteUrl'],
+            $message
+        );
+    }
+
+    public function tagAndPushDevelopment(string $tag, string $branch = 'master', ?string $message = null): void
+    {
+        $repoPath = sys_get_temp_dir() . '/repo_' . bin2hex(random_bytes(16));
+        mkdir($repoPath);
+
+        $message = $message ?? 'Release ' . $tag;
+
+        try {
+            $this->taggingService->cloneOrFetch(
+                $branch,
+                $repoPath,
+                'release',
+                $this->config['developmentRemoteUrl'],
+                false
+            );
+
+            $this->retry(
+                function () use ($tag, $repoPath, $message) {
+                    $this->stdout->writeln('Running composer install');
+                    (new Builder())
+                        ->in($repoPath)
+                        ->output($this->stdout)
+                        ->with('message', $message)
+                        ->run('rm composer.lock || true; composer install --no-scripts');
+
+                    $platformSha = file_get_contents($this->config['projectRoot'] . '/PLATFORM_COMMIT_SHA');
+                    $composerLockData = json_decode(file_get_contents($repoPath . '/composer.lock'), true);
+                    $package = $this->getPackageFromComposerLock($composerLockData, 'shopware/platform');
+
+                    if (!$this->validatePackage($package, $tag, $platformSha)) {
+                        throw new \RuntimeException(
+                            'PLATFORM_COMMIT_SHA: "' . $platformSha . '"
+                            shopware/platform package data invalid. Current package data: ' . print_r($package, true)
+                        );
+                    }
+
+                    return true;
+                },
+                5
+            );
+
+            (new Builder())
+                ->in($repoPath)
+                ->with('message', $message)
+                ->run(
+                    <<<'CODE'
+                    git reset
+                    git add --force composer.lock
+                    git commit -m {{ $message }}
+CODE
+                )
+                ->throw();
+
+            $this->taggingService->createTag($tag, $repoPath, $message, true);
+            $this->taggingService->pushTag($tag, $repoPath, 'release');
+        } finally {
+            (new Builder())
+                ->with('dir', $repoPath)
+                ->run('rm -Rf {{ $dir }}');
+        }
+    }
+
+    public function getPackageFromComposerLock(array $composerLock, string $packageName): array
+    {
+        foreach ($composerLock['packages'] as $package) {
+            if ($package['name'] === $packageName) {
+                return $package;
+            }
+        }
+
+        throw new \RuntimeException(sprintf('Package "%s" not found', $packageName));
+    }
+
+    private function tagAndPushManyRepos(string $tag, array $repos): void
+    {
+        foreach ($repos as $repoData) {
+            $this->stdout->writeln('Creating tag ' . $tag . ' for ' . $repoData['path']);
+            $this->taggingService->createTag($tag, $repoData['path'], 'Release ' . $tag, true);
+
+            $this->stdout->writeln('Pushing tag ' . $tag . ' for ' . $repoData['path'] . ' to ' . $repoData['remoteUrl']);
+            $this->taggingService->pushTag($tag, $repoData['path'], 'release', $repoData['remoteUrl']);
+        }
     }
 
     private function updateStability(string $composerJsonPath, string $stability): void
@@ -128,6 +257,8 @@ class ReleaseService
         $newStability = VersionParser::normalizeStability($stability);
 
         if ($currentStability !== $newStability) {
+            $this->stdout->writeln('Updating composer minimum-stability from "' . $currentStability . '" to "' . $newStability . '"');
+
             $composerJson['minimum-stability'] = $newStability;
             $encoded = \json_encode($composerJson, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
             file_put_contents($composerJsonPath, $encoded);
@@ -143,52 +274,67 @@ class ReleaseService
 
     private function updateComposerLock(string $composerLockPath, string $tag, array $repos): void
     {
-        $dir = escapeshellarg($this->config['projectRoot']);
+        $this->retry(
+            function () use ($composerLockPath, $tag, $repos) {
+                $dir = $this->config['projectRoot'];
 
-        $composerWaitTime = $this->config['composerUpdateWaitTime'] ?? 45;
-        sleep($composerWaitTime);
+                $this->stdout->writeln('Deleting vendor/shopware');
+                (new Builder())
+                    ->in($dir)
+                    ->output($this->stdout)
+                    ->run('rm -Rf vendor/shopware');
 
-        $max = 10;
-        for ($i = 0; $i < $max; ++$i) {
-            sleep($composerWaitTime / 3);
+                $this->stdout->writeln('Running composer update');
+                (new Builder())
+                    ->in($dir)
+                    ->output($this->stdout)
+                    ->run('composer update -vvv "shopware/*" --no-interaction --no-scripts');
 
-            $cmd = 'cd ' . $dir . ' && rm -Rf vendor/shopware';
-            system($cmd);
+                $composerLock = json_decode(file_get_contents($composerLockPath), true);
 
-            $cmd = 'composer update -vvv --working-dir=' . $dir . ' "shopware/*" --no-interaction --no-scripts';
-            system($cmd);
+                foreach ($repos as $repo => $repoData) {
+                    $package = $this->getPackageFromComposerLock($composerLock, 'shopware/' . $repo);
 
-            $composerLock = json_decode(file_get_contents($composerLockPath), true);
+                    $repoData['reference'] = exec('git -C ' . escapeshellarg($repoData['path']) . ' rev-parse HEAD');
 
-            foreach ($repos as $repo => $repoData) {
-                $package = $this->getPackageFromComposerLock($composerLock, 'shopware/' . $repo);
-
-                $repoData['reference'] = exec('git -C ' . escapeshellarg($repoData['path']) . ' rev-parse HEAD');
-
-                if (!$this->validatePackage($package, $tag)) {
-                    echo 'retry! current packageData:' . PHP_EOL;
-                    var_dump($package);
-
-                    continue 2;
+                    if (!$this->validatePackage($package, $tag)) {
+                        throw new \RuntimeException('Package invalid, package data: ' . print_r($package, true));
+                    }
                 }
-            }
 
-            break; // is valid
-        }
-
-        if ($i >= $max) {
-            throw new \RuntimeException('Failed to update composer.lock');
-        }
+                return true;
+            },
+            10
+        );
     }
 
-    private function getPackageFromComposerLock(array $composerLock, string $packageName): array
+    private function retry(callable $callback, int $maxTries): void
     {
-        foreach ($composerLock['packages'] as $package) {
-            if ($package['name'] === $packageName) {
-                return $package;
+        $firstWaitTime = $this->config['composerUpdateWaitTime'] ?? 45;
+        $stepWaitTime = (int) max(1, $firstWaitTime / 3);
+
+        $this->stdout->writeln('Waiting ' . $firstWaitTime . 's until first attempt');
+        sleep($firstWaitTime);
+
+        $lastException = null;
+        for ($i = 0; $i < $maxTries; ++$i) {
+            if ($lastException !== null) {
+                $this->stdout->writeln('Attempt failed. Message: ' . $lastException->getMessage());
+                $this->stdout->writeln('Waiting ' . $stepWaitTime . 's until next retry');
+            }
+            sleep($stepWaitTime);
+
+            try {
+                if ($callback() === true) {
+                    break;
+                }
+            } catch (\Throwable $e) {
+                $lastException = $e;
             }
         }
 
-        throw new \RuntimeException(sprintf('Package "%s" not found', $packageName));
+        if ($i >= $maxTries) {
+            throw ($lastException ?? new \RuntimeException('Callback did not return true'));
+        }
     }
 }

@@ -12,11 +12,13 @@
         "league/flysystem-memory": "^1.0",
         "psalm/phar": "3.18.2",
         "symfony/console": "~4.4",
-        "symfony/dotenv": "~4.4"
+        "symfony/dotenv": "~4.4",
+        "titasgailius/terminal": "^0.4.0"
     },
     "require-dev": {
         "phpstan/phpstan": "0.12.53",
         "phpunit/phpunit": "8.5.8",
+        "symfony/debug-bundle": "^5.1",
         "symplify/easy-coding-standard-prefixed": "8.3.45"
     },
     "license": "MIT",

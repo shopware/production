@@ -103,5 +103,8 @@ return static function (ContainerConfigurator $containerConfigurator): void {
         BlankLineAfterOpeningTagFixer::class => null,
         PhpdocSummaryFixer::class => null,
         ExplicitStringVariableFixer::class => null,
+        PhpCsFixer\Fixer\Phpdoc\NoSuperfluousPhpdocTagsFixer::class => [
+            __DIR__ . '/.gitlab-ci/tools/src/Service/ProcessBuilder.php'
+        ]
     ]);
 };
