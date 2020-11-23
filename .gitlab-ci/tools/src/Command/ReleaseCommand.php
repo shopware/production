@@ -160,7 +160,8 @@ abstract class ReleaseCommand extends Command
             $artifactFilesystem,
             $this->getChangelogService($input, $output),
             new UpdateApiService($config['updateApiHost']),
-            $this->getSbpClient($input, $output)
+            $this->getSbpClient($input, $output),
+            $output
         );
     }
 
