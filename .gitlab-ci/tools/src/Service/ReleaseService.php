@@ -4,7 +4,6 @@ namespace Shopware\CI\Service;
 
 use Composer\Semver\VersionParser;
 use Shopware\CI\Service\ProcessBuilder as Builder;
-use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class ReleaseService
@@ -39,13 +38,13 @@ class ReleaseService
         ReleasePrepareService $releasePrepareService,
         TaggingService $taggingService,
         SbpClient $sbpClient,
-        ?OutputInterface $stdout = null
+        OutputInterface $stdout
     ) {
         $this->config = $config;
         $this->taggingService = $taggingService;
         $this->releasePrepareService = $releasePrepareService;
         $this->sbpClient = $sbpClient;
-        $this->stdout = $stdout ?? new NullOutput();
+        $this->stdout = $stdout;
     }
 
     public function releasePackage(string $tag): void

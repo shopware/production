@@ -6,6 +6,7 @@ use GuzzleHttp\Client;
 use PHPUnit\Framework\TestCase;
 use Shopware\CI\Service\ProcessBuilder as Builder;
 use Shopware\CI\Service\TaggingService;
+use Symfony\Component\Console\Output\NullOutput;
 
 class TaggingServiceTest extends TestCase
 {
@@ -36,7 +37,7 @@ class TaggingServiceTest extends TestCase
     {
         $config = ['stability' => 'alpha'];
         $gitlabClient = $this->createMock(Client::class);
-        $taggingService = new TaggingService($config, $gitlabClient);
+        $taggingService = new TaggingService($config, $gitlabClient, new NullOutput());
 
         $upstreamRemotePath = $this->getTmpDir();
 

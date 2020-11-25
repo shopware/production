@@ -159,7 +159,7 @@ abstract class ReleaseCommand extends Command
             $this->getDeployFilesystem($input, $output),
             $artifactFilesystem,
             $this->getChangelogService($input, $output),
-            new UpdateApiService($config['updateApiHost']),
+            new UpdateApiService($config['updateApiHost'], $output),
             $this->getSbpClient($input, $output),
             $output
         );
@@ -194,7 +194,7 @@ abstract class ReleaseCommand extends Command
             ],
         ]);
 
-        return new TaggingService($config, $gitlabApiClient, false, $output);
+        return new TaggingService($config, $gitlabApiClient, $output, false);
     }
 
     protected function getReleaseService(InputInterface $input, OutputInterface $output): ReleaseService

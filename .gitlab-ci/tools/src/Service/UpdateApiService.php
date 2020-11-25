@@ -2,7 +2,6 @@
 
 namespace Shopware\CI\Service;
 
-use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class UpdateApiService
@@ -17,10 +16,10 @@ class UpdateApiService
      */
     private $stdout;
 
-    public function __construct(string $updateApiHost, ?OutputInterface $stdout = null)
+    public function __construct(string $updateApiHost, OutputInterface $stdout)
     {
         $this->updateApiHost = $updateApiHost;
-        $this->stdout = $stdout ?? new NullOutput();
+        $this->stdout = $stdout;
     }
 
     public function insertReleaseData(array $parameters): void

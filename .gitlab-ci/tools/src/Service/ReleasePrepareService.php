@@ -4,7 +4,6 @@ namespace Shopware\CI\Service;
 
 use League\Flysystem\Filesystem;
 use Shopware\CI\Service\Xml\Release;
-use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class ReleasePrepareService
@@ -53,7 +52,7 @@ class ReleasePrepareService
         ChangelogService $changelogService,
         UpdateApiService $updateApiService,
         SbpClient $sbpClient,
-        ?OutputInterface $stdout = null
+        OutputInterface $stdout
     ) {
         $this->config = $config;
         $this->deployFilesystem = $deployFilesystem;
@@ -61,7 +60,7 @@ class ReleasePrepareService
         $this->artifactsFilesystem = $artifactsFilesystem;
         $this->updateApiService = $updateApiService;
         $this->sbpClient = $sbpClient;
-        $this->stdout = $stdout ?? new NullOutput();
+        $this->stdout = $stdout;
     }
 
     public function prepareRelease(string $tag): void

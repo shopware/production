@@ -11,6 +11,7 @@ use Shopware\CI\Service\ChangelogService;
 use Shopware\CI\Service\ReleasePrepareService;
 use Shopware\CI\Service\SbpClient;
 use Shopware\CI\Service\UpdateApiService;
+use Symfony\Component\Console\Output\NullOutput;
 
 class ReleasePrepareServiceTest extends TestCase
 {
@@ -404,7 +405,8 @@ NEXT-1235 - DE Bar
             $this->artifactsFilesystem,
             $changelogService,
             $updateApiService,
-            $sbpClient
+            $sbpClient,
+            new NullOutput()
         );
     }
 }

@@ -6,7 +6,6 @@ use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 use Shopware\CI\Service\Exception\TaggingException;
 use Shopware\CI\Service\ProcessBuilder as Builder;
-use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 
@@ -32,12 +31,12 @@ class TaggingService
      */
     private $stdout;
 
-    public function __construct(array $config, Client $gitlabApiClient, bool $sign = false, ?OutputInterface $stdout = null)
+    public function __construct(array $config, Client $gitlabApiClient, OutputInterface $stdout, bool $sign = false)
     {
         $this->config = $config;
         $this->gitlabApiClient = $gitlabApiClient;
         $this->sign = $sign;
-        $this->stdout = $stdout ?? new NullOutput();
+        $this->stdout = $stdout;
     }
 
     public function createTag(string $tag, string $repoPath, string $message, bool $force = false): void

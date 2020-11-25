@@ -133,7 +133,8 @@ class ReleaseServiceTest extends TestCase
             [],
             $this->createMock(ReleasePrepareService::class),
             $this->createMock(TaggingService::class),
-            $this->createMock(SbpClient::class)
+            $this->createMock(SbpClient::class),
+            new NullOutput()
         );
 
         $actual = $releaseService->validatePackage($packageData, $tag);
@@ -148,7 +149,8 @@ class ReleaseServiceTest extends TestCase
             [],
             $releasePrepareService,
             $taggingService,
-            $this->createMock(SbpClient::class)
+            $this->createMock(SbpClient::class),
+            new NullOutput()
         );
         $content = file_get_contents(__DIR__ . '/fixtures/shopware6.xml');
         /** @var Release $list */
@@ -180,7 +182,8 @@ class ReleaseServiceTest extends TestCase
             [],
             $releasePrepareService,
             $taggingService,
-            $this->createMock(SbpClient::class)
+            $this->createMock(SbpClient::class),
+            new NullOutput()
         );
         $content = file_get_contents(__DIR__ . '/fixtures/shopware6.xml');
         /** @var Release $list */
@@ -212,7 +215,8 @@ class ReleaseServiceTest extends TestCase
             [],
             $releasePrepareService,
             $taggingService,
-            $this->createMock(SbpClient::class)
+            $this->createMock(SbpClient::class),
+            new NullOutput()
         );
         $releasePrepareService->method('getReleaseList')->willReturn(new Release('<Release/>'));
 
@@ -238,14 +242,15 @@ class ReleaseServiceTest extends TestCase
         $this->makeFakeRelease($config, 'v6.1.998');
 
         $output = new ConsoleOutput();
-        $taggingService = new TaggingService($config, $this->createMock(Client::class), false, $output);
+        $taggingService = new TaggingService($config, $this->createMock(Client::class), $output, false);
         $releasePrepareService = $this->createMock(ReleasePrepareService::class);
 
         $releaseService = new ReleaseService(
             $config,
             $releasePrepareService,
             $taggingService,
-            $this->createMock(SbpClient::class)
+            $this->createMock(SbpClient::class),
+            new NullOutput()
         );
 
         $this->startGitServer();
@@ -312,7 +317,8 @@ class ReleaseServiceTest extends TestCase
             [],
             $this->createMock(ReleasePrepareService::class),
             $this->createMock(TaggingService::class),
-            $sbpClient
+            $sbpClient,
+            new NullOutput()
         );
 
         $releaseDate = new \DateTime();
@@ -354,7 +360,8 @@ class ReleaseServiceTest extends TestCase
             [],
             $this->createMock(ReleasePrepareService::class),
             $this->createMock(TaggingService::class),
-            $sbpClient
+            $sbpClient,
+            new NullOutput()
         );
 
         $releaseDate = new \DateTime();
@@ -413,7 +420,7 @@ class ReleaseServiceTest extends TestCase
             'developmentRemoteUrl' => 'file://' . $upstreamRepoPath,
             'composerUpdateWaitTime' => 1,
         ];
-        $taggingService = new TaggingService($config, $this->createMock(Client::class), false, $output);
+        $taggingService = new TaggingService($config, $this->createMock(Client::class), $output, false);
         $releaseService = new ReleaseService(
             $config,
             $this->createMock(ReleasePrepareService::class),
