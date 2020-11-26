@@ -48,6 +48,11 @@ abstract class ReleaseCommand extends Command
             'jira' => [
                 'api_base_uri' => rtrim($_SERVER['JIRA_API_V2_URL'] ?? 'https://jira.shopware.com/rest/api/2/', '/') . '/',
             ],
+            'sbp' => [
+                'apiBaseUri' => rtrim($_SERVER['SBP_API_BASE_URI'] ?? '', '/') . '/',
+                'apiUser' => $_SERVER['SBP_API_USER'] ?? '',
+                'apiPassword' => $_SERVER['SBP_API_PASSWORD'] ?? '',
+            ],
             'platform' => [
                 'remote' => $_SERVER['PLATFORM_REPO_URL'] ?? 'git@gitlab.shopware.com:shopware/6/product/platform',
             ],
@@ -174,13 +179,23 @@ abstract class ReleaseCommand extends Command
 
     protected function getSbpClient(InputInterface $input, OutputInterface $output): SbpClient
     {
-        return new SbpClient(new Client([
-            'base_uri' => $_SERVER['SBP_API_BASE_URI'],
+        $config = $this->getConfig($input, $output);
+
+        $client = new SbpClient(new Client([
+            'base_uri' => $config['sbp']['apiUri'],
             'headers' => [
                 'Content-Type' => 'application/json',
                 'User-Agent' => 'gitlab.shopware.com',
             ],
         ]));
+
+        try {
+            $client->login($config['sbp']['apiUser'], $config['sbp']['apiPassword']);
+        } catch (\Throwable $e) {
+            $output->writeln('Failed sbp login: ' . $e->getMessage());
+        }
+
+        return $client;
     }
 
     protected function getTaggingService(InputInterface $input, OutputInterface $output): TaggingService
