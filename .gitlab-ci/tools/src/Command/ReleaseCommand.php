@@ -182,7 +182,7 @@ abstract class ReleaseCommand extends Command
         $config = $this->getConfig($input, $output);
 
         $client = new SbpClient(new Client([
-            'base_uri' => $config['sbp']['apiUri'],
+            'base_uri' => $config['sbp']['apiBaseUri'],
             'headers' => [
                 'Content-Type' => 'application/json',
                 'User-Agent' => 'gitlab.shopware.com',
