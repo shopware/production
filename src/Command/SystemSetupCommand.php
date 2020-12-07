@@ -37,6 +37,7 @@ class SystemSetupCommand extends Command
             ->addOption('database-url', null, InputOption::VALUE_OPTIONAL, 'Database dsn')
             ->addOption('generate-jwt-keys', null, InputOption::VALUE_NONE, 'Generate jwt private and public key')
             ->addOption('jwt-passphrase', null, InputOption::VALUE_OPTIONAL, 'JWT private key passphrase', 'shopware')
+            ->addOption('composer-home', null, InputOption::VALUE_REQUIRED, 'Set the composer home directory otherwise the environment variable $COMPOSER_HOME will be used or the project dir as fallback')
         ;
         $this->addOption('force', 'f', InputOption::VALUE_NONE, 'Force setup');
     }
@@ -53,6 +54,7 @@ class SystemSetupCommand extends Command
             'SHOPWARE_CDN_STRATEGY_DEFAULT' => 'id',
             'BLUE_GREEN_DEPLOYMENT' => 1,
             'MAILER_URL' => 'smtp://localhost:25?encryption=&auth_mode=',
+            'COMPOSER_HOME' => $input->getOption('composer-home') ?: $_SERVER['COMPOSER_HOME'] ?: "{$this->projectDir}/var/cache/composer",
         ];
 
         $io = new SymfonyStyle($input, $output);
