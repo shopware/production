@@ -185,6 +185,7 @@ class ReleaseService
                     $this->stdout->writeln('Running composer install');
                     (new Builder())
                         ->in($repoPath)
+                        ->timeout(240)
                         ->output($this->stdout)
                         ->with('message', $message)
                         ->run('rm composer.lock || true; composer install --no-scripts');
@@ -287,6 +288,7 @@ CODE
                 (new Builder())
                     ->in($dir)
                     ->output($this->stdout)
+                    ->timeout(240)
                     ->run('composer update -vvv "shopware/*" --no-interaction --no-scripts');
 
                 $composerLock = json_decode(file_get_contents($composerLockPath), true);
