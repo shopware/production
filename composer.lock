@@ -4059,16 +4059,16 @@
         },
         {
             "name": "shopware/administration",
-            "version": "6.3.4.0",
+            "version": "6.3.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/administration.git",
-                "reference": "1e944d88491f0c3dfcccd038e0297a0d4e52e090"
+                "reference": "94bbc86001dac1f2d80be0c6d515f1be7bc6aa42"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/administration/zipball/1e944d88491f0c3dfcccd038e0297a0d4e52e090",
-                "reference": "1e944d88491f0c3dfcccd038e0297a0d4e52e090",
+                "url": "https://api.github.com/repos/shopware/administration/zipball/94bbc86001dac1f2d80be0c6d515f1be7bc6aa42",
+                "reference": "94bbc86001dac1f2d80be0c6d515f1be7bc6aa42",
                 "shasum": ""
             },
             "require": {
@@ -4094,20 +4094,20 @@
                 "MIT"
             ],
             "description": "Administration frontend for the Shopware Core",
-            "time": "2020-12-07T03:24:27+00:00"
+            "time": "2020-12-14T03:25:07+00:00"
         },
         {
             "name": "shopware/core",
-            "version": "6.3.4.0",
+            "version": "6.3.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/core.git",
-                "reference": "735103456fbb129cfa5f4778fcd51e252f7a45bb"
+                "reference": "d2d06c052bf517580c472af8485210bd2675c65c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/core/zipball/735103456fbb129cfa5f4778fcd51e252f7a45bb",
-                "reference": "735103456fbb129cfa5f4778fcd51e252f7a45bb",
+                "url": "https://api.github.com/repos/shopware/core/zipball/d2d06c052bf517580c472af8485210bd2675c65c",
+                "reference": "d2d06c052bf517580c472af8485210bd2675c65c",
                 "shasum": ""
             },
             "require": {
@@ -4247,20 +4247,20 @@
                 "shop",
                 "shopware"
             ],
-            "time": "2020-12-07T03:24:26+00:00"
+            "time": "2020-12-14T03:25:07+00:00"
         },
         {
             "name": "shopware/elasticsearch",
-            "version": "6.3.4.0",
+            "version": "6.3.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/elasticsearch.git",
-                "reference": "31171edc580f13aaef9ac497e27614a124c8483a"
+                "reference": "77629e5e8863385cae99f7a1531abee39c88f5c9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/elasticsearch/zipball/31171edc580f13aaef9ac497e27614a124c8483a",
-                "reference": "31171edc580f13aaef9ac497e27614a124c8483a",
+                "url": "https://api.github.com/repos/shopware/elasticsearch/zipball/77629e5e8863385cae99f7a1531abee39c88f5c9",
+                "reference": "77629e5e8863385cae99f7a1531abee39c88f5c9",
                 "shasum": ""
             },
             "require": {
@@ -4295,20 +4295,20 @@
                 "MIT"
             ],
             "description": "Elasticsearch for Shopware",
-            "time": "2020-12-07T03:24:26+00:00"
+            "time": "2020-12-14T03:25:07+00:00"
         },
         {
             "name": "shopware/recovery",
-            "version": "6.3.4.0",
+            "version": "6.3.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/recovery.git",
-                "reference": "86915b51b9ee011bda631f41d31f14b970868145"
+                "reference": "425e23c2a99a446c4a8749b0d018fb0e1dfd8b2e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/recovery/zipball/86915b51b9ee011bda631f41d31f14b970868145",
-                "reference": "86915b51b9ee011bda631f41d31f14b970868145",
+                "url": "https://api.github.com/repos/shopware/recovery/zipball/425e23c2a99a446c4a8749b0d018fb0e1dfd8b2e",
+                "reference": "425e23c2a99a446c4a8749b0d018fb0e1dfd8b2e",
                 "shasum": ""
             },
             "require": {
@@ -4328,20 +4328,20 @@
                 "MIT"
             ],
             "description": "Recovery for Shopware",
-            "time": "2020-12-07T03:24:26+00:00"
+            "time": "2020-12-14T03:25:07+00:00"
         },
         {
             "name": "shopware/storefront",
-            "version": "6.3.4.0",
+            "version": "6.3.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/storefront.git",
-                "reference": "8a7dad9ec2efa9d5b76d146ab6e2c919e3a35ba7"
+                "reference": "335d6050ef650b9590df564c8573727725bc1af0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/storefront/zipball/8a7dad9ec2efa9d5b76d146ab6e2c919e3a35ba7",
-                "reference": "8a7dad9ec2efa9d5b76d146ab6e2c919e3a35ba7",
+                "url": "https://api.github.com/repos/shopware/storefront/zipball/335d6050ef650b9590df564c8573727725bc1af0",
+                "reference": "335d6050ef650b9590df564c8573727725bc1af0",
                 "shasum": ""
             },
             "require": {
@@ -4394,7 +4394,7 @@
                 "MIT"
             ],
             "description": "Storefront for Shopware",
-            "time": "2020-12-07T03:24:27+00:00"
+            "time": "2020-12-14T03:25:08+00:00"
         },
         {
             "name": "sroze/messenger-enqueue-transport",
@@ -8587,16 +8587,16 @@
         },
         {
             "name": "fzaninotto/faker",
-            "version": "v1.9.1",
+            "version": "v1.9.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fzaninotto/Faker.git",
-                "reference": "fc10d778e4b84d5bd315dad194661e091d307c6f"
+                "reference": "848d8125239d7dbf8ab25cb7f054f1a630e68c2e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fzaninotto/Faker/zipball/fc10d778e4b84d5bd315dad194661e091d307c6f",
-                "reference": "fc10d778e4b84d5bd315dad194661e091d307c6f",
+                "url": "https://api.github.com/repos/fzaninotto/Faker/zipball/848d8125239d7dbf8ab25cb7f054f1a630e68c2e",
+                "reference": "848d8125239d7dbf8ab25cb7f054f1a630e68c2e",
                 "shasum": ""
             },
             "require": {
@@ -8634,7 +8634,7 @@
                 "fixtures"
             ],
             "abandoned": true,
-            "time": "2019-12-12T13:22:17+00:00"
+            "time": "2020-12-11T09:56:16+00:00"
         },
         {
             "name": "johnkary/phpunit-speedtrap",
@@ -9007,16 +9007,16 @@
         },
         {
             "name": "phar-io/version",
-            "version": "3.0.3",
+            "version": "3.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phar-io/version.git",
-                "reference": "726c026815142e4f8677b7cb7f2249c9ffb7ecae"
+                "reference": "e4782611070e50613683d2b9a57730e9a3ba5451"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phar-io/version/zipball/726c026815142e4f8677b7cb7f2249c9ffb7ecae",
-                "reference": "726c026815142e4f8677b7cb7f2249c9ffb7ecae",
+                "url": "https://api.github.com/repos/phar-io/version/zipball/e4782611070e50613683d2b9a57730e9a3ba5451",
+                "reference": "e4782611070e50613683d2b9a57730e9a3ba5451",
                 "shasum": ""
             },
             "require": {
@@ -9050,7 +9050,7 @@
                 }
             ],
             "description": "Library for handling version information and constraints",
-            "time": "2020-11-30T09:21:21+00:00"
+            "time": "2020-12-13T23:18:30+00:00"
         },
         {
             "name": "phpdocumentor/reflection-common",
