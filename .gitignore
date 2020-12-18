@@ -1,4 +1,6 @@
 custom/*
+!custom/plugins/
+custom/plugins/*
 !custom/plugins/.gitkeep
 !custom/static-plugins/
 
