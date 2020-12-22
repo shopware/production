@@ -29,6 +29,7 @@
         SHOPWARE_ES_HOSTS: elasticsearch:9200
         SHOPWARE_ES_INDEXING_ENABLED: 1
         SHOPWARE_ES_INDEX_PREFIX: sw
+        FEATURE_ALL: "false"
         GIT_STRATEGY: none
     before_script:
         - export TAG=${CI_COMMIT_TAG:-$(cat artifacts/TAG)}
