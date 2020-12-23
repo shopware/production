@@ -5,12 +5,8 @@ declare(strict_types=1);
 namespace Shopware\Production;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\FetchMode;
-use Shopware\Core\Framework\Migration\MigrationStep;
 use Shopware\Core\Framework\Plugin\KernelPluginLoader\KernelPluginLoader;
-use Symfony\Component\DependencyInjection\ContainerAwareTrait;
-use Symfony\Component\HttpKernel\Bundle\Bundle;
-use Symfony\Component\Routing\RouteCollectionBuilder;
+use Shopware\Core\Profiling\Doctrine\DebugStack;
 
 class Kernel extends \Shopware\Core\Kernel
 {
@@ -21,10 +17,11 @@ class Kernel extends \Shopware\Core\Kernel
         bool $debug,
         KernelPluginLoader $pluginLoader,
         ?string $cacheId = null,
-        ?string $version = self::SHOPWARE_FALLBACK_VERSION
+        ?string $version = self::SHOPWARE_FALLBACK_VERSION,
+        ?Connection $connection = null
     ) {
         $cacheId = $cacheId ?? $environment;
-        parent::__construct($environment, $debug, $pluginLoader, $cacheId, $version);
+        parent::__construct($environment, $debug, $pluginLoader, $cacheId, $version, $connection);
     }
 
     protected function initializeDatabaseConnectionVariables(): void
@@ -38,14 +35,12 @@ class Kernel extends \Shopware\Core\Kernel
         }
 
         if ($this->getEnvironment() === 'dev') {
-            self::getConnection()->getConfiguration()->setSQLLogger(
-                new \Shopware\Core\Profiling\Doctrine\DebugStack()
-            );
+            self::getConnection()->getConfiguration()->setSQLLogger(new DebugStack());
         }
 
         $reflection = new \ReflectionMethod(\Shopware\Core\Kernel::class, 'initializeDatabaseConnectionVariables');
         if (!$reflection->isPrivate()) {
-            call_user_func('parent::initializeDatabaseConnectionVariables');
+            parent::initializeDatabaseConnectionVariables();
         }
     }
 }

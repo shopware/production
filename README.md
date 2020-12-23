@@ -102,8 +102,8 @@ The following commands and scripts are available
 | `bin/console system:generate-jwt-secret` | Generates a new jwt secret |
 | `bin/console system:generate-app-secret` | Outputs a new app secret. This does not update your .env! |
 | `bin/console system:install` | Setup database and optional install some basic data |
-| `bin/console system:update-prepare` | Run update preparations before the update. Do not update if this fails |
-| `bin/console system:update-finish` | Executes the migrations and finishes the update |
+| `bin/console system:update:prepare` | Run update preparations before the update. Do not update if this fails |
+| `bin/console system:update:finish` | Executes the migrations and finishes the update |
 | `bin/console theme:change` | Assign theme to a sales channel |
 
 

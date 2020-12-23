@@ -3,8 +3,8 @@
   "description": "CI Test Repo",
   "type": "project",
   "require": {
-    "shopware/core": "~6.1.0",
-    "shopware/storefront": "~6.1.0"
+    "shopware/core": "6.*",
+    "shopware/storefront": "6.*"
   },
   "config": {
     "secure-http": false

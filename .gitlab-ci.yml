@@ -13,7 +13,7 @@ variables:
 
 stages:
     - build
-#    - analyze
+    - analyze
     - test
     - prepare-release
     - release
@@ -96,9 +96,10 @@ Build Test Package:
         - docker build . -t "${CI_REGISTRY_IMAGE}:${IMAGE_TAG}"
         - mkdir artifacts || true
         - chmod 777 artifacts || true
+        - .gitlab-ci/changed-files.sh > artifacts/additional_update_files
         # TODO: get REFERENCE_INSTALLER_URL and REFERENCE_INSTALLER_SHA256 from shopware6.xml - use MINIMUM_VERSION
         # create package archive file
-        - docker run -v $PWD/artifacts:/artifacts -e REFERENCE_INSTALLER_URL -e REFERENCE_INSTALLER_SHA256 --entrypoint=bin/package.sh ${CI_REGISTRY_IMAGE}:${IMAGE_TAG}
+        - docker run -v $PWD/artifacts:/artifacts -e REFERENCE_INSTALLER_URL -e REFERENCE_INSTALLER_SHA256 --entrypoint=bin/package.sh ${CI_REGISTRY_IMAGE}:${IMAGE_TAG} /artifacts/additional_update_files
         - echo ${TAG} > artifacts/TAG
         - echo ${CI_JOB_ID} > artifacts/PACKAGE_JOB_ID
         - echo ${MATCHING_BRANCH} > artifacts/PLATFORM_BRANCH
@@ -109,15 +110,34 @@ Build Test Package:
             - artifacts/
             - repos/
 
-#Static Analysis:
-#    stage: analyze
-#    image: shopware/development:latest
-#    only:
-#        refs:
-#            - merge_requests
-#    script:
-#        - composer install -d .gitlab-ci/tools
-#       - php .gitlab-ci/tools/vendor/bin/ecs check --config easy-coding-standard.php
+Static Analysis:
+    stage: analyze
+    image: shopware/development:latest
+    only:
+        refs:
+            - merge_requests
+    script:
+        - composer install
+        - composer install -d .gitlab-ci/tools
+        - php .gitlab-ci/tools/vendor/bin/ecs check --config easy-coding-standard.php
+        - php .gitlab-ci/tools/vendor/bin/phpstan analyse
+        - php .gitlab-ci/tools/vendor/bin/psalm.phar
+
+Tools unit test:
+    stage: test
+    image: shopware/development:latest
+    only:
+        refs:
+            - merge_requests
+    script:
+        - composer install -d .gitlab-ci/tools
+        - php .gitlab-ci/tools/vendor/bin/phpunit --configuration .gitlab-ci/tools/phpunit.xml.dist --log-junit phpunit.junit.xml
+    artifacts:
+        when: always
+        paths:
+            - phpunit.junit.xml
+        reports:
+            junit: phpunit.junit.xml
 
 # Unit tests
 

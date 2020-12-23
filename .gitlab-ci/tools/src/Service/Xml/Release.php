@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Shopware\CI\Service\Xml;
 
@@ -7,13 +7,16 @@ use SimpleXMLElement;
 class Release extends SimpleXMLElement
 {
     /** @var Release[]|null */
+    public $releases;
+
+    /** @var Release[]|null */
     public $release;
 
     /** @var string */
-    public $tag;
+    public $tag = '';
 
     /** @var string */
-    public $version;
+    public $version = '';
 
     /** @var string */
     public $version_text = '';
@@ -34,7 +37,10 @@ class Release extends SimpleXMLElement
     public $ea = 0;
 
     /** @var string */
-    public $type;
+    public $type = '';
+
+    /** @var bool */
+    public $manual = false;
 
     /** @var string */
     public $revision = '';
@@ -43,10 +49,10 @@ class Release extends SimpleXMLElement
     public $release_date = '';
 
     /** @var string */
-    public $github_repo;
+    public $github_repo = '';
 
     /** @var string */
-    public $upgrade_md;
+    public $upgrade_md = '';
 
     /** @var string */
     public $download_link_install = '';
@@ -66,10 +72,10 @@ class Release extends SimpleXMLElement
     /** @var string */
     public $sha256_update = '';
 
-    /** @var array */
-    public $locales = [];
+    /** @var object|null */
+    public $locales;
 
-    public function addRelease(string $version): Release
+    public function addRelease(string $version): ?Release
     {
         $release = new Release('<release/>');
 
@@ -84,8 +90,12 @@ class Release extends SimpleXMLElement
         }
 
         $dom = dom_import_simplexml($this);
+        $ownerDocument = $dom->ownerDocument;
+        if ($ownerDocument === null) {
+            throw new \RuntimeException('Release xml is invalid');
+        }
         $dom->insertBefore(
-            $dom->ownerDocument->importNode(dom_import_simplexml($release), true),
+            $ownerDocument->importNode(dom_import_simplexml($release), true),
             $dom->firstChild
         );
 
@@ -101,7 +111,7 @@ class Release extends SimpleXMLElement
         return [
             'version' => $matches[1],
             'version_text' => $matches[5] ?? '',
-            'rc' => (int)($matches[6] ?? 0),
+            'rc' => (int) ($matches[6] ?? 0),
         ];
     }
 
@@ -109,7 +119,12 @@ class Release extends SimpleXMLElement
     {
         $parsed = self::parseVersion($version);
 
+        /** @var Release|null $matching */
         $matching = null;
+        if ($this->release === null) {
+            return null;
+        }
+
         foreach ($this->release as $r) {
             if ($r->getVersion() !== $parsed['version'] || $r->getRc() !== $parsed['rc']) {
                 continue;
@@ -126,38 +141,41 @@ class Release extends SimpleXMLElement
     }
 
     /**
-     * @return Release[]
+     * @return \Generator<Release>
      */
-    public function getReleases(): iterable
+    public function getReleases(): \Generator
     {
-        foreach ($this->release as $r) {
-            yield $r;
-        }
+        yield from $this->release;
+    }
+
+    public function getTag(): string
+    {
+        return (string) $this->tag;
     }
 
     public function getVersion(): string
     {
-        return (string)$this->version;
+        return (string) $this->version;
     }
 
     public function getVersionText(): string
     {
-        return (string)$this->version_text;
+        return (string) $this->version_text;
     }
 
     public function getMinimumVersion(): string
     {
-        return (string)$this->minimum_version;
+        return (string) $this->minimum_version;
     }
 
     public function getSecurityUpdate(): string
     {
-        return (string)$this->security_update;
+        return (string) $this->security_update;
     }
 
     public function isPublic(): bool
     {
-        return (string)$this->public === '1';
+        return (string) $this->public === '1';
     }
 
     public function makePublic(): void
@@ -172,73 +190,82 @@ class Release extends SimpleXMLElement
 
     public function getRc(): int
     {
-        return (int)$this->rc;
+        return (int) $this->rc;
     }
 
     public function getEa(): int
     {
-        return (int)$this->ea;
+        return (int) $this->ea;
     }
 
     public function getRevision(): string
     {
-        return (string)$this->revision;
+        return (string) $this->revision;
     }
 
     public function getReleaseDate(): string
     {
-        return (string)$this->release_date;
+        return (string) $this->release_date;
     }
 
     public function getGithubRepo(): string
     {
-        return (string)$this->github_repo;
+        return (string) $this->github_repo;
     }
 
     public function getUpgradeMd(): string
     {
-        return (string)$this->upgrade_md;
+        return (string) $this->upgrade_md;
     }
 
     public function getDownloadLinkInstall(): string
     {
-        return (string)$this->download_link_install;
+        return (string) $this->download_link_install;
     }
 
     public function getDownloadLinkUpdate(): string
     {
-        return (string)$this->download_link_update;
+        return (string) $this->download_link_update;
     }
 
     public function getSha256Install(): string
     {
-        return (string)$this->sha256_install;
+        return (string) $this->sha256_install;
     }
 
     public function getSha256Update(): string
     {
-        return (string)$this->sha256_update;
+        return (string) $this->sha256_update;
     }
 
     public function getType(): string
     {
-        return (string)$this->type;
+        return (string) $this->type;
     }
 
-    public function getLocales(): array
+    public function isManual(): bool
     {
-        return (array)$this->locales;
+        return (bool) $this->manual;
     }
 
-    public function setLocale(string $lang, $data): void
+    public function setLocale(string $lang, array $data): void
     {
+        if ($this->locales === null) {
+            $this->locales = new \stdClass();
+        }
+
         if (isset($data['changelog'])) {
             $this->locales->$lang->changelog = '';
-            $this->addCDataToNode($this->locales->$lang->changelog, PHP_EOL . $data['changelog'] . PHP_EOL);
+
+            /** @var SimpleXMLElement $changelog */
+            $changelog = $this->locales->$lang->changelog;
+            $this->addCDataToNode($changelog, PHP_EOL . $data['changelog'] . PHP_EOL);
         }
         if (isset($data['important_changes'])) {
             $this->locales->$lang->important_changes = '';
-            $this->addCDataToNode($this->locales->$lang->important_changes, PHP_EOL . $data['important_changes'] . PHP_EOL);
+            /** @var SimpleXMLElement $importantChanges */
+            $importantChanges = $this->locales->$lang->important_changes;
+            $this->addCDataToNode($importantChanges, PHP_EOL . $data['important_changes'] . PHP_EOL);
         }
     }
 
@@ -258,11 +285,18 @@ class Release extends SimpleXMLElement
         }
     }
 
-    private function addCDataToNode(SimpleXMLElement $node, $value): void
+    private function addCDataToNode(SimpleXMLElement $node, string $value): void
     {
-        if ($domElement = dom_import_simplexml($node)) {
-            $domOwner = $domElement->ownerDocument;
-            $domElement->appendChild($domOwner->createCDATASection((string)$value));
+        $domElement = dom_import_simplexml($node);
+        if ($domElement === false) {
+            return;
         }
+
+        $domOwner = $domElement->ownerDocument;
+        if ($domOwner === null) {
+            return;
+        }
+
+        $domElement->appendChild($domOwner->createCDATASection($value));
     }
 }

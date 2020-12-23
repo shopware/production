@@ -4,13 +4,7 @@ declare(strict_types=1);
 
 namespace Shopware\Production\Command;
 
-use Doctrine\DBAL\Configuration;
-use Doctrine\DBAL\DriverManager;
-use Doctrine\DBAL\FetchMode;
-use Shopware\Core\Framework\Adapter\Console\ShopwareStyle;
-use Shopware\Production\Kernel;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -41,7 +35,7 @@ class SystemGenerateJwtSecretCommand extends Command
         }
 
         $passphrase = $input->getOption('jwt-passphrase');
-        $privateKeyPath = $input->getOption('private-key-path') ?? $this->projectDir . '/config/jwt/private.pem';
+        $privateKeyPath = $input->getOption('private-key-path') ?? ($this->projectDir . '/config/jwt/private.pem');
         $publicKeyPath = $input->getOption('public-key-path');
 
         if (!$publicKeyPath && !$input->getOption('private-key-path')) {
@@ -50,14 +44,32 @@ class SystemGenerateJwtSecretCommand extends Command
 
         $force = $input->getOption('force');
 
+        if (!\is_string($privateKeyPath)) {
+            $io->error('Private key path is invalid');
+
+            return 1;
+        }
+
         if (file_exists($privateKeyPath) && !$force) {
             $io->error(sprintf('Cannot create private key %s, it already exists.', $privateKeyPath));
 
             return 1;
         }
 
+        if (!\is_string($publicKeyPath)) {
+            $io->error('Public key path is invalid');
+
+            return 1;
+        }
+
         if (file_exists($publicKeyPath) && !$force) {
             $io->error(sprintf('Cannot create public key %s, it already exists.', $publicKeyPath));
+
+            return 1;
+        }
+
+        if (!\is_string($passphrase)) {
+            $io->error('Passphrase is invalid');
 
             return 1;
         }
@@ -70,7 +82,13 @@ class SystemGenerateJwtSecretCommand extends Command
         ]);
 
         // export private key
-        openssl_pkey_export_to_file($key, $privateKeyPath, $passphrase);
+        $result = openssl_pkey_export_to_file($key, $privateKeyPath, $passphrase);
+        if ($result === false) {
+            $io->error('Could not export private key to file');
+
+            return 1;
+        }
+
         chmod($privateKeyPath, 0660);
 
         if ($publicKeyPath) {

@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-
 namespace Shopware\CI\Test\Service\Xml;
 
 use PHPUnit\Framework\TestCase;
@@ -54,7 +53,7 @@ class ReleaseTest extends TestCase
     /**
      * @dataProvider invalidVersionsProvider
      */
-    public function testParseInvalidVersionThrowsException($version): void
+    public function testParseInvalidVersionThrowsException(string $version): void
     {
         $this->expectException(\RuntimeException::class);
         Release::parseVersion($version);
@@ -91,6 +90,7 @@ class ReleaseTest extends TestCase
         $releaseRoot = simplexml_load_string(file_get_contents(self::TEST_XML), Release::class);
 
         $first = $releaseRoot->getRelease('v6.2.1');
+        static::assertInstanceOf(Release::class, $first);
 
         static::assertFalse($first->isPublic());
         static::assertSame('', $first->getDownloadLinkInstall());
@@ -99,6 +99,7 @@ class ReleaseTest extends TestCase
         $first->download_link_install = 'https://example.com/install.zip';
 
         $second = $releaseRoot->getRelease('v6.2.1');
+        static::assertInstanceOf(Release::class, $second);
 
         $first->makePublic();
 
@@ -128,10 +129,15 @@ class ReleaseTest extends TestCase
 
         static::assertNull($releaseRoot->getRelease('v6.2.2'));
 
-        $count = count($releaseRoot->release);
+        $releases = $releaseRoot->release;
+        static::assertNotNull($releases);
+        $count = \count($releases);
 
         $newRelease = $releaseRoot->addRelease('v6.2.2');
-        static::assertCount($count + 1, $releaseRoot->release);
+        static::assertInstanceOf(Release::class, $newRelease);
+        $releases = $releaseRoot->release;
+        static::assertNotNull($releases);
+        static::assertCount($count + 1, $releases);
 
         $foundRelease = $releaseRoot->getRelease('v6.2.2');
         static::assertEquals($newRelease, $foundRelease);
@@ -142,6 +148,8 @@ class ReleaseTest extends TestCase
 
         $newRelease->makePublic();
 
-        static::assertEquals($newRelease, $releaseRoot->release[0]);
+        $releases = $releaseRoot->release;
+        static::assertNotNull($releases);
+        static::assertEquals($newRelease, $releases[0]);
     }
 }

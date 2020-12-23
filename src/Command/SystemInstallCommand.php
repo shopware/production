@@ -48,7 +48,7 @@ class SystemInstallCommand extends Command
     {
         $output = new ShopwareStyle($input, $output);
 
-        /**
+        /*
          * Needs to be set because migration for testsuite needs the trigger.
          * Because there are some tests that work directly on the db and so ignore the indexer
          */
@@ -56,7 +56,7 @@ class SystemInstallCommand extends Command
 
         $_ENV['BLUE_GREEN_DEPLOYMENT'] = 1;
 
-        $dsn = trim((string)($_ENV['DATABASE_URL'] ?? $_SERVER['DATABASE_URL'] ?? getenv('DATABASE_URL')));
+        $dsn = trim((string) ($_ENV['DATABASE_URL'] ?? $_SERVER['DATABASE_URL'] ?? getenv('DATABASE_URL')));
         if ($dsn === '' || $dsn === Kernel::PLACEHOLDER_DATABASE_URL) {
             $output->error("Environment variable 'DATABASE_URL' not defined.");
 
@@ -156,13 +156,10 @@ class SystemInstallCommand extends Command
             ];
         }
 
-        $commands = array_merge($commands, [
-            [
-                'command' => 'assets:install',
-            ],
-            [
-                'command' => 'cache:clear',
-            ],
+        array_push($commands, [
+            'command' => 'assets:install',
+        ], [
+            'command' => 'cache:clear',
         ]);
 
         $this->runCommands($commands, $output);
@@ -177,14 +174,19 @@ class SystemInstallCommand extends Command
     }
 
     /**
-     * @param array<string, array<string, string>> $commands
+     * @param array<int, array<string, string|bool>> $commands
      */
     private function runCommands(array $commands, OutputInterface $output): int
     {
+        $application = $this->getApplication();
+        if ($application === null) {
+            throw new \RuntimeException('No application initialised');
+        }
+
         foreach ($commands as $parameters) {
             $output->writeln('');
 
-            $command = $this->getApplication()->find($parameters['command']);
+            $command = $application->find($parameters['command']);
             unset($parameters['command']);
             $returnCode = $command->run(new ArrayInput($parameters, $command->getDefinition()), $output);
             if ($returnCode !== 0) {

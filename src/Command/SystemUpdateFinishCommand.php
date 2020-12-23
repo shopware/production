@@ -18,6 +18,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class SystemUpdateFinishCommand extends Command
 {
@@ -43,7 +44,7 @@ class SystemUpdateFinishCommand extends Command
     {
         $output = new ShopwareStyle($input, $output);
 
-        $dsn = trim((string)($_SERVER['DATABASE_URL'] ?? getenv('DATABASE_URL')));
+        $dsn = trim((string) ($_SERVER['DATABASE_URL'] ?? getenv('DATABASE_URL')));
         if ($dsn === '' || $dsn === Kernel::PLACEHOLDER_DATABASE_URL) {
             $output->note("Environment variable 'DATABASE_URL' not defined. Skipping " . $this->getName() . '...');
 
@@ -56,28 +57,36 @@ class SystemUpdateFinishCommand extends Command
         $containerWithoutPlugins = $this->rebootKernelWithoutPlugins();
 
         $context = Context::createDefaultContext();
-        $oldVersion = (string)$this->container->get(SystemConfigService::class)
-            ->get(UpdateController::UPDATE_PREVIOUS_VERSION_KEY);
+        /** @var SystemConfigService $systemConfigService */
+        $systemConfigService = $this->container->get(SystemConfigService::class);
+        $oldVersion = $systemConfigService->getString(UpdateController::UPDATE_PREVIOUS_VERSION_KEY);
 
         $newVersion = $containerWithoutPlugins->getParameter('kernel.shopware_version');
-        $containerWithoutPlugins->get('event_dispatcher')
-            ->dispatch(new UpdatePreFinishEvent($context, $oldVersion, $newVersion));
+        /** @var EventDispatcherInterface $eventDispatcherWithoutPlugins */
+        $eventDispatcherWithoutPlugins = $this->rebootKernelWithoutPlugins()->get('event_dispatcher');
+        $eventDispatcherWithoutPlugins->dispatch(new UpdatePreFinishEvent($context, $oldVersion, $newVersion));
 
-        $this->runMigrations($input, $output);
+        $this->runMigrations($output);
 
+        /** @var EventDispatcherInterface $eventDispatcher */
+        $eventDispatcher = $this->container->get('event_dispatcher');
         $updateEvent = new UpdatePostFinishEvent($context, $oldVersion, $newVersion);
-        $this->container->get('event_dispatcher')->dispatch($updateEvent);
+        $eventDispatcher->dispatch($updateEvent);
 
-        $this->installAssets($input, $output);
+        $this->installAssets($output);
 
         $output->writeln('');
 
         return 0;
     }
 
-    private function runMigrations(InputInterface $input, OutputInterface $output): int
+    private function runMigrations(OutputInterface $output): int
     {
-        $command = $this->getApplication()->find('database:migrate');
+        $application = $this->getApplication();
+        if ($application === null) {
+            throw new \RuntimeException('No application initialised');
+        }
+        $command = $application->find('database:migrate');
 
         $arguments = [
             'identifier' => 'core',
@@ -88,9 +97,13 @@ class SystemUpdateFinishCommand extends Command
         return $command->run($arrayInput, $output);
     }
 
-    private function installAssets(InputInterface $input, OutputInterface $output): int
+    private function installAssets(OutputInterface $output): int
     {
-        $command = $this->getApplication()->find('assets:install');
+        $application = $this->getApplication();
+        if ($application === null) {
+            throw new \RuntimeException('No application initialised');
+        }
+        $command = $application->find('assets:install');
 
         return $command->run(new ArrayInput([], $command->getDefinition()), $output);
     }

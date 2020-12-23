@@ -1,5 +1,4 @@
-<?php
-
+<?php declare(strict_types=1);
 
 namespace Shopware\CI\Command;
 
@@ -11,8 +10,10 @@ use League\Flysystem\AwsS3v3\AwsS3Adapter;
 use League\Flysystem\Filesystem;
 use Shopware\CI\Service\ChangelogService;
 use Shopware\CI\Service\CredentialService;
+use Shopware\CI\Service\ProcessBuilder;
 use Shopware\CI\Service\ReleasePrepareService;
 use Shopware\CI\Service\ReleaseService;
+use Shopware\CI\Service\SbpClient;
 use Shopware\CI\Service\TaggingService;
 use Shopware\CI\Service\UpdateApiService;
 use Shopware\CI\Service\VersioningService;
@@ -28,7 +29,7 @@ abstract class ReleaseCommand extends Command
     private $config;
 
     /**
-     * @var Filesystem
+     * @var Filesystem|null
      */
     private $deployFilesystem;
 
@@ -47,6 +48,11 @@ abstract class ReleaseCommand extends Command
             'jira' => [
                 'api_base_uri' => rtrim($_SERVER['JIRA_API_V2_URL'] ?? 'https://jira.shopware.com/rest/api/2/', '/') . '/',
             ],
+            'sbp' => [
+                'apiBaseUri' => rtrim($_SERVER['SBP_API_BASE_URI'] ?? '', '/') . '/',
+                'apiUser' => $_SERVER['SBP_API_USER'] ?? '',
+                'apiPassword' => $_SERVER['SBP_API_PASSWORD'] ?? '',
+            ],
             'platform' => [
                 'remote' => $_SERVER['PLATFORM_REPO_URL'] ?? 'git@gitlab.shopware.com:shopware/6/product/platform',
             ],
@@ -62,9 +68,14 @@ abstract class ReleaseCommand extends Command
             'gitlabApiToken' => $_SERVER['BOT_API_TOKEN'] ?? '',
             'isMinorRelease' => $_SERVER['MINOR_RELEASE'] ?? false,
             'platformBranch' => $_SERVER['PLATFORM_BRANCH'] ?? null,
+            'platformRemoteUrl' => $_SERVER['PLATFORM_REMOTE_URL'] ?? '',
+            'developmentRemoteUrl' => $_SERVER['DEVELOPMENT_REMOTE_URL'] ?? '',
+            'sshPrivateKeyFile' => $_SERVER['SSH_PRIVATE_KEY_FILE'] ?? '',
         ];
 
-
+        if ($config['sshPrivateKeyFile'] !== '') {
+            ProcessBuilder::loadSshKey($config['sshPrivateKeyFile']);
+        }
 
         if (isset($_SERVER['CI_API_V4_URL'])) {
             $config['gitlabBaseUri'] = rtrim($_SERVER['CI_API_V4_URL'] ?? '', '/') . '/'; // guzzle needs the slash
@@ -85,6 +96,9 @@ abstract class ReleaseCommand extends Command
 
         if ($input->hasArgument('tag')) {
             $tag = $input->getArgument('tag');
+            if (!\is_string($tag)) {
+                throw new \RuntimeException('Invalid tag given');
+            }
             $config['tag'] = $tag;
             $stability = $stability ?? VersionParser::parseStability($config['tag']);
         }
@@ -143,7 +157,6 @@ abstract class ReleaseCommand extends Command
     {
         $config = $this->getConfig($input, $output);
 
-
         $artifactFilesystem = new Filesystem(new Local($config['projectRoot'] . '/artifacts'));
 
         return new ReleasePrepareService(
@@ -151,7 +164,9 @@ abstract class ReleaseCommand extends Command
             $this->getDeployFilesystem($input, $output),
             $artifactFilesystem,
             $this->getChangelogService($input, $output),
-            new UpdateApiService($config['updateApiHost'])
+            new UpdateApiService($config['updateApiHost'], $output),
+            $this->getSbpClient($input, $output),
+            $output
         );
     }
 
@@ -160,6 +175,27 @@ abstract class ReleaseCommand extends Command
         $config = $this->getConfig($input, $output);
 
         return new VersioningService(new VersionParser(), $config['stability']);
+    }
+
+    protected function getSbpClient(InputInterface $input, OutputInterface $output): SbpClient
+    {
+        $config = $this->getConfig($input, $output);
+
+        $client = new SbpClient(new Client([
+            'base_uri' => $config['sbp']['apiBaseUri'],
+            'headers' => [
+                'Content-Type' => 'application/json',
+                'User-Agent' => 'gitlab.shopware.com',
+            ],
+        ]));
+
+        try {
+            $client->login($config['sbp']['apiUser'], $config['sbp']['apiPassword']);
+        } catch (\Throwable $e) {
+            $output->writeln('Failed sbp login: ' . $e->getMessage());
+        }
+
+        return $client;
     }
 
     protected function getTaggingService(InputInterface $input, OutputInterface $output): TaggingService
@@ -173,7 +209,7 @@ abstract class ReleaseCommand extends Command
             ],
         ]);
 
-        return new TaggingService($config, $gitlabApiClient);
+        return new TaggingService($config, $gitlabApiClient, $output, false);
     }
 
     protected function getReleaseService(InputInterface $input, OutputInterface $output): ReleaseService
@@ -183,7 +219,9 @@ abstract class ReleaseCommand extends Command
         return new ReleaseService(
             $config,
             $this->getReleasePrepareService($input, $output),
-            $this->getTaggingService($input, $output)
+            $this->getTaggingService($input, $output),
+            $this->getSbpClient($input, $output),
+            $output
         );
     }
 }

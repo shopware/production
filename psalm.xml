@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<psalm
+    resolveFromConfigFile="true"
+    ensureArrayStringOffsetsExist="true"
+    findUnusedVariablesAndParams="true"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="https://getpsalm.org/schema/config"
+    xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
+    autoloader=".gitlab-ci/tools/vendor/autoload.php"
+>
+    <projectFiles>
+        <directory name="src"/>
+        <directory name=".gitlab-ci/tools/src"/>
+        <directory name=".gitlab-ci/tools/tests"/>
+        <ignoreFiles>
+            <directory name="vendor"/>
+            <directory name=".gitlab-ci/tools/vendor"/>
+        </ignoreFiles>
+    </projectFiles>
+
+    <issueHandlers>
+        <ForbiddenCode>
+            <errorLevel type="info">
+                <file name=".gitlab-ci/tools/src/Service/ReleaseService.php"/>
+                <file name=".gitlab-ci/tools/src/Service/ReleasePrepareService.php"/>
+            </errorLevel>
+        </ForbiddenCode>
+
+        <InvalidArgument>
+            <errorLevel type="info">
+                <referencedFunction name="League\Flysystem\AwsS3v3\AwsS3Adapter::__construct"/>
+            </errorLevel>
+        </InvalidArgument>
+
+        <InternalMethod>
+            <errorLevel type="info">
+                <referencedMethod name="Doctrine\DBAL\Configuration::setSQLLogger"/>
+                <referencedMethod name="PHPUnit\Framework\MockObject\Builder\InvocationMocker::willReturn"/>
+                <referencedMethod name="PHPUnit\Framework\MockObject\Builder\InvocationMocker::method"/>
+                <referencedMethod name="PHPUnit\Framework\MockObject\Builder\InvocationMocker::with"/>
+            </errorLevel>
+        </InternalMethod>
+
+        <InternalClass>
+            <errorLevel type="info">
+                <referencedClass name="Doctrine\DBAL\Configuration"/>
+            </errorLevel>
+        </InternalClass>
+
+        <InvalidScalarArgument>
+            <errorLevel type="info">
+                <referencedFunction name="Symfony\Component\Console\Application::find"/>
+            </errorLevel>
+        </InvalidScalarArgument>
+
+        <UnresolvableInclude>
+            <errorLevel type="info">
+                <file name="src/TestBootstrap.php"/>
+            </errorLevel>
+        </UnresolvableInclude>
+
+        <!-- Should be fixed some day :-) -->
+        <PossiblyUndefinedArrayOffset errorLevel="info"/>
+
+        <PropertyNotSetInConstructor errorLevel="info"/>
+    </issueHandlers>
+</psalm>

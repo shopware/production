@@ -7,7 +7,6 @@ use Shopware\CI\Command\EditReleaseCommand;
 use Shopware\CI\Command\ReleaseInfoCommand;
 use Shopware\CI\Command\ReleasePackageCommand;
 use Shopware\CI\Command\ReleaseTagsCommand;
-use Shopware\CI\Command\DeleteTagsCommand;
 use Shopware\CI\Command\GenerateChangelogCommand;
 use Shopware\CI\Command\ReleasePrepareCommand;
 use Shopware\CI\Command\ShowNextTagCommand;
@@ -24,7 +23,6 @@ if (is_readable(__DIR__ . '/.env')) {
 $application->add(new GenerateChangelogCommand());
 $application->add(new ShowNextTagCommand());
 $application->add(new ReleaseTagsCommand());
-$application->add(new DeleteTagsCommand());
 $application->add(new ReleasePrepareCommand());
 $application->add(new ReleasePackageCommand());
 $application->add(new EditReleaseCommand());

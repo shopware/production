@@ -32,7 +32,7 @@ Prepare release:
 
 Release tags:
     stage: release
-    image: alpine:3.10
+    image: alpine:3.11
     when: manual
     only:
         refs:

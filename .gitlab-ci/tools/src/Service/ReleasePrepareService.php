@@ -1,10 +1,10 @@
-<?php
-
+<?php declare(strict_types=1);
 
 namespace Shopware\CI\Service;
 
 use League\Flysystem\Filesystem;
 use Shopware\CI\Service\Xml\Release;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class ReleasePrepareService
 {
@@ -35,18 +35,32 @@ class ReleasePrepareService
      */
     private $updateApiService;
 
+    /**
+     * @var SbpClient
+     */
+    private $sbpClient;
+
+    /**
+     * @var OutputInterface
+     */
+    private $stdout;
+
     public function __construct(
         array $config,
         Filesystem $deployFilesystem,
         FileSystem $artifactsFilesystem,
         ChangelogService $changelogService,
-        UpdateApiService $updateApiService
+        UpdateApiService $updateApiService,
+        SbpClient $sbpClient,
+        OutputInterface $stdout
     ) {
         $this->config = $config;
         $this->deployFilesystem = $deployFilesystem;
         $this->changelogService = $changelogService;
         $this->artifactsFilesystem = $artifactsFilesystem;
         $this->updateApiService = $updateApiService;
+        $this->sbpClient = $sbpClient;
+        $this->stdout = $stdout;
     }
 
     public function prepareRelease(string $tag): void
@@ -56,6 +70,9 @@ class ReleasePrepareService
         $release = $releaseList->getRelease($tag);
         if ($release === null) {
             $release = $releaseList->addRelease($tag);
+        }
+        if ($release === null) {
+            throw new \RuntimeException('Still no release. Something went really wrong there');
         }
 
         if ($release->isPublic()) {
@@ -71,33 +88,77 @@ class ReleasePrepareService
                 $changelog = $this->changelogService->getChangeLog($tag);
                 $release->setLocales($changelog);
             } catch (\Throwable $e) {
-                var_dump($e);
+                $this->stdout->writeln('Failed to write changelog: ' . $e->getMessage());
             }
         } else {
-            echo 'May not alter changelog ' . PHP_EOL;
+            $this->stdout->writeln('May not alter changelog');
         }
 
         $this->storeReleaseList($releaseList);
 
         $this->registerUpdate($tag, $release);
+
+        try {
+            $this->upsertSbpVersion($tag);
+        } catch (\Throwable $e) {
+            $this->stdout->writeln('Failed to upsertSbpVersion for tag ' . $tag . ' error: ' . $e->getMessage());
+        }
+    }
+
+    public function upsertSbpVersion(string $tag): void
+    {
+        $parsed = VersioningService::parseTag($tag);
+        $version = $parsed['major'] . '.' . $parsed['minor'] . '.' . $parsed['patch'] . '.' . $parsed['build'];
+
+        $nextParentVersions = [
+            $parsed['major'] . '.' . $parsed['minor'] . '.' . $parsed['patch'],
+            $parsed['major'] . '.' . $parsed['minor'],
+            $parsed['major'],
+        ];
+
+        $parent = null;
+        foreach ($nextParentVersions as $nextParentVersion) {
+            $parent = $this->sbpClient->getVersionByName((string) $nextParentVersion);
+            if ($parent !== null) {
+                $this->stdout->writeln('Found parent ' . $parent['name'] . ' for ' . $version);
+
+                break;
+            }
+        }
+
+        if ($parent === null) {
+            throw new \RuntimeException('failed to get sbp version. parent not found');
+        }
+
+        $current = $this->sbpClient->getVersionByName($version);
+        if (isset($current['releaseDate'])) {
+            $releaseDate = new \DateTimeImmutable(isset($current['releaseDate']['date']) ? $current['releaseDate']['date'] : $current['releaseDate']);
+        } else {
+            $releaseDate = new \DateTime();
+            $releaseDate->setTimestamp(strtotime('first monday of next month'));
+        }
+
+        $this->stdout->writeln('Upserting sbp version ' . $version . ' with release date ' . $releaseDate->format('Y-m-d'));
+        $this->sbpClient->upsertVersion($version, $parent['id'], $releaseDate->format('Y-m-d'), null);
     }
 
     public function uploadArchives(Release $release): void
     {
-        $installUpload = $this->hashAndUpload($release->tag, 'install.zip');
+        $releaseTag = $release->getTag();
+        $installUpload = $this->hashAndUpload($releaseTag, 'install.zip');
         $release->download_link_install = $installUpload['url'];
         $release->sha1_install = $installUpload['sha1'];
         $release->sha256_install = $installUpload['sha256'];
 
-        $updateUpload = $this->hashAndUpload($release->tag, 'update.zip');
+        $updateUpload = $this->hashAndUpload($releaseTag, 'update.zip');
         $release->download_link_update = $updateUpload['url'];
         $release->sha1_update = $updateUpload['sha1'];
         $release->sha256_update = $updateUpload['sha256'];
 
-        $this->hashAndUpload($release->tag, 'install.tar.xz');
-        $minorBranch = VersioningService::getMinorBranch($release->tag);
+        $this->hashAndUpload($releaseTag, 'install.tar.xz');
+        $minorBranch = VersioningService::getMinorBranch($releaseTag);
         $this->hashAndUpload(
-            $release->tag,
+            $releaseTag,
             'install.tar.xz',
             'sw6/install_' . $minorBranch . '_next.tar.xz' // 6.2_next.tar.xz, 6.3.0_next.tar.xz, 6.3.1_next.tar.xz
         );
@@ -106,8 +167,14 @@ class ReleasePrepareService
     public function getReleaseList(): Release
     {
         $content = $this->deployFilesystem->read(self::SHOPWARE_XML_PATH);
+        if ($content === false) {
+            throw new \RuntimeException('Could not read Shopware xml file');
+        }
 
-        return simplexml_load_string($content, Release::class);
+        /** @var Release $release */
+        $release = simplexml_load_string($content, Release::class);
+
+        return $release;
     }
 
     public function storeReleaseList(Release $release): void
@@ -115,7 +182,11 @@ class ReleasePrepareService
         $dom = new \DOMDocument('1.0');
         $dom->preserveWhiteSpace = false;
         $dom->formatOutput = true;
-        $dom->loadXML($release->asXML());
+        $releaseXml = $release->asXML();
+        if ($releaseXml === false) {
+            throw new \RuntimeException('Release XML file is invalid');
+        }
+        $dom->loadXML($releaseXml);
 
         $this->deployFilesystem->put(self::SHOPWARE_XML_PATH, $dom->saveXML());
     }
@@ -123,24 +194,24 @@ class ReleasePrepareService
     public function registerUpdate(string $tag, Release $release): void
     {
         $baseParams = [
-            '--release-version' => (string)$release->version,
+            '--release-version' => (string) $release->version,
             '--channel' => VersioningService::getUpdateChannel($tag),
         ];
 
-        if (((string)$release->version_text) !== '') {
-            $baseParams['--version-text'] = (string)$release->version_text;
+        if (((string) $release->version_text) !== '') {
+            $baseParams['--version-text'] = (string) $release->version_text;
         }
 
         $insertReleaseParameters = array_merge($baseParams, [
             '--min-version' => $this->config['minimumVersion'] ?? '6.2.0',
-            '--install-uri' => (string)$release->download_link_install,
-            '--install-size' => (string)$this->artifactsFilesystem->getSize('install.zip'),
-            '--install-sha1' => (string)$release->sha1_install,
-            '--install-sha256' => (string)$release->sha256_install,
-            '--update-uri' => (string)$release->download_link_update,
-            '--update-size' => (string)$this->artifactsFilesystem->getSize('update.zip'),
-            '--update-sha1' => (string)$release->sha1_update,
-            '--update-sha256' => (string)$release->sha256_update,
+            '--install-uri' => (string) $release->download_link_install,
+            '--install-size' => (string) $this->artifactsFilesystem->getSize('install.zip'),
+            '--install-sha1' => (string) $release->sha1_install,
+            '--install-sha256' => (string) $release->sha256_install,
+            '--update-uri' => (string) $release->download_link_update,
+            '--update-size' => (string) $this->artifactsFilesystem->getSize('update.zip'),
+            '--update-sha1' => (string) $release->sha1_update,
+            '--update-sha256' => (string) $release->sha256_update,
         ]);
 
         $this->updateApiService->insertReleaseData($insertReleaseParameters);
@@ -154,7 +225,7 @@ class ReleasePrepareService
     private function setReleaseProperties(string $tag, Release $release): void
     {
         $release->minimum_version = $this->config['minimumVersion'] ?? '6.2.0';
-        $release->public = 0;
+        $release->public = '0';
         $release->ea = 0;
         $release->revision = '';
         $release->type = VersioningService::getReleaseType($tag);
@@ -178,7 +249,16 @@ class ReleasePrepareService
         $parts = explode('.', $basename, 2);
 
         $targetPath = $targetPath ?: 'sw6/' . $parts[0] . '_' . $tag . '_' . $sha1 . '.' . $parts[1];
-        $this->deployFilesystem->putStream($targetPath, $this->artifactsFilesystem->readStream($source));
+        $sourceStream = $this->artifactsFilesystem->readStream($source);
+        if ($sourceStream === false) {
+            throw new \RuntimeException(sprintf('Could not read from source: "%s"', $source));
+        }
+
+        $this->stdout->writeln('Uploading ' . $basename . ' to ' . $targetPath);
+        $this->stdout->writeln('sha1: ' . $sha1);
+        $this->stdout->writeln('sha256: ' . $sha256);
+
+        $this->deployFilesystem->putStream($targetPath, $sourceStream);
 
         return [
             'url' => $this->config['deployFilesystem']['publicDomain'] . '/' . $targetPath,
@@ -190,14 +270,17 @@ class ReleasePrepareService
     private function hashFile(string $alg, string $path): string
     {
         $context = hash_init($alg);
-        hash_update_stream($context, $this->artifactsFilesystem->readStream($path));
+        $pathStream = $this->artifactsFilesystem->readStream($path);
+        if ($pathStream === false) {
+            throw new \RuntimeException(sprintf('Could not read from path: "%s"', $path));
+        }
+        $_bytesAdded = hash_update_stream($context, $pathStream);
 
         return hash_final($context);
     }
 
     private function mayAlterChangelog(Release $release): bool
     {
-        return !$release->isPublic()
-            && ((bool)($release->manual ?? false)) !== true;
+        return !$release->isPublic() && !$release->isManual();
     }
 }

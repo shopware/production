@@ -1,11 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Shopware\CI\Command;
 
-use GuzzleHttp\Client;
 use Shopware\CI\Service\ChangelogService;
-use Shopware\CI\Service\CredentialService;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Exception\InvalidOptionException;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -19,7 +16,7 @@ class GenerateChangelogCommand extends ReleaseCommand
     public static $defaultName = 'release:generate-changelog';
 
     /**
-     * @var ChangelogService|null
+     * @var ChangelogService
      */
     private $changeLogService;
 
@@ -55,7 +52,7 @@ class GenerateChangelogCommand extends ReleaseCommand
         if (empty($version)) {
             $unreleasedVersions = $this->changeLogService->getVersions(true);
             $question = new ChoiceQuestion('Jira version', $unreleasedVersions, $unreleasedVersions[0]);
-            $question->setValidator(static function ($value) {
+            $question->setValidator(static function (string $value): string {
                 if (trim($value) === '') {
                     throw new InvalidOptionException('The release-version cannot be empty');
                 }
@@ -65,7 +62,7 @@ class GenerateChangelogCommand extends ReleaseCommand
 
             $version = $io->askQuestion($question);
         }
-        $version = is_array($version) ? $version[0] : $version;
+        $version = \is_array($version) ? $version[0] : $version;
         $version = $this->changeLogService->findVersion($version);
 
         return $version;

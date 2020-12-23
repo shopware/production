@@ -3,7 +3,6 @@
 namespace Shopware\CI\Test\Service;
 
 use Composer\Semver\VersionParser;
-use GuzzleHttp\Client;
 use PHPUnit\Framework\TestCase;
 use Shopware\CI\Service\Exception\InvalidTagException;
 use Shopware\CI\Service\VersioningService;
@@ -148,7 +147,7 @@ class VersioningServiceTest extends TestCase
         static::assertSame($expected, $versioningService->getNextTag($constraint, $lastVersion, $doMinor));
     }
 
-    public function getMatchingVersionsProvider()
+    public function getMatchingVersionsProvider(): array
     {
         return [
             [
@@ -398,7 +397,7 @@ CODE;
         ];
     }
 
-    private function mt_shuffle_array($array)
+    private function mt_shuffle_array(array $array): array
     {
         $shuffled_array = [];
         $arr_length = count($array);

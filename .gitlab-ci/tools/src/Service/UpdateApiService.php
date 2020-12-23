@@ -1,7 +1,8 @@
-<?php
-
+<?php declare(strict_types=1);
 
 namespace Shopware\CI\Service;
+
+use Symfony\Component\Console\Output\OutputInterface;
 
 class UpdateApiService
 {
@@ -10,9 +11,15 @@ class UpdateApiService
      */
     private $updateApiHost;
 
-    public function __construct(string $updateApiHost)
+    /**
+     * @var OutputInterface
+     */
+    private $stdout;
+
+    public function __construct(string $updateApiHost, OutputInterface $stdout)
     {
         $this->updateApiHost = $updateApiHost;
+        $this->stdout = $stdout;
     }
 
     public function insertReleaseData(array $parameters): void
@@ -34,7 +41,7 @@ class UpdateApiService
     {
         $escapedParameters = [];
         foreach ($parameters as $key => $value) {
-            $escapedParameters[] = $key . '=' . escapeshellarg($value);
+            $escapedParameters[] = $key . '=' . escapeshellarg((string) $value);
         }
         $command = sprintf(
             'ssh shopware@%s php /var/www/shopware-update-api/bin/console %s %s',
@@ -43,14 +50,13 @@ class UpdateApiService
             implode(' ', $escapedParameters)
         );
 
-        $returnCode = 0;
-
+        $this->stdout->writeln('Run locally: ' . $command);
         // TODO: activate
-        echo $command . PHP_EOL;
-        // system($command, $returnCode);
+//        $returnCode = 0;
+//        system($command, $returnCode);
 
-        if ($returnCode !== 0) {
-            throw new \RuntimeException('Failed to execute "' . $command . '". Return code: ' . $returnCode);
-        }
+//        if ($returnCode !== 0) {
+//            throw new \RuntimeException('Failed to execute "' . $command . '". Return code: ' . $returnCode);
+//        }
     }
 }

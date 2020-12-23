@@ -1,15 +1,13 @@
-<?php
-
+<?php declare(strict_types=1);
 
 namespace Shopware\CI\Service;
 
-use Composer\Semver\Constraint\Constraint;
-use Composer\Semver\Constraint\MultiConstraint;
-use Composer\Semver\Semver;
-use Composer\Semver\VersionParser;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
-use function Symfony\Component\VarDumper\Dumper\esc;
+use Shopware\CI\Service\Exception\TaggingException;
+use Shopware\CI\Service\ProcessBuilder as Builder;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 
 class TaggingService
 {
@@ -23,89 +21,157 @@ class TaggingService
      */
     private $gitlabApiClient;
 
-    public function __construct(array $config, Client $gitlabApiClient)
+    /**
+     * @var bool
+     */
+    private $sign;
+
+    /**
+     * @var OutputInterface
+     */
+    private $stdout;
+
+    public function __construct(array $config, Client $gitlabApiClient, OutputInterface $stdout, bool $sign = false)
     {
         $this->config = $config;
         $this->gitlabApiClient = $gitlabApiClient;
+        $this->sign = $sign;
+        $this->stdout = $stdout;
     }
 
-    public function deleteTag(string $tag, array $repos): void
+    public function createTag(string $tag, string $repoPath, string $message, bool $force = false): void
     {
-        $pureTag = $tag;
-        $ref = escapeshellarg("refs/tags/$tag");
-        $tag = escapeshellarg($tag);
-        $privateToken = $this->config['gitlabApiToken'];
+        if ($force) {
+            try {
+                $this->deleteTag($tag, $repoPath);
+            } catch (ProcessFailedException $e) {
+                // ignore failure
+            }
+        }
 
-        foreach ($repos as $repo => $repoData) {
-            $path = escapeshellarg($repoData['path']);
-            $githubUrl = $repoData['githubUrl'];
+        $sign = $this->sign ? '--sign' : '--no-sign';
+        self::inRepo($repoPath)
+            ->with('tag', $tag)
+            ->with('message', $message)
+            ->with('sign', $sign)
+            ->run('git tag {{ $tag }} -a -m {{ $message }} {{ $sign }}')
+            ->throw();
+    }
 
-            $shellCode = <<<CODE
-    git -C $path -d tag $tag || true
-    git -C $path push origin :$ref
-    curl -X DELETE -H "Private-Token: $privateToken" $githubUrl/git/refs/tags/$pureTag
-CODE;
+    public function pushTag(string $tag, string $repoPath, string $remoteName, ?string $remoteUrl = null, ?string $localRef = null): void
+    {
+        $params = array_merge($this->config, [
+            'tag' => $tag,
+            'remoteName' => $remoteName,
+            'remoteUrl' => $remoteUrl,
+            'localRef' => $localRef ?? 'refs/tags/' . $tag,
+            'remoteRef' => 'refs/tags/' . $tag,
+        ]);
 
-            echo 'exec: ' . $shellCode . PHP_EOL;
+        if ($remoteUrl !== null) {
+            self::inRepo($repoPath)
+                ->with($params)
+                ->run(
+                    '
+                    git remote remove {{ $remoteName }} || true;
+                    git remote add {{ $remoteName }} {{ $remoteUrl }}'
+                );
+        }
 
-            system($shellCode, $retCode);
+        self::inRepo($repoPath)
+            ->with($params)
+            ->output($this->stdout)
+            ->run('git push {{ $remoteName }} {{ $localRef }}:{{ $remoteRef }}')
+            ->throw();
+    }
 
-            if ($retCode !== 0) {
-                echo 'Failed to delete tag for ' . $repoData['remoteUrl'] . '. Please delete by manual' . PHP_EOL;
+    public function deleteTag(string $tag, string $repoPath): void
+    {
+        $builder = new Builder();
+        $builder->in($repoPath)
+            ->with('tag', $tag)
+            ->output($this->stdout)
+            ->run('git tag -d {{ $tag }}')
+            ->throw();
+    }
+
+    public function fetchTagPush(string $tag, string $commitRef, string $remoteName = 'upstream', ?string $repoPath = null, ?string $remoteUrl = null, ?string $message = null): void
+    {
+        if ($remoteUrl !== null && filter_var($remoteUrl, FILTER_VALIDATE_URL) === false) {
+            throw new TaggingException($tag, $repoPath ?? '', 'remoteUrl is not a valid url');
+        }
+
+        $isTmp = false;
+        if ($repoPath === null) {
+            $repoPath = sys_get_temp_dir() . '/repo_' . bin2hex(random_bytes(16));
+            $isTmp = true;
+        }
+
+        (new Builder())
+            ->with('repoPath', $repoPath)
+            ->run('mkdir -p {{ $repoPath }}');
+
+        if (!file_exists($repoPath)) {
+            throw new TaggingException($tag, $repoPath, 'Repository path not found');
+        }
+
+        try {
+            $this->cloneOrFetch($commitRef, $repoPath, $remoteName, $remoteUrl);
+
+            $message = $message ?? 'Release ' . $tag;
+            $this->createTag($tag, $repoPath, $message, true);
+
+            $this->pushTag($tag, $repoPath, $remoteName, $remoteUrl);
+        } finally {
+            if ($isTmp) {
+                (new Builder())
+                    ->with('dir', $repoPath)
+                    ->run('rm -Rf {{ $dir }}');
             }
         }
     }
 
-    public function tagAndPushRepos(string $tag, array $repos): void
+    public function cloneOrFetch(string $commitRef, string $repoPath, string $remoteName, ?string $remoteUrl = null, bool $bare = true): void
     {
-        $ref = escapeshellarg("refs/tags/$tag");
-        $tag = escapeshellarg($tag);
-        $commitMsg = escapeshellarg('Release ' . $tag);
+        $params = array_merge($this->config, [
+            'remoteUrl' => $remoteUrl,
+            'remoteName' => $remoteName,
+            'commitRef' => $commitRef,
+        ]);
 
-        foreach ($repos as $repo => $repoData) {
-            $path = escapeshellarg($repoData['path']);
-            $remote = escapeshellarg($repoData['remoteUrl']);
-
-            $shellCode = <<<CODE
-    git -C $path tag $tag -a -m $commitMsg || true
-    git -C $path remote add release  $remote
-    git -C $path push release $ref
-CODE;
-
-            echo 'exec: ' . $shellCode . PHP_EOL;
-
-            system($shellCode, $retCode);
-
-            if ($retCode !== 0) {
-                throw new \RuntimeException('Failed to push tag for ' . $repoData['remoteUrl'] . '. Please delete the tags that where already pushed');
-            }
-        }
-    }
-
-    public function tagAndPushPlatform(string $tag, string $commitRef, string $remote): void
-    {
-        $path = sys_get_temp_dir() . '/platform_' . bin2hex(random_bytes(16));
-        mkdir($path);
-
-        $path = escapeshellarg($path);
-
-        $commitMsg = 'Release ' . $tag;
-        $shellCode = <<<CODE
-    git -C $path init --bare
-    git -C $path remote add origin $remote
-    git -C $path fetch --depth=1 origin $commitRef
-    git -C $path reset --soft FETCH_HEAD
-    git -C $path tag $tag -a -m "$commitMsg"
-    git -C $path push origin refs/tags/$tag
-CODE;
-
-        system($shellCode, $retCode);
-
-        if ($retCode !== 0) {
-            throw new \RuntimeException('Failed tag platform and push it');
+        if ($bare) {
+            self::inRepo($repoPath)
+                ->with($params)
+                ->run('git init --bare  .')
+                ->throw();
+        } else {
+            self::inRepo($repoPath)
+                ->with($params)
+                ->run('git init .')
+                ->throw();
         }
 
-        system('rm -Rf ' . $path);
+        if ($remoteUrl !== null) {
+            self::inRepo($repoPath)
+                ->with($params)
+                ->run('git remote add {{ $remoteName }} {{ $remoteUrl }}');
+        }
+
+        self::inRepo($repoPath)
+            ->output($this->stdout)
+            ->with($params)
+            ->run('git fetch --depth=1 {{ $remoteName }} {{ $commitRef }}')
+            ->throw();
+
+        self::inRepo($repoPath)
+            ->run('git reset --soft FETCH_HEAD')
+            ->throw();
+
+        if (!$bare) {
+            self::inRepo($repoPath)
+                ->run('git checkout HEAD')
+                ->throw();
+        }
     }
 
     public function createReleaseBranch(string $repository, string $tag, string $gitRemoteUrl): void
@@ -115,11 +181,14 @@ CODE;
         $escapedTag = escapeshellarg($tag);
         $gitRemoteUrl = escapeshellarg($gitRemoteUrl);
 
+        $sign = $this->sign ? '--gpg-sign' : '--no-gpg-sign';
+        $signTag = $this->sign ? '--sign' : '--no-sign';
+
         $shellCode = <<<CODE
             set -e
             git -C $repository add PLATFORM_COMMIT_SHA composer.json composer.lock public/recovery/install/data/version
-            git -C $repository commit -m $commitMsg
-            git -C $repository tag $escapedTag -a -m $commitMsg
+            git -C $repository commit -m $commitMsg $sign
+            git -C $repository tag $escapedTag -a -m $commitMsg $signTag
             git -C $repository remote add release $gitRemoteUrl
             git -C $repository push release --tags
 CODE;
@@ -143,5 +212,10 @@ CODE;
         ];
 
         $this->gitlabApiClient->request('POST', 'projects/' . $projectId . '/merge_requests', $requestOptions);
+    }
+
+    private static function inRepo(string $repoPath): Builder
+    {
+        return (new Builder())->in($repoPath);
     }
 }
