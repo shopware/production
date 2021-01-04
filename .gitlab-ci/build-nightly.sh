@@ -94,3 +94,8 @@ mv composer.json.new composer.json
 rm -Rf composer.lock vendor/shopware/* vendor/autoload.php
 composer install --no-interaction
 
+SPLIT_REPOS=${SPLIT_REPOS:-"Administration Storefront Core Elasticsearch Recovery"}
+
+for pkg in $SPLIT_REPOS; do
+    composer require shopware/${pkg,,}:${TAG} --no-scripts
+done
