@@ -37,6 +37,13 @@
     "repositories": [
         {
             "type": "path",
+            "url": "custom/plugins/*/packages/*",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
             "url": "custom/static-plugins/*",
             "options": {
                 "symlink": true
