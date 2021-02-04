@@ -78,10 +78,11 @@ Build Test Package:
         - git -C .platform remote set-url origin https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/platform.git
         # Find best matching branch. Example try: 6.3.2.1, 6.3.2, 6.3, master
         - export MATCHING_BRANCH=$(.gitlab-ci/tools/console release:show-platform-branch $TAG .platform)
-        - if [[ -z $MATCHING_BRANCH ]]; then echo "No matching branch found" exit 1; fi
-        - echo "Checkout platform branch $branch"
+        - if [[ -z $MATCHING_BRANCH ]]; then echo "No matching branch found"; exit 1; fi
+        - echo "Checkout platform branch $MATCHING_BRANCH"
         # fetch newest changes from $MATCHING_BRANCH
         - git -C .platform fetch origin ${MATCHING_BRANCH}
+        - git -C .platform log -n 5
         # set HEAD to newest commit in $$MATCHING_BRANCH
         - git -C .platform reset --soft FETCH_HEAD
         # split platform into separate repos/packages
