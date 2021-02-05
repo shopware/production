@@ -164,7 +164,7 @@ class ReleaseService
         );
     }
 
-    public function tagAndPushDevelopment(string $tag, string $branch = 'master', ?string $message = null): void
+    public function tagAndPushDevelopment(string $tag, string $branch = 'trunk', ?string $message = null): void
     {
         $repoPath = sys_get_temp_dir() . '/repo_' . bin2hex(random_bytes(16));
         mkdir($repoPath);

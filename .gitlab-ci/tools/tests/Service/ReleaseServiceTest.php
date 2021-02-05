@@ -402,15 +402,21 @@ class ReleaseServiceTest extends TestCase
 
     public function testTagAndPushDevelopment(): void
     {
+        if (!isset($_SERVER['SSH_PRIVATE_KEY_FILE'])) {
+            static::markTestSkipped('Define env var SSH_PRIVATE_KEY_FILE');
+        } else {
+            Builder::loadSshKey($_SERVER['SSH_PRIVATE_KEY_FILE']);
+        }
+
         $output = new ConsoleOutput();
         $upstreamRepoPath = $this->getTmpDir();
         (new Builder())
             ->output($output)
             ->in($upstreamRepoPath)
-            ->with('branch', 'master')
+            ->with('branch', 'trunk')
             ->run(
                 '
-                git clone --no-tags --depth=1 --branch={{ $branch }} https://github.com/shopware/development .
+                git clone --no-tags --depth=1 --branch={{ $branch }} git@gitlab.shopware.com:shopware/6/product/development.git .
                 git remote remove origin'
             )->throw();
 
@@ -438,7 +444,7 @@ class ReleaseServiceTest extends TestCase
         try {
             $releaseService->tagAndPushDevelopment(
                 $nonExistingTag,
-                'master'
+                'trunk'
             );
         } catch (\Throwable $e) {
             $actualException = $e;
@@ -448,7 +454,7 @@ class ReleaseServiceTest extends TestCase
         $currentPlatformTag = 'v' . ltrim($packageData['version'], 'v');
         $releaseService->tagAndPushDevelopment(
             $currentPlatformTag,
-            'master'
+            'trunk'
         );
 
         (new Builder())

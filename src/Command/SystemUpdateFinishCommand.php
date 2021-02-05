@@ -62,6 +62,10 @@ class SystemUpdateFinishCommand extends Command
         $oldVersion = $systemConfigService->getString(UpdateController::UPDATE_PREVIOUS_VERSION_KEY);
 
         $newVersion = $containerWithoutPlugins->getParameter('kernel.shopware_version');
+        if (!\is_string($newVersion)) {
+            throw new \RuntimeException('Container parameter "kernel.shopware_version" needs to be a string');
+        }
+
         /** @var EventDispatcherInterface $eventDispatcherWithoutPlugins */
         $eventDispatcherWithoutPlugins = $this->rebootKernelWithoutPlugins()->get('event_dispatcher');
         $eventDispatcherWithoutPlugins->dispatch(new UpdatePreFinishEvent($context, $oldVersion, $newVersion));

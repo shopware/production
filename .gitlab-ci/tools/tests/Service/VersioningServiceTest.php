@@ -345,8 +345,8 @@ class VersioningServiceTest extends TestCase
                 'tag' => '6.3.2.0',
             ],
             [
-                'expectedBranch' => 'master',
-                'branches' => ['master', '6.3.1', '6.3.3', '6.3.2.1'],
+                'expectedBranch' => 'trunk',
+                'branches' => ['trunk', '6.3.1', '6.3.3', '6.3.2.1'],
                 'tag' => '6.3.2.0',
             ],
         ];

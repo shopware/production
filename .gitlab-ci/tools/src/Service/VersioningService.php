@@ -127,7 +127,7 @@ class VersioningService
 
         $branches = $this->getBranchesOfTag($tag);
         if (Semver::satisfies($tag, '>= 6.3.0.0')) {
-            $branches[] = 'master';
+            $branches[] = 'trunk';
         }
 
         $matchingBranch = null;

@@ -46,6 +46,10 @@ class SystemUpdatePrepareCommand extends Command
 
         $context = Context::createDefaultContext();
         $currentVersion = $this->container->getParameter('kernel.shopware_version');
+        if (!\is_string($currentVersion)) {
+            throw new \RuntimeException('Container parameter "kernel.shopware_version" needs to be a string');
+        }
+
         // TODO: get new version (from composer.lock?)
         $newVersion = '';
 
