@@ -113,7 +113,7 @@ Build Test Package:
 
 Static Analysis:
     stage: analyze
-    image: shopware/development:latest
+    image: shopware/development:7.4
     only:
         refs:
             - merge_requests
@@ -126,7 +126,7 @@ Static Analysis:
 
 Tools unit test:
     stage: test
-    image: shopware/development:latest
+    image: shopware/development:7.4
     only:
         refs:
             - merge_requests
