@@ -1749,16 +1749,16 @@
         },
         {
             "name": "google/auth",
-            "version": "v1.14.3",
+            "version": "v1.15.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/googleapis/google-auth-library-php.git",
-                "reference": "c1503299c779af0cbc99b43788f75930988852cf"
+                "reference": "b346c07de6613e26443d7b4830e5e1933b830dc4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/googleapis/google-auth-library-php/zipball/c1503299c779af0cbc99b43788f75930988852cf",
-                "reference": "c1503299c779af0cbc99b43788f75930988852cf",
+                "url": "https://api.github.com/repos/googleapis/google-auth-library-php/zipball/b346c07de6613e26443d7b4830e5e1933b830dc4",
+                "reference": "b346c07de6613e26443d7b4830e5e1933b830dc4",
                 "shasum": ""
             },
             "require": {
@@ -1771,7 +1771,7 @@
             },
             "require-dev": {
                 "guzzlehttp/promises": "0.1.1|^1.3",
-                "kelvinmo/simplejwt": "^0.2.5",
+                "kelvinmo/simplejwt": "^0.2.5|^0.5.1",
                 "phpseclib/phpseclib": "^2",
                 "phpunit/phpunit": "^4.8.36|^5.7",
                 "sebastian/comparator": ">=1.2.3",
@@ -1797,7 +1797,7 @@
                 "google",
                 "oauth2"
             ],
-            "time": "2020-10-16T21:33:48+00:00"
+            "time": "2021-02-05T20:50:04+00:00"
         },
         {
             "name": "google/cloud-core",
@@ -4220,16 +4220,16 @@
         },
         {
             "name": "shopware/administration",
-            "version": "6.3.5.0",
+            "version": "6.3.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/administration.git",
-                "reference": "8a58a3264bfab3f076e86ae702a2962ae0e7d021"
+                "reference": "ad6b37fe952269e69d8620240a47d8c43197cdf6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/administration/zipball/8a58a3264bfab3f076e86ae702a2962ae0e7d021",
-                "reference": "8a58a3264bfab3f076e86ae702a2962ae0e7d021",
+                "url": "https://api.github.com/repos/shopware/administration/zipball/ad6b37fe952269e69d8620240a47d8c43197cdf6",
+                "reference": "ad6b37fe952269e69d8620240a47d8c43197cdf6",
                 "shasum": ""
             },
             "require": {
@@ -4255,27 +4255,27 @@
                 "MIT"
             ],
             "description": "Administration frontend for the Shopware Core",
-            "time": "2021-02-01T03:23:26+00:00"
+            "time": "2021-02-08T03:24:51+00:00"
         },
         {
             "name": "shopware/core",
-            "version": "6.3.5.0",
+            "version": "6.3.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/core.git",
-                "reference": "479960a2bec7602acc93942c097588f22496c39b"
+                "reference": "13ef4baa9b71f2bb1052ef9b11412715622f45b9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/core/zipball/479960a2bec7602acc93942c097588f22496c39b",
-                "reference": "479960a2bec7602acc93942c097588f22496c39b",
+                "url": "https://api.github.com/repos/shopware/core/zipball/13ef4baa9b71f2bb1052ef9b11412715622f45b9",
+                "reference": "13ef4baa9b71f2bb1052ef9b11412715622f45b9",
                 "shasum": ""
             },
             "require": {
                 "aws/aws-sdk-php": "3.133.6",
                 "cocur/slugify": "4.0.0",
                 "composer/composer": "~1.10.0",
-                "composer/package-versions-deprecated": "^1.8.2",
+                "composer/package-versions-deprecated": "^1.8.0",
                 "composer/semver": "~1.7.0",
                 "doctrine/annotations": "1.8.0",
                 "doctrine/dbal": "2.10.1",
@@ -4408,20 +4408,20 @@
                 "shop",
                 "shopware"
             ],
-            "time": "2021-02-01T03:23:25+00:00"
+            "time": "2021-02-08T03:24:51+00:00"
         },
         {
             "name": "shopware/elasticsearch",
-            "version": "6.3.5.0",
+            "version": "6.3.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/elasticsearch.git",
-                "reference": "bf921b0f7f3c64d1d0b7447596cf18c47a82e30d"
+                "reference": "2de9a8ad584024485fa7f413141463362b714fbf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/elasticsearch/zipball/bf921b0f7f3c64d1d0b7447596cf18c47a82e30d",
-                "reference": "bf921b0f7f3c64d1d0b7447596cf18c47a82e30d",
+                "url": "https://api.github.com/repos/shopware/elasticsearch/zipball/2de9a8ad584024485fa7f413141463362b714fbf",
+                "reference": "2de9a8ad584024485fa7f413141463362b714fbf",
                 "shasum": ""
             },
             "require": {
@@ -4456,20 +4456,20 @@
                 "MIT"
             ],
             "description": "Elasticsearch for Shopware",
-            "time": "2021-02-01T03:23:25+00:00"
+            "time": "2021-02-08T03:24:51+00:00"
         },
         {
             "name": "shopware/recovery",
-            "version": "6.3.5.0",
+            "version": "6.3.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/recovery.git",
-                "reference": "8218bbfd06e24cf6f709453ba1c0b3008c0af817"
+                "reference": "d3bf0fc5f9ec4c71257a587611bcc456e0e4abf9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/recovery/zipball/8218bbfd06e24cf6f709453ba1c0b3008c0af817",
-                "reference": "8218bbfd06e24cf6f709453ba1c0b3008c0af817",
+                "url": "https://api.github.com/repos/shopware/recovery/zipball/d3bf0fc5f9ec4c71257a587611bcc456e0e4abf9",
+                "reference": "d3bf0fc5f9ec4c71257a587611bcc456e0e4abf9",
                 "shasum": ""
             },
             "require": {
@@ -4489,20 +4489,20 @@
                 "MIT"
             ],
             "description": "Recovery for Shopware",
-            "time": "2021-02-01T03:23:25+00:00"
+            "time": "2021-02-08T03:24:51+00:00"
         },
         {
             "name": "shopware/storefront",
-            "version": "6.3.5.0",
+            "version": "6.3.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/storefront.git",
-                "reference": "a03ab3d5f6399426bae8f09be9898f433d95d180"
+                "reference": "67bb55f2ad33b8dfef66ea3ee85a693aed7a666b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/storefront/zipball/a03ab3d5f6399426bae8f09be9898f433d95d180",
-                "reference": "a03ab3d5f6399426bae8f09be9898f433d95d180",
+                "url": "https://api.github.com/repos/shopware/storefront/zipball/67bb55f2ad33b8dfef66ea3ee85a693aed7a666b",
+                "reference": "67bb55f2ad33b8dfef66ea3ee85a693aed7a666b",
                 "shasum": ""
             },
             "require": {
@@ -4555,7 +4555,7 @@
                 "MIT"
             ],
             "description": "Storefront for Shopware",
-            "time": "2021-02-01T03:23:26+00:00"
+            "time": "2021-02-08T03:24:51+00:00"
         },
         {
             "name": "sroze/messenger-enqueue-transport",
@@ -5927,7 +5927,7 @@
         },
         {
             "name": "symfony/intl",
-            "version": "v5.2.2",
+            "version": "v5.2.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/intl.git",
@@ -7562,7 +7562,7 @@
         },
         {
             "name": "symfony/string",
-            "version": "v5.2.2",
+            "version": "v5.2.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/string.git",
