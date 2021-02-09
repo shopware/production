@@ -26,6 +26,11 @@
             <tag name="console.command"/>
         </service>
 
+        <service id="Shopware\Production\Command\SystemLocaleCommand">
+            <argument type="service" id="Doctrine\DBAL\Connection" />
+            <tag name="console.command"/>
+        </service>
+
         <service id="Shopware\Production\Command\SystemSetupCommand">
             <argument type="string">%kernel.project_dir%</argument>
             <tag name="console.command"/>
