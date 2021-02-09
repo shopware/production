@@ -118,6 +118,7 @@ Static Analysis:
         refs:
             - merge_requests
     script:
+        - composer self-update --2
         - composer install
         - composer install -d .gitlab-ci/tools
         - php .gitlab-ci/tools/vendor/bin/ecs check --config easy-coding-standard.php

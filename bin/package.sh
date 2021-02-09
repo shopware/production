@@ -24,7 +24,7 @@ rm -rf var/cache/* \
     vendor/phenx/php-font-lib/sample-fonts \
     install.lock
 
-CORE_TAG=$(php -r 'include_once "vendor/autoload.php"; echo ltrim(explode("@", PackageVersions\Versions::getVersion("shopware/core"))[0], "v");')
+CORE_TAG=$(php -r 'include_once "vendor/autoload.php"; echo ltrim(explode("@", Composer\InstalledVersions::getVersion("shopware/core"))[0], "v");')
 
 if command -v xz >/dev/null 2>&1; then
     tar -cf - . | xz -9 -z  > ${ARTIFACTS_DIR}/install.tar.xz

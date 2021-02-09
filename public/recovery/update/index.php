@@ -4,7 +4,7 @@ $rootDir = dirname(__DIR__, 3);
 
 if (file_exists($rootDir . '/vendor/shopware/recovery/Update/index.php')) {
     require_once $rootDir . '/vendor/shopware/recovery/Update/index.php';
-} else if (file_exists($rootDir . '/vendor/shopware/platform/src/Recovery/Update/index.php')) {
+} elseif (file_exists($rootDir . '/vendor/shopware/platform/src/Recovery/Update/index.php')) {
     require_once $rootDir . '/vendor/shopware/platform/src/Recovery/Update/index.php';
 } else {
     // if the recovery is not yet there use the old recovery logic
