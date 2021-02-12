@@ -1,4 +1,4 @@
-FROM alpine:3.10
+FROM alpine:3.13
 
 ENV COMPOSER_HOME=/var/cache/composer
 ENV PROJECT_ROOT=/sw6
@@ -21,10 +21,8 @@ RUN apk --no-cache add \
 COPY config/etc /etc
 
 # Make sure files/folders needed by the processes are accessable when they run under the sw6
-RUN chown -R sw6.sw6 /run && \
-  chown -R sw6.sw6 /var/lib/nginx && \
-  chown -R sw6.sw6 /var/tmp/nginx && \
-  chown -R sw6.sw6 /var/log/nginx
+RUN mkdir -p /var/{lib,tmp,log}/nginx && \
+  chown -R sw6.sw6 /run /var/{lib,tmp,log}/nginx
 
 WORKDIR $PROJECT_ROOT
 

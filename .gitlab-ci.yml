@@ -30,7 +30,7 @@ Build Test Package:
     only:
         refs:
             - schedules
-    image: debian:buster-slim
+    image: debian:bullseye-slim
     services:
         -   name: docker:18.09.7-dind
             alias: docker
@@ -113,7 +113,7 @@ Build Test Package:
 
 Static Analysis:
     stage: analyze
-    image: shopware/development:7.4
+    image: shopware/development:7.4-composer-2
     only:
         refs:
             - merge_requests
@@ -127,7 +127,7 @@ Static Analysis:
 
 Tools unit test:
     stage: test
-    image: shopware/development:7.4
+    image: shopware/development:7.4-composer-2
     only:
         refs:
             - merge_requests
@@ -145,7 +145,7 @@ Tools unit test:
 
 Unit PHP 7.4:
     extends: .unit_base
-    image: shopware/development:7.4
+    image: shopware/development:7.4-composer-2
 
 # e2e install tests
 

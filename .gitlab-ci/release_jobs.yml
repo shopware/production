@@ -6,7 +6,7 @@
 
 Prepare release:
     stage: prepare-release
-    image: debian:buster-slim
+    image: debian:bullseye-slim
     needs: ['Build Test Package']
     when: manual
     only:
@@ -32,7 +32,7 @@ Prepare release:
 
 Release tags:
     stage: release
-    image: alpine:3.11
+    image: alpine:3.13
     when: manual
     only:
         refs:
@@ -74,7 +74,7 @@ Build package:
         variables:
             # only run this job if the tag is protected
             - $CI_COMMIT_REF_PROTECTED == "true"
-    image: docker
+    image: docker:19
     services:
         -   name: docker:18.09.7-dind
             alias: docker
@@ -101,7 +101,7 @@ Build package:
 
 Release package:
     stage: release
-    image: debian:buster-slim
+    image: debian:bullseye-slim
     only:
         refs:
             - tags
