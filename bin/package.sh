@@ -4,7 +4,8 @@ BIN_DIR="$(cd -P -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 export PROJECT_ROOT="${PROJECT_ROOT:-"$(dirname "$BIN_DIR")"}"
 export ARTIFACTS_DIR="${ARTIFACTS_DIR:-"$PROJECT_ROOT/artifacts"}"
 
-ADDIONAL_UPDATE_FILES=$1
+DEFAULT_ENV_FILENAME=".env.defaults"
+ADDITIONAL_UPDATE_FILES=$1
 
 set -o errexit
 
@@ -27,10 +28,13 @@ rm -rf var/cache/* \
 CORE_TAG=$(php -r 'include_once "vendor/autoload.php"; echo ltrim(explode("@", Composer\InstalledVersions::getVersion("shopware/core"))[0], "v");')
 
 if command -v xz >/dev/null 2>&1; then
-    tar -cf - . | xz -9 -z  > ${ARTIFACTS_DIR}/install.tar.xz
+    tar -cf - . | xz -9 -z  > "${ARTIFACTS_DIR}"/install.tar.xz
 fi
 
 echo "$CORE_TAG" > public/recovery/install/data/version
+if [ -n "$DEFAULT_ENV" ]; then
+    echo "$DEFAULT_ENV" > "$DEFAULT_ENV_FILENAME"
+fi
 
 REFERENCE_INSTALLER_URL=${REFERENCE_INSTALLER_URL:-"https://releases.shopware.com/sw6/install_6.2.1_1592219982.zip"}
 REFERENCE_INSTALLER_SHA256=${REFERENCE_INSTALLER_SHA256:-"721dc18ff8c8f14cfe38bc731b4627e94119be5c1a03396b3234d837895f1806"}
@@ -57,8 +61,8 @@ if [ -n "$REFERENCE_INSTALLER_URL" ]; then
     # copy files that changed between the reference and the new version
     rsync -rvcmq --compare-dest="$REFERENCE_TEMP_DIR" "$PROJECT_ROOT/" "$UPDATE_TEMP_DIR/"
 
-    if [ -r "$ADDIONAL_UPDATE_FILES" ]; then
-        rsync -av --files-from="$ADDIONAL_UPDATE_FILES" "$PROJECT_ROOT/" "$UPDATE_TEMP_DIR/"
+    if [ -r "$ADDITIONAL_UPDATE_FILES" ]; then
+        rsync -av --files-from="$ADDITIONAL_UPDATE_FILES" "$PROJECT_ROOT/" "$UPDATE_TEMP_DIR/"
     fi
 
     cd "$UPDATE_TEMP_DIR"
@@ -66,6 +70,10 @@ if [ -n "$REFERENCE_INSTALLER_URL" ]; then
     # add update meta information
     mkdir update-assets
     echo "$CORE_TAG" > update-assets/version
+    if [ -n "$DEFAULT_ENV" ]; then
+        rm "$DEFAULT_ENV_FILENAME" || true
+        echo "$DEFAULT_ENV" > "update-assets/$DEFAULT_ENV_FILENAME"
+    fi
 
     ${PROJECT_ROOT}/bin/deleted_files_vendor.sh -o"$REFERENCE_TEMP_DIR/vendor" -n"$PROJECT_ROOT/vendor" > update-assets/cleanup.txt
 

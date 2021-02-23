@@ -59,11 +59,13 @@ Build Test Package:
         - npm config set cache $PWD/.npm
         # we need to do the checkout to have correct permissions. See: https://gitlab.com/gitlab-org/gitlab-runner/-/issues/1736
         - umask 0022
+        - git config --global init.defaultBranch trunk
         - git init .
         - git remote add origin ${CI_REPOSITORY_URL}
         - git fetch origin $CI_COMMIT_BRANCH
         - git fetch --tags
         - git checkout -f -q ${CI_COMMIT_SHA}
+        - git log -n 5
         - composer config --global  cache-dir $PWD/.composer
         # install helper tools
         - composer install --working-dir=.gitlab-ci/tools
@@ -82,9 +84,9 @@ Build Test Package:
         - echo "Checkout platform branch $MATCHING_BRANCH"
         # fetch newest changes from $MATCHING_BRANCH
         - git -C .platform fetch origin ${MATCHING_BRANCH}
-        - git -C .platform log -n 5
         # set HEAD to newest commit in $$MATCHING_BRANCH
         - git -C .platform reset --soft FETCH_HEAD
+        - git -C .platform log -n 5
         # split platform into separate repos/packages
         - >
             for pkg in $SPLIT_REPOS ; do
@@ -100,7 +102,8 @@ Build Test Package:
         - .gitlab-ci/changed-files.sh > artifacts/additional_update_files
         # TODO: get REFERENCE_INSTALLER_URL and REFERENCE_INSTALLER_SHA256 from shopware6.xml - use MINIMUM_VERSION
         # create package archive file
-        - docker run -v $PWD/artifacts:/artifacts -e REFERENCE_INSTALLER_URL -e REFERENCE_INSTALLER_SHA256 --entrypoint=bin/package.sh ${CI_REGISTRY_IMAGE}:${IMAGE_TAG} /artifacts/additional_update_files
+        - 'echo "Default env: $DEFAULT_ENV"'
+        - docker run -v $PWD/artifacts:/artifacts -e DEFAULT_ENV -e REFERENCE_INSTALLER_URL -e REFERENCE_INSTALLER_SHA256 --entrypoint=bin/package.sh ${CI_REGISTRY_IMAGE}:${IMAGE_TAG} /artifacts/additional_update_files
         - echo ${TAG} > artifacts/TAG
         - echo ${CI_JOB_ID} > artifacts/PACKAGE_JOB_ID
         - echo ${MATCHING_BRANCH} > artifacts/PLATFORM_BRANCH

@@ -54,7 +54,9 @@ ${SPLITSH} --path ${PLATFORM_REPO} --prefix=${PREFIX} --target=refs/heads/${PKG}
 git -C ${PLATFORM_REPO} remote remove ${PKG} || true
 git -C ${PLATFORM_REPO} remote add ${PKG} ${tmpFolder}/
 
-git -C ${PLATFORM_REPO} push -u ${PKG} ${PKG}:master -f
+DEFAULT_BRANCH=$(git config --global init.defaultBranch)
+DEFAULT_BRANCH=${DEFAULT_BRANCH:-trunk}
+git -C ${PLATFORM_REPO} push -u ${PKG} ${PKG}:$DEFAULT_BRANCH -f
 
 git clone ${tmpFolder}/ ${PKG_REPO}
 
