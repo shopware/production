@@ -48,4 +48,3 @@ custom/*
 !/var/cache/.gitkeep
 !/var/queue/.gitkeep
 !/var/test/.gitkeep
-!/var/plugins.json
