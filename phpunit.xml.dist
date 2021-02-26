@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/8.0/phpunit.xsd"
-	     bootstrap="src/TestBootstrap.php"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.5/phpunit.xsd"
+         bootstrap="src/TestBootstrap.php"
          cacheResult="false"
-         cacheTokens="false"
-         executionOrder="random"
->
+         executionOrder="random">
+
     <php>
         <ini name="error_reporting" value="-1" />
         <env name="SHELL_VERBOSITY" value="-1" />
@@ -16,6 +15,20 @@
 
         <env name="SYMFONY_DEPRECATIONS_HELPER" value="weak" />
     </php>
+
+    <coverage>
+        <include>
+            <directory suffix=".php">./vendor/shopware/administration</directory>
+            <directory suffix=".php">./vendor/shopware/core</directory>
+            <directory suffix=".php">./vendor/shopware/storefront</directory>
+        </include>
+        <exclude>
+            <directory suffix=".php">./src/**/Test</directory>
+            <directory suffix=".php">./vendor/shopware/core/**/Test</directory>
+            <directory suffix=".php">./vendor/shopware/core/Migration</directory>
+            <directory suffix=".php">./vendor/shopware/core/Flag</directory>
+        </exclude>
+    </coverage>
 
     <testsuites>
         <testsuite name="administration">
@@ -50,20 +63,6 @@
             <directory>vendor/shopware/elasticsearch</directory>
         </testsuite>
     </testsuites>
-
-    <filter>
-        <whitelist>
-            <directory suffix=".php">./vendor/shopware/administration</directory>
-            <directory suffix=".php">./vendor/shopware/core</directory>
-            <directory suffix=".php">./vendor/shopware/storefront</directory>
-            <exclude>
-                <directory suffix=".php">./src/**/Test</directory>
-                <directory suffix=".php">./vendor/shopware/core/**/Test</directory>
-                <directory suffix=".php">./vendor/shopware/core/Migration</directory>
-                <directory suffix=".php">./vendor/shopware/core/Flag</directory>
-            </exclude>
-        </whitelist>
-    </filter>
 
     <listeners>
         <listener class="Symfony\Bridge\PhpUnit\SymfonyTestsListener">
