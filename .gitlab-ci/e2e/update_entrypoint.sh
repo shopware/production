@@ -46,6 +46,9 @@ mysql -h mysql -u root -proot ${DB_NAME} -e 'UPDATE sales_channel_domain SET url
 mysql -h mysql -u root -proot ${DB_NAME} -e 'UPDATE system_config SET configuration_value = "{\"_value\": \"http://localhost:3000\"}" WHERE configuration_key IN("core.store.apiUri", "core.update.apiUri")';
 
 sed -ie "s/sw6_e2e_test/${DB_NAME}/g" /app/.env
+sed -ie "s/localhost:8000/localhost:${HTTP_PORT}/g" /app/.env
+
+mv /app/public/.htaccess.dist /app/public/.htaccess
 
 node ${SCRIPT_DIR}/update-api-mock.js &
 
