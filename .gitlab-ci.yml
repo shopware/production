@@ -335,7 +335,7 @@ Finalize Percy Build:
         refs:
             - schedules
         variables:
-            - $CYPRESS_PERCY_USAGE == "true"
+            - '$CYPRESS_PERCY_USAGE == "true" && $PERCY_TOKEN'
     script:
         # finalize all visual testing jobs
         - export PERCY_TOKEN=$PERCY_TOKEN
