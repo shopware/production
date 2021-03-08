@@ -123,6 +123,7 @@ class SystemInstallCommand extends Command
                 'command' => 'database:migrate-destructive',
                 'identifier' => 'core',
                 '--all' => true,
+                '--version-selection-mode' => 'all',
             ],
             [
                 'command' => 'dal:refresh:index',
