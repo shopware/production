@@ -27,10 +27,6 @@ rm -rf var/cache/* \
 
 CORE_TAG=$(php -r 'include_once "vendor/autoload.php"; echo ltrim(explode("@", Composer\InstalledVersions::getVersion("shopware/core"))[0], "v");')
 
-if command -v xz >/dev/null 2>&1; then
-    tar -cf - . | xz -9 -z  > "${ARTIFACTS_DIR}"/install.tar.xz
-fi
-
 echo "$CORE_TAG" > public/recovery/install/data/version
 if [ -n "$DEFAULT_ENV" ]; then
     echo "$DEFAULT_ENV" > "$DEFAULT_ENV_FILENAME"
@@ -85,3 +81,7 @@ fi
 cd ${PROJECT_ROOT}
 
 zip -qq -9 -r "$ARTIFACTS_DIR/install.zip" .
+
+if command -v xz >/dev/null 2>&1; then
+    tar -cf - . | xz -9 -z  > "${ARTIFACTS_DIR}"/install.tar.xz
+fi
