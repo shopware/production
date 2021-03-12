@@ -41,8 +41,8 @@ If you are using a separate build server, consider having NPM and Node as build-
 To set up the environment and install with a basic setup run the following commands:
 
 ```bash
-# clone newest 6.1 patch version from github 
-git clone --branch=6.1 https://github.com/shopware/production shopware
+# clone the newest patch version from github 
+git clone --branch=[current version] https://github.com/shopware/production shopware
 cd shopware
 
 # install shopware and dependencies according to the composer.lock 
@@ -196,7 +196,7 @@ You only need to require the things you want. If you only want to run shopware 6
     "require": {
         "php": "~7.4",
         "composer/package-versions-deprecated": "^1.8.0",
-        "shopware/core": "~v6.1.0"
+        "shopware/core": "~v[current version]"
     }
 }
 ```
