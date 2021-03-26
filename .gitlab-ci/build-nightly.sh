@@ -8,17 +8,17 @@ set -x
 [[ -n ${TAG} ]]
 
 CWD="$(cd -P -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
-export PROJECT_ROOT="${PROJECT_ROOT:-"$(dirname $CWD)"}"
+export PROJECT_ROOT="${PROJECT_ROOT:-"$(dirname "$CWD")"}"
 
 export ADMIN_ROOT=repos/administration/
 export STOREFRONT_ROOT=repos/storefront/
 
-cd $PROJECT_ROOT
-cp ${CWD}/plugins.json var/plugins.json
+cd "$PROJECT_ROOT"
+cp "${CWD}"/plugins.json var/plugins.json
 
-composer install --no-interaction
+composer install --no-interaction --no-scripts
 
-${PROJECT_ROOT}/bin/build-js.sh
+"${PROJECT_ROOT}"/bin/build-js.sh
 
 find ${ADMIN_ROOT} -name 'node_modules' -type d -prune -print -exec rm -rf '{}' \;
 find ${STOREFRONT_ROOT} -name 'node_modules' -type d -prune -print -exec rm -rf '{}' \;
@@ -32,15 +32,19 @@ prepare_repo() {
         # npm --prefix ${APP_PATH} version --no-git-tag-version ${TAG}
     #fi
 
-    git -C repos/${1} add .
-    git -C repos/${1} commit -m  "${COMMIT_MSG}" || true
+    if [[ "${1}" != "core" ]]; then
+        composer require "shopware/core:${TAG}" -d "repos/${1}" --no-update --no-install
+    fi
 
-    git -C repos/${1} tag -d ${TAG} || true
-    git -C repos/${1} tag ${TAG} -a -m "${COMMIT_MSG}"
-    git -C repos/${1} checkout ${TAG}
+    git -C "repos/${1}" add .
+    git -C "repos/${1}" commit -m  "${COMMIT_MSG}" || true
+
+    git -C "repos/${1}" tag -d "${TAG}" || true
+    git -C "repos/${1}" tag "${TAG}" -a -m "${COMMIT_MSG}"
+    git -C "repos/${1}" checkout "${TAG}"
 }
 
-cd ${PROJECT_ROOT}
+cd "${PROJECT_ROOT}"
 
 prepare_repo "core"
 prepare_repo "recovery"
@@ -88,7 +92,7 @@ for CHECK_FILE in $STOREFRONT_CHECK_FILES; do
     fi
 done
 
-jq -s add composer.json ${CWD}/composer.nightly_override.json > composer.json.new
+jq -s add composer.json "${CWD}"/composer.nightly_override.json > composer.json.new
 mv composer.json.new composer.json
 
 rm -Rf composer.lock vendor/shopware/* vendor/autoload.php
@@ -97,5 +101,5 @@ composer install --no-interaction
 SPLIT_REPOS=${SPLIT_REPOS:-"Administration Storefront Core Elasticsearch Recovery"}
 
 for pkg in $SPLIT_REPOS; do
-    composer require shopware/${pkg,,}:${TAG} --no-scripts
+    composer require "shopware/${pkg,,}:${TAG}" --no-scripts
 done
