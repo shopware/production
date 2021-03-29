@@ -6,7 +6,6 @@ namespace Shopware\Production\Command;
 
 use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\DriverManager;
-use Doctrine\DBAL\FetchMode;
 use Shopware\Core\Framework\Adapter\Console\ShopwareStyle;
 use Shopware\Production\Kernel;
 use Symfony\Component\Console\Command\Command;
@@ -92,23 +91,28 @@ class SystemInstallCommand extends Command
 
         $dropDatabase = $input->getOption('drop-database');
         if ($dropDatabase) {
-            $connection->executeUpdate('DROP DATABASE IF EXISTS `' . $dbName . '`');
+            $connection->executeStatement('DROP DATABASE IF EXISTS `' . $dbName . '`');
             $output->writeln('Drop database `' . $dbName . '`');
         }
 
         $createDatabase = $input->getOption('create-database') || $dropDatabase;
         if ($createDatabase) {
-            $connection->executeUpdate('CREATE DATABASE IF NOT EXISTS `' . $dbName . '` CHARACTER SET `utf8mb4` COLLATE `utf8mb4_unicode_ci`');
+            $connection->executeStatement('CREATE DATABASE IF NOT EXISTS `' . $dbName . '` CHARACTER SET `utf8mb4` COLLATE `utf8mb4_unicode_ci`');
             $output->writeln('Created database `' . $dbName . '`');
         }
 
-        $connection->exec('USE `' . $dbName . '`');
+        $connection->executeStatement('USE `' . $dbName . '`');
 
-        $tables = $connection->query('SHOW TABLES')->fetchAll(FetchMode::COLUMN);
+        $hasMigrationTable = false;
+        foreach ($connection->executeQuery('SHOW TABLES') as $row) {
+            if (current($row) === 'migration') {
+                $hasMigrationTable = true;
+            }
+        }
 
-        if (!in_array('migration', $tables, true)) {
+        if ($hasMigrationTable) {
             $output->writeln('Importing base schema.sql');
-            $connection->exec($this->getBaseSchema());
+            $connection->executeStatement($this->getBaseSchema());
         }
 
         $output->writeln('');
@@ -187,7 +191,7 @@ class SystemInstallCommand extends Command
         foreach ($commands as $parameters) {
             $output->writeln('');
 
-            $command = $application->find($parameters['command']);
+            $command = $application->find((string) ($parameters['command'] ?? ''));
             unset($parameters['command']);
             $returnCode = $command->run(new ArrayInput($parameters, $command->getDefinition()), $output);
             if ($returnCode !== 0) {

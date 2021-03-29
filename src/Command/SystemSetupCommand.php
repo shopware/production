@@ -162,7 +162,7 @@ class SystemSetupCommand extends Command
             $io->note('Checking database credentials');
 
             $connection = DriverManager::getConnection(['url' => $dsnWithoutDb, 'charset' => 'utf8mb4'], new Configuration());
-            $connection->exec('SELECT 1');
+            $connection->executeStatement('SELECT 1');
         }
 
         return $dsn;
