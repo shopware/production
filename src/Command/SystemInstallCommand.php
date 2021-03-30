@@ -110,7 +110,7 @@ class SystemInstallCommand extends Command
             }
         }
 
-        if ($hasMigrationTable) {
+        if (!$hasMigrationTable) {
             $output->writeln('Importing base schema.sql');
             $connection->executeStatement($this->getBaseSchema());
         }
