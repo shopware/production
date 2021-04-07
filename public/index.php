@@ -46,7 +46,7 @@ if (!isset($_SERVER['APP_ENV']) && !isset($_ENV['APP_ENV'])) {
     }
     $envFile = __DIR__ . '/../.env';
     if (file_exists($envFile)) {
-        (new Dotenv(true))->load($envFile);
+        (new Dotenv())->load($envFile);
     }
 }
 

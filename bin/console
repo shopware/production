@@ -27,7 +27,7 @@ if (!class_exists(Application::class)) {
 $envFile = __DIR__ . '/../.env';
 
 if (class_exists(Dotenv::class) && is_readable($envFile) && !is_dir($envFile)) {
-    (new Dotenv(true))->load(__DIR__ . '/../.env');
+    (new Dotenv())->load(__DIR__ . '/../.env');
 }
 
 if (!isset($_SERVER['PROJECT_ROOT'])) {
