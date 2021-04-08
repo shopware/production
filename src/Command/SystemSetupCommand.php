@@ -42,7 +42,7 @@ class SystemSetupCommand extends Command
             ->addArgument('APP_ENV', InputArgument::OPTIONAL, 'Application environment')
             ->addArgument('APP_URL', InputArgument::OPTIONAL, 'Application URL')
             ->addArgument('BLUE_GREEN_DEPLOYMENT', InputArgument::OPTIONAL, 'Blue green deployment')
-            ->addArgument('DATABASE_URL', InputArgument::OPTIONAL, 'Database URL')
+            ->addArgument('DATABASE_URL', InputArgument::OPTIONAL, 'Database URL mysql://user:password@host:port')
 
         ;
         $this->addOption('force', 'f', InputOption::VALUE_NONE, 'Force setup');
