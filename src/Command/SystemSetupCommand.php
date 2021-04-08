@@ -43,6 +43,7 @@ class SystemSetupCommand extends Command
             ->addArgument('APP_URL', InputArgument::OPTIONAL, 'Application URL')
             ->addArgument('BLUE_GREEN_DEPLOYMENT', InputArgument::OPTIONAL, 'Blue green deployment')
             ->addArgument('DATABASE_URL', InputArgument::OPTIONAL, 'Database URL mysql://user:password@host:port')
+            ->addArgument('DATABASE_NAME', InputArgument::OPTIONAL, 'Database name')
 
         ;
         $this->addOption('force', 'f', InputOption::VALUE_NONE, 'Force setup');
@@ -80,7 +81,8 @@ class SystemSetupCommand extends Command
        		$key = Key::createNewRandomKey();
        		$env['APP_SECRET'] = $key->saveToAsciiSafeString();
         	$env['INSTANCE_ID'] = $this->generateInstanceId();
-        	$env['DATABASE_URL'] = $this->getDsn($input, $io);
+        	$env['DATABASE_URL'] = $this->getDsn($input, $io)."/".$input->getArgument('DATABASE_NAME');
+
 	        $this->createEnvFile($input, $io, $env);
 	        return 0;
 
