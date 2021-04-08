@@ -38,6 +38,13 @@ class SystemSetupCommand extends Command
             ->addOption('generate-jwt-keys', null, InputOption::VALUE_NONE, 'Generate jwt private and public key')
             ->addOption('jwt-passphrase', null, InputOption::VALUE_OPTIONAL, 'JWT private key passphrase', 'shopware')
             ->addOption('composer-home', null, InputOption::VALUE_REQUIRED, 'Set the composer home directory otherwise the environment variable $COMPOSER_HOME will be used or the project dir as fallback')
+            ->addOption('cli', null, InputOption::VALUE_OPTIONAL, 'CLI based install')
+            ->addOption('APP_ENV', null, InputOption::VALUE_OPTIONAL, 'Application environment')
+            ->addOption('APP_URL', null, InputOption::VALUE_OPTIONAL, 'Application URL')
+            ->addOption('BLUE_GREEN_DEPLOYMENT', null, InputOption::VALUE_OPTIONAL, 'Blue green deployment')
+            ->addOption('DATABASE_URL', null, InputOption::VALUE_OPTIONAL, 'Database dsn - mysql://user:password@host:port')
+            ->addOption('DATABASE_NAME', null, InputOption::VALUE_OPTIONAL, 'Database name')
+
         ;
         $this->addOption('force', 'f', InputOption::VALUE_NONE, 'Force setup');
     }
@@ -64,6 +71,21 @@ class SystemSetupCommand extends Command
 
         if (!$input->getOption('force') && file_exists($this->projectDir . '/.env')) {
             $io->comment('Instance has already been set-up. To start over, please delete your .env file.');
+
+            return 0;
+        }
+
+        if ($input->getOption('cli')) {
+            $env['APP_ENV'] = $input->getOption('APP_ENV') ?? $_ENV['APP_ENV'];
+            $env['APP_URL'] = trim($input->getOption('APP_URL')) ?? $_ENV['APP_URL'];
+            $env['BLUE_GREEN_DEPLOYMENT'] = (int) $input->getOption('BLUE_GREEN_DEPLOYMENT') ?? $_ENV['BLUE_GREEN_DEPLOYMENT'];
+            $this->generateJwt($input, $io);
+            $key = Key::createNewRandomKey();
+            $env['APP_SECRET'] = $key->saveToAsciiSafeString();
+            $env['INSTANCE_ID'] = $this->generateInstanceId();
+            $env['DATABASE_URL'] = $input->getOption('DATABASE_URL') ? $this->getDsn($input, $io) . '/' . $input->getOption('DATABASE_NAME') : $_ENV['DATABASE_URL'] . '/' . $_ENV['DATABASE_NAME'];
+
+            $this->createEnvFile($input, $io, $env);
 
             return 0;
         }
@@ -130,7 +152,7 @@ class SystemSetupCommand extends Command
             return $value;
         };
 
-        $dsn = $input->getOption('database-url');
+        $dsn = $input->getOption('database-url') ? $input->getOption('database-url') : $input->getOption('DATABASE_URL');
         if (\is_string($dsn)) {
             $params = parse_url($dsn);
             $dsnWithoutDb = sprintf(
@@ -183,7 +205,7 @@ class SystemSetupCommand extends Command
         $output->writeln('');
         $output->writeln($envVars);
 
-        if ($input->isInteractive() && !$output->confirm('Check if everything is ok. Write into "' . $envFile . '"?', false)) {
+        if ($input->isInteractive() && !$input->getOption('cli') && !$output->confirm('Check if everything is ok. Write into "' . $envFile . '"?', false)) {
             throw new \RuntimeException('abort');
         }
 
