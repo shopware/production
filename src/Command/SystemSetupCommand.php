@@ -14,6 +14,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\OutputStyle;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Console\Input\InputArgument;
 
 class SystemSetupCommand extends Command
 {
@@ -37,6 +38,12 @@ class SystemSetupCommand extends Command
             ->addOption('database-url', null, InputOption::VALUE_OPTIONAL, 'Database dsn')
             ->addOption('generate-jwt-keys', null, InputOption::VALUE_NONE, 'Generate jwt private and public key')
             ->addOption('jwt-passphrase', null, InputOption::VALUE_OPTIONAL, 'JWT private key passphrase', 'shopware')
+            ->addOption('cli', null, InputOption::VALUE_OPTIONAL, 'CLI based install')
+            ->addArgument('APP_ENV', InputArgument::OPTIONAL, 'Application environment')
+            ->addArgument('APP_URL', InputArgument::OPTIONAL, 'Application URL')
+            ->addArgument('BLUE_GREEN_DEPLOYMENT', InputArgument::OPTIONAL, 'Blue green deployment')
+            ->addArgument('DATABASE_URL', InputArgument::OPTIONAL, 'Database URL')
+
         ;
         $this->addOption('force', 'f', InputOption::VALUE_NONE, 'Force setup');
     }
@@ -64,6 +71,19 @@ class SystemSetupCommand extends Command
             $io->comment('Instance has already been set-up. To start over, please delete your .env file.');
 
             return 0;
+        }
+
+        if ($input->getOption('cli')) {
+       		$env['APP_ENV'] = $input->getArgument('APP_ENV');
+       		$env['APP_URL'] = $input->getArgument('APP_URL');
+       		$env['BLUE_GREEN_DEPLOYMENT'] = (int) $input->getArgument('BLUE_GREEN_DEPLOYMENT');
+       		$key = Key::createNewRandomKey();
+       		$env['APP_SECRET'] = $key->saveToAsciiSafeString();
+        	$env['INSTANCE_ID'] = $this->generateInstanceId();
+        	$env['DATABASE_URL'] = $this->getDsn($input, $io);
+	        $this->createEnvFile($input, $io, $env);
+	        return 0;
+
         }
 
         $io->section('Application information');
@@ -128,7 +148,7 @@ class SystemSetupCommand extends Command
             return $value;
         };
 
-        $dsn = $input->getOption('database-url');
+        $dsn = $input->getOption('database-url') ? $input->getOption('database-url') : $input->getArgument('DATABASE_URL');
         if (\is_string($dsn)) {
             $params = parse_url($dsn);
             $dsnWithoutDb = sprintf(
@@ -181,7 +201,7 @@ class SystemSetupCommand extends Command
         $output->writeln('');
         $output->writeln($envVars);
 
-        if ($input->isInteractive() && !$output->confirm('Check if everything is ok. Write into "' . $envFile . '"?', false)) {
+        if ($input->isInteractive() && !$input->getOption("cli") && !$output->confirm('Check if everything is ok. Write into "' . $envFile . '"?', false)) {
             throw new \RuntimeException('abort');
         }
 
