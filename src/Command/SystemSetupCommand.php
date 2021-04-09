@@ -76,8 +76,9 @@ class SystemSetupCommand extends Command
 
         if ($input->getOption('cli')) {
        		$env['APP_ENV'] = $input->getArgument('APP_ENV');
-       		$env['APP_URL'] = $input->getArgument('APP_URL');
+       		$env['APP_URL'] = trim($input->getArgument('APP_URL'));
        		$env['BLUE_GREEN_DEPLOYMENT'] = (int) $input->getArgument('BLUE_GREEN_DEPLOYMENT');
+       		$this->generateJwt($input, $io);
        		$key = Key::createNewRandomKey();
        		$env['APP_SECRET'] = $key->saveToAsciiSafeString();
         	$env['INSTANCE_ID'] = $this->generateInstanceId();
