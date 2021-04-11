@@ -57,5 +57,7 @@ if (file_exists(TEST_PROJECT_DIR . '/.env.test')) {
     if (!class_exists(Dotenv::class)) {
         throw new RuntimeException('APP_ENV environment variable is not defined. You need to define environment variables for configuration or add "symfony/dotenv" as a Composer dependency to load variables from a .env.test file.');
     }
-    (new Dotenv())->load(TEST_PROJECT_DIR . '/.env.test');
+    (new Dotenv())
+        ->usePutenv(true)
+        ->load(TEST_PROJECT_DIR . '/.env.test');
 }
