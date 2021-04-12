@@ -59,6 +59,12 @@
             </errorLevel>
         </UnresolvableInclude>
 
+        <PossiblyInvalidCast>
+            <errorLevel type="info">
+                <file name="src/Command/SystemSetupCommand.php"/>
+            </errorLevel>
+        </PossiblyInvalidCast>
+
         <!-- Should be fixed some day :-) -->
         <PossiblyUndefinedArrayOffset errorLevel="info"/>
 

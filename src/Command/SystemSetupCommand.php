@@ -38,20 +38,21 @@ class SystemSetupCommand extends Command
             ->addOption('generate-jwt-keys', null, InputOption::VALUE_NONE, 'Generate jwt private and public key')
             ->addOption('jwt-passphrase', null, InputOption::VALUE_OPTIONAL, 'JWT private key passphrase', 'shopware')
             ->addOption('composer-home', null, InputOption::VALUE_REQUIRED, 'Set the composer home directory otherwise the environment variable $COMPOSER_HOME will be used or the project dir as fallback')
-            ->addOption('cli', null, InputOption::VALUE_OPTIONAL, 'CLI based install')
             ->addOption('APP_ENV', null, InputOption::VALUE_OPTIONAL, 'Application environment')
             ->addOption('APP_URL', null, InputOption::VALUE_OPTIONAL, 'Application URL')
             ->addOption('BLUE_GREEN_DEPLOYMENT', null, InputOption::VALUE_OPTIONAL, 'Blue green deployment')
             ->addOption('DATABASE_URL', null, InputOption::VALUE_OPTIONAL, 'Database dsn - mysql://user:password@host:port')
-            ->addOption('DATABASE_NAME', null, InputOption::VALUE_OPTIONAL, 'Database name')
-
-        ;
+            ->addOption('DATABASE_NAME', null, InputOption::VALUE_OPTIONAL, 'Database name');
         $this->addOption('force', 'f', InputOption::VALUE_NONE, 'Force setup');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $env = [
+            'APP_ENV' => 'prod',
+            'APP_URL' => 'http://127.0.0.1/',
+            'DATABASE_URL' => 'http://127.0.0.1/',
+            'DATABASE_NAME' => 'shopware6',
             'SHOPWARE_ES_HOSTS' => 'elasticsearch:9200',
             'SHOPWARE_ES_ENABLED' => '0',
             'SHOPWARE_ES_INDEXING_ENABLED' => '0',
@@ -59,7 +60,7 @@ class SystemSetupCommand extends Command
             'SHOPWARE_HTTP_CACHE_ENABLED' => '1',
             'SHOPWARE_HTTP_DEFAULT_TTL' => '7200',
             'SHOPWARE_CDN_STRATEGY_DEFAULT' => 'id',
-            'BLUE_GREEN_DEPLOYMENT' => 1,
+            'BLUE_GREEN_DEPLOYMENT' => '1',
             'MAILER_URL' => 'smtp://localhost:25?encryption=&auth_mode=',
             'COMPOSER_HOME' => $input->getOption('composer-home') ?: $_SERVER['COMPOSER_HOME'] ?: "{$this->projectDir}/var/cache/composer",
         ];
@@ -75,15 +76,29 @@ class SystemSetupCommand extends Command
             return 0;
         }
 
-        if ($input->getOption('cli')) {
-            $env['APP_ENV'] = $input->getOption('APP_ENV') ?? $_ENV['APP_ENV'];
-            $env['APP_URL'] = trim($input->getOption('APP_URL')) ?? $_ENV['APP_URL'];
-            $env['BLUE_GREEN_DEPLOYMENT'] = (int) $input->getOption('BLUE_GREEN_DEPLOYMENT') ?? $_ENV['BLUE_GREEN_DEPLOYMENT'];
+        if (!$input->isInteractive()) {
+            $env['APP_ENV'] = $input->getOption('APP_ENV') ?? $_ENV['APP_ENV'] ?? $env['APP_ENV'];
             $this->generateJwt($input, $io);
             $key = Key::createNewRandomKey();
             $env['APP_SECRET'] = $key->saveToAsciiSafeString();
             $env['INSTANCE_ID'] = $this->generateInstanceId();
+            $_ENV['DATABASE_URL'] = $_ENV['DATABASE_URL'] ?? $env['DATABASE_URL'];
+            $_ENV['DATABASE_NAME'] = $_ENV['DATABASE_NAME'] ?? $env['DATABASE_NAME'];
             $env['DATABASE_URL'] = $input->getOption('DATABASE_URL') ? $this->getDsn($input, $io) . '/' . $input->getOption('DATABASE_NAME') : $_ENV['DATABASE_URL'] . '/' . $_ENV['DATABASE_NAME'];
+
+            $_ENV['APP_URL'] = $_ENV['APP_URL'] ?? $env['APP_URL'];
+            if ($input->getOption('APP_URL') && !is_array($input->getOption('APP_URL'))) {
+                $env['APP_URL'] = trim((string) $input->getOption('APP_URL'));
+            } else {
+                $env['APP_URL'] = $_ENV['APP_URL'];
+            }
+
+            $_ENV['BLUE_GREEN_DEPLOYMENT'] = $_ENV['BLUE_GREEN_DEPLOYMENT'] ?? $env['BLUE_GREEN_DEPLOYMENT'];
+            if ($input->getOption('BLUE_GREEN_DEPLOYMENT')) {
+                $env['BLUE_GREEN_DEPLOYMENT'] = (int) $input->getOption('BLUE_GREEN_DEPLOYMENT');
+            } else {
+                $env['BLUE_GREEN_DEPLOYMENT'] = $_ENV['BLUE_GREEN_DEPLOYMENT'];
+            }
 
             $this->createEnvFile($input, $io, $env);
 
@@ -205,7 +220,7 @@ class SystemSetupCommand extends Command
         $output->writeln('');
         $output->writeln($envVars);
 
-        if ($input->isInteractive() && !$input->getOption('cli') && !$output->confirm('Check if everything is ok. Write into "' . $envFile . '"?', false)) {
+        if ($input->isInteractive() && !$output->confirm('Check if everything is ok. Write into "' . $envFile . '"?', false)) {
             throw new \RuntimeException('abort');
         }
 
