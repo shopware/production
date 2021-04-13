@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 export COMPOSE_PROJECT_NAME=sw6_ci
 
@@ -26,8 +26,8 @@ find ${STOREFRONT_ROOT} -name 'node_modules' -type d -prune -print -exec rm -rf 
 COMMIT_MSG=${COMMIT_MSG:-"Release $TAG"}
 
 prepare_repo() {
-    APP_PATH=repos/${1}/Resources/app/${1}
     # TODO: NPM does not support 4 digit version numbers
+    # APP_PATH=repos/${1}/Resources/app/${1}
     #if [[ -f "$APP_PATH/package.json" ]]; then
         # npm --prefix ${APP_PATH} version --no-git-tag-version ${TAG}
     #fi

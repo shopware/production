@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -e
 set -x
@@ -6,7 +6,7 @@ set -x
 PLATFORM_REPO=$1
 PREFIX=$2
 
-PKG=$(basename ${PREFIX})
+PKG=$(basename "${PREFIX}")
 PKG_REPO=repos/${PKG,,}
 
 SPLITSH=${SPLITSH:-'bin/splitsh-lite'}
@@ -28,7 +28,7 @@ if [[ ! -f $SPLITSH ]]; then
 
   chmod +x splitsh-lite
 
-  mv splitsh-lite ${SPLITSH}
+  mv splitsh-lite "${SPLITSH}"
 fi
 
 
@@ -38,26 +38,26 @@ if [[ ! -d ${PLATFORM_REPO} ]]; then
 fi
 
 if [[ -d ${PKG_REPO} ]]; then
-    rm -Rf ${PKG_REPO} || true
+    rm -Rf "${PKG_REPO}" || true
 fi
 
-mkdir -p ${PKG_REPO} || true
+mkdir -p "${PKG_REPO}" || true
 
 echo "Splitting ${PKG}"
 
 tmpFolder=$(mktemp -d)
-git init --bare ${tmpFolder}/
+git init --bare "${tmpFolder}"/
 
-${SPLITSH} --path ${PLATFORM_REPO} --prefix=${PREFIX} --target=refs/heads/${PKG}
+${SPLITSH} --path "${PLATFORM_REPO}" --prefix="${PREFIX}" --target=refs/heads/"${PKG}"
 
 
-git -C ${PLATFORM_REPO} remote remove ${PKG} || true
-git -C ${PLATFORM_REPO} remote add ${PKG} ${tmpFolder}/
+git -C "${PLATFORM_REPO}" remote remove "${PKG}" || true
+git -C "${PLATFORM_REPO}" remote add "${PKG}" "${tmpFolder}"/
 
 DEFAULT_BRANCH=$(git config --global init.defaultBranch)
 DEFAULT_BRANCH=${DEFAULT_BRANCH:-trunk}
-git -C ${PLATFORM_REPO} push -u ${PKG} ${PKG}:$DEFAULT_BRANCH -f
+git -C "${PLATFORM_REPO}" push -u "${PKG}" "${PKG}":"$DEFAULT_BRANCH" -f
 
-git clone ${tmpFolder}/ ${PKG_REPO}
+git clone "${tmpFolder}"/ "${PKG_REPO}"
 
 rm -rf "${tmpFolder}"

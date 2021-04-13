@@ -1,6 +1,6 @@
-#!/bin/sh
+#!/usr/bin/env sh
 
-function main() {
+main() {
     while getopts "ho:n:d:" OPTION
     do
         case $OPTION in
@@ -9,10 +9,10 @@ function main() {
                  exit 1
                  ;;
             o)
-                original_dir=`realpath $OPTARG`/
+                original_dir="$(realpath "$OPTARG")/"
                 ;;
             n)
-                new_dir=`realpath $OPTARG`/
+                new_dir="$(realpath "$OPTARG")/"
                 ;;
             ?)
                 usage
@@ -48,11 +48,10 @@ function main() {
     diff_directories_find_deleted "${original_dir}" "${new_dir}"
 }
 
-function diff_directories_find_deleted() {
-    local originalDir=$1; shift
-    local newDir=$1; shift
-
-    local cutDir=$(dirname ${originalDir})
+diff_directories_find_deleted() {
+    originalDir=$1; shift
+    newDir=$1; shift
+    cutDir=$(dirname "${originalDir}")
 
     diff -rq "${originalDir}" "${newDir}" |
     grep "^Only in ${originalDir}" |
@@ -63,7 +62,7 @@ function diff_directories_find_deleted() {
     sed "s|//|/|"
 }
 
-function usage() {
+usage() {
     cat << EOF
 usage: $0 options
 

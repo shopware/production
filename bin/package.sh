@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-BIN_DIR="$(cd -P -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
+BIN_DIR="$(cd -P -- "$(dirname -- "${BASH_SOURCE:-${0}}")" && pwd -P)"
 export PROJECT_ROOT="${PROJECT_ROOT:-"$(dirname "$BIN_DIR")"}"
 export ARTIFACTS_DIR="${ARTIFACTS_DIR:-"$PROJECT_ROOT/artifacts"}"
 
@@ -11,7 +11,7 @@ set -o errexit
 
 # cleanup
 
-cd ${PROJECT_ROOT}
+cd "${PROJECT_ROOT}"
 
 rm -rf var/cache/* \
     var/log/* \
@@ -45,9 +45,9 @@ if [ -n "$REFERENCE_INSTALLER_URL" ]; then
     set -x
 
     REFERENCE_TEMP_DIR=$(mktemp -d)
-    cd $REFERENCE_TEMP_DIR
+    cd "$REFERENCE_TEMP_DIR"
     mv "$REFERENCE_INSTALLER_FILE" .
-    unzip -qq *.zip
+    unzip -qq ./*.zip
 
     UPDATE_TEMP_DIR=$(mktemp -d)
 
@@ -71,14 +71,14 @@ if [ -n "$REFERENCE_INSTALLER_URL" ]; then
         echo "$DEFAULT_ENV" > "update-assets/$DEFAULT_ENV_FILENAME"
     fi
 
-    ${PROJECT_ROOT}/bin/deleted_files_vendor.sh -o"$REFERENCE_TEMP_DIR/vendor" -n"$PROJECT_ROOT/vendor" > update-assets/cleanup.txt
+    "${PROJECT_ROOT}"/bin/deleted_files_vendor.sh -o"$REFERENCE_TEMP_DIR/vendor" -n"$PROJECT_ROOT/vendor" > update-assets/cleanup.txt
 
     zip -qq -9 -r "$ARTIFACTS_DIR/update.zip" .
 fi
 
 # installer
 
-cd ${PROJECT_ROOT}
+cd "${PROJECT_ROOT}"
 
 zip -qq -9 -r "$ARTIFACTS_DIR/install.zip" .
 

@@ -120,7 +120,10 @@ Static Analysis:
         refs:
             - merge_requests
     script:
-        - composer self-update --2
+        - apt update && apt install shellcheck
+        # SC1090: source is not resolved
+        # SC2039: busybox sh supports [[
+        - shellcheck --exclude=SC1090 --exclude=SC2039 bin/*.sh .gitlab-ci/*.sh .gitlab-ci/tools/bin/*.sh
         - composer install
         - composer install -d .gitlab-ci/tools
         - php .gitlab-ci/tools/vendor/bin/ecs check --config easy-coding-standard.php
