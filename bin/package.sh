@@ -1,11 +1,14 @@
 #!/usr/bin/env sh
 
+echo "$@"
+
 BIN_DIR="$(cd -P -- "$(dirname -- "${BASH_SOURCE:-${0}}")" && pwd -P)"
 export PROJECT_ROOT="${PROJECT_ROOT:-"$(dirname "$BIN_DIR")"}"
 export ARTIFACTS_DIR="${ARTIFACTS_DIR:-"$PROJECT_ROOT/artifacts"}"
 
 DEFAULT_ENV_FILENAME=".env.defaults"
-ADDITIONAL_UPDATE_FILES=$1
+ADDITIONAL_UPDATE_FILES="$1"
+ADDITIONAL_DELETED_FILES="$2"
 
 set -o errexit
 
@@ -38,7 +41,10 @@ REFERENCE_INSTALLER_FILE="$ARTIFACTS_DIR/reference.zip"
 
 # make update
 if [ -n "$REFERENCE_INSTALLER_URL" ]; then
-    curl -sS "${REFERENCE_INSTALLER_URL}" -o "$REFERENCE_INSTALLER_FILE"
+    if [ ! -f "$REFERENCE_INSTALLER_FILE" ]; then
+        curl -sS "${REFERENCE_INSTALLER_URL}" -o "$REFERENCE_INSTALLER_FILE"
+    fi
+
     HASH_CHECK_LINE="$REFERENCE_INSTALLER_SHA256  $REFERENCE_INSTALLER_FILE"
     echo "${HASH_CHECK_LINE}" | sha256sum -c -
 
@@ -72,6 +78,15 @@ if [ -n "$REFERENCE_INSTALLER_URL" ]; then
     fi
 
     "${PROJECT_ROOT}"/bin/deleted_files_vendor.sh -o"$REFERENCE_TEMP_DIR/vendor" -n"$PROJECT_ROOT/vendor" > update-assets/cleanup.txt
+
+    if [ -r "$ADDITIONAL_DELETED_FILES" ]; then
+        cat "$ADDITIONAL_DELETED_FILES" >> update-assets/cleanup.txt
+    fi
+
+    sort update-assets/cleanup.txt | uniq > update-assets/cleanup.txt.sorted
+    mv update-assets/cleanup.txt.sorted update-assets/cleanup.txt
+
+    cp update-assets/cleanup.txt "$ARTIFACTS_DIR"/cleanup.txt
 
     zip -qq -9 -r "$ARTIFACTS_DIR/update.zip" .
 fi

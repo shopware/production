@@ -7,7 +7,7 @@ set -x
 set -e
 
 #E2E_INSTALL_PACKAGE_URL=https://releases.shopware.com/sw6/install_6.1.6_1589441426.zip
-E2E_INSTALL_PACKAGE_FILE=$(basename ${E2E_INSTALL_PACKAGE_URL})
+E2E_INSTALL_PACKAGE_FILE=$(basename "${E2E_INSTALL_PACKAGE_URL}")
 
 if [[ -z ${E2E_INSTALL_PACKAGE_URL} ]]; then
     echo "please define the variable E2E_INSTALL_PACKAGE_URL"
@@ -15,13 +15,13 @@ if [[ -z ${E2E_INSTALL_PACKAGE_URL} ]]; then
 fi
 
 if [[ ! -e ${DATA_DIR}/${E2E_INSTALL_PACKAGE_FILE} ]]; then
-    gosu application curl ${E2E_INSTALL_PACKAGE_URL} --silent --output ${DATA_DIR}/${E2E_INSTALL_PACKAGE_FILE}
+    gosu application curl "${E2E_INSTALL_PACKAGE_URL}" --silent --output "${DATA_DIR}/${E2E_INSTALL_PACKAGE_FILE}"
 fi
 
 cd /app
 
 extractAndDeleteArchive() {
-    cp $1 archive
+    cp "$1" archive
     if [[ ${1: -4} == ".zip" ]]; then
         unzip -qqo archive
     else
@@ -30,7 +30,7 @@ extractAndDeleteArchive() {
     rm archive
 }
 
-extractAndDeleteArchive ${DATA_DIR}/${E2E_INSTALL_PACKAGE_FILE}
+extractAndDeleteArchive "${DATA_DIR}/${E2E_INSTALL_PACKAGE_FILE}"
 
 chown application:application -R /app
 
