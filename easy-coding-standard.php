@@ -84,6 +84,9 @@ return static function (ContainerConfigurator $containerConfigurator): void {
         'src',
         '.gitlab-ci/tools/src',
         '.gitlab-ci/tools/tests',
+        'public/index.php',
+        'easy-coding-standard.php',
+        'bin/console',
     ]);
 
     $parameters->set(Option::SETS, [
@@ -104,7 +107,7 @@ return static function (ContainerConfigurator $containerConfigurator): void {
         PhpdocSummaryFixer::class => null,
         ExplicitStringVariableFixer::class => null,
         PhpCsFixer\Fixer\Phpdoc\NoSuperfluousPhpdocTagsFixer::class => [
-            __DIR__ . '/.gitlab-ci/tools/src/Service/ProcessBuilder.php'
-        ]
+            __DIR__ . '/.gitlab-ci/tools/src/Service/ProcessBuilder.php',
+        ],
     ]);
 };

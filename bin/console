@@ -3,9 +3,9 @@
 
 use Composer\InstalledVersions;
 use Shopware\Core\Framework\Plugin\KernelPluginLoader\DbalKernelPluginLoader;
+use Shopware\Core\Framework\Plugin\KernelPluginLoader\StaticKernelPluginLoader;
 use Shopware\Production\HttpKernel;
 use Shopware\Production\Kernel;
-use Shopware\Core\Framework\Plugin\KernelPluginLoader\StaticKernelPluginLoader;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Dotenv\Dotenv;
@@ -13,7 +13,7 @@ use Symfony\Component\ErrorHandler\Debug;
 
 if (PHP_VERSION_ID < 70400) {
     echo 'Your cli is running PHP version ' . PHP_VERSION . ' but Shopware 6 requires at least PHP 7.4.0' . PHP_EOL;
-    exit();
+    exit(1);
 }
 
 set_time_limit(0);
@@ -27,9 +27,7 @@ if (!class_exists(Application::class)) {
 $envFile = __DIR__ . '/../.env';
 
 if (class_exists(Dotenv::class) && is_readable($envFile) && !is_dir($envFile)) {
-    (new Dotenv())
-        ->usePutenv(true)
-        ->load(__DIR__ . '/../.env');
+    (new Dotenv())->usePutenv()->load($envFile);
 }
 
 if (!isset($_SERVER['PROJECT_ROOT'])) {
@@ -38,7 +36,7 @@ if (!isset($_SERVER['PROJECT_ROOT'])) {
 
 $input = new ArgvInput();
 $env = $input->getParameterOption(['--env', '-e'], $_SERVER['APP_ENV'] ?? 'prod', true);
-$debug = (bool) ($_SERVER['APP_DEBUG'] ?? ($env !== 'prod')) && !$input->hasParameterOption('--no-debug', true);
+$debug = ($_SERVER['APP_DEBUG'] ?? ($env !== 'prod')) && !$input->hasParameterOption('--no-debug', true);
 
 if ($debug) {
     umask(0000);
@@ -50,7 +48,7 @@ if ($debug) {
 
 $pluginLoader = new StaticKernelPluginLoader($classLoader, null);
 
-$shopwareVersion = InstalledVersions::getVersion('shopware/core');
+$shopwareVersion = InstalledVersions::getVersion('shopware/core') . '@' . InstalledVersions::getReference('shopware/core');
 
 if ($input->getFirstArgument() === 'system:install') {
     $_SERVER['INSTALL'] = true;
@@ -59,20 +57,14 @@ if ($input->getFirstArgument() === 'system:install') {
 if (trim($_SERVER['DATABASE_URL'] ?? '') === '') {
     // fake DATABASE_URL
     $_SERVER['DATABASE_URL'] = Kernel::PLACEHOLDER_DATABASE_URL;
-} else if (!isset($_SERVER['INSTALL'])) {
-    $pluginLoader = new DbalKernelPluginLoader($classLoader, null, \Shopware\Core\Kernel::getConnection());
+} else {
+    if (!isset($_SERVER['INSTALL'])) {
+        $pluginLoader = new DbalKernelPluginLoader($classLoader, null, \Shopware\Core\Kernel::getConnection());
+    }
 }
 
-if (class_exists('Shopware\Core\HttpKernel')) {
-    $kernel = new HttpKernel($env, $debug, $classLoader);
-    $kernel->setPluginLoader($pluginLoader);
+$kernel = new HttpKernel($env, $debug, $classLoader);
+$kernel->setPluginLoader($pluginLoader);
 
-    $application = new Application($kernel->getKernel());
-    $application->run($input);
-
-    return;
-}
-
-$kernel = new Kernel($env, $debug, $pluginLoader, $_SERVER['SW_CACHE_ID'] ?? null, $shopwareVersion);
-$application = new Application($kernel);
+$application = new Application($kernel->getKernel());
 $application->run($input);
