@@ -10,8 +10,5 @@ DirectoryIndex index.html
 
     # Restrict access to root folder files
     RedirectMatch 404 /(composer\.(json|lock|phar)|README\.md|\.gitignore|.*\.dist|\.env.*)$
-
-    # Restrict access to shop configs files
-    RedirectMatch 404 ^.*\/(bin|config|build|custom|files|src|var|vendor)\/(?<!public).*$
 </IfModule>
 
