@@ -4216,16 +4216,16 @@
         },
         {
             "name": "shopware/administration",
-            "version": "6.3.5.3",
+            "version": "6.3.5.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/administration.git",
-                "reference": "f24adb10ca45e21b20195def699918f1592d394e"
+                "reference": "85e43d9d8cf5a55be6123d51ef70b8bb0a8a4ea6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/administration/zipball/f24adb10ca45e21b20195def699918f1592d394e",
-                "reference": "f24adb10ca45e21b20195def699918f1592d394e",
+                "url": "https://api.github.com/repos/shopware/administration/zipball/85e43d9d8cf5a55be6123d51ef70b8bb0a8a4ea6",
+                "reference": "85e43d9d8cf5a55be6123d51ef70b8bb0a8a4ea6",
                 "shasum": ""
             },
             "require": {
@@ -4251,20 +4251,20 @@
                 "MIT"
             ],
             "description": "Administration frontend for the Shopware Core",
-            "time": "2021-04-12T11:24:30+00:00"
+            "time": "2021-04-19T08:10:55+00:00"
         },
         {
             "name": "shopware/core",
-            "version": "6.3.5.3",
+            "version": "6.3.5.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/core.git",
-                "reference": "cc6f2b50a3d9edc9e8394d5e8e190eff08bb2542"
+                "reference": "e8c6e55cb348426b687f9e762403ddbcbe35543d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/core/zipball/cc6f2b50a3d9edc9e8394d5e8e190eff08bb2542",
-                "reference": "cc6f2b50a3d9edc9e8394d5e8e190eff08bb2542",
+                "url": "https://api.github.com/repos/shopware/core/zipball/e8c6e55cb348426b687f9e762403ddbcbe35543d",
+                "reference": "e8c6e55cb348426b687f9e762403ddbcbe35543d",
                 "shasum": ""
             },
             "require": {
@@ -4404,20 +4404,20 @@
                 "shop",
                 "shopware"
             ],
-            "time": "2021-04-12T11:24:29+00:00"
+            "time": "2021-04-19T08:10:55+00:00"
         },
         {
             "name": "shopware/elasticsearch",
-            "version": "6.3.5.3",
+            "version": "6.3.5.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/elasticsearch.git",
-                "reference": "d1aecd688de11e3a3582d119d9b04c31d2cf305f"
+                "reference": "02caf6b509ec7ce34d597f0b74fd50073bea488f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/elasticsearch/zipball/d1aecd688de11e3a3582d119d9b04c31d2cf305f",
-                "reference": "d1aecd688de11e3a3582d119d9b04c31d2cf305f",
+                "url": "https://api.github.com/repos/shopware/elasticsearch/zipball/02caf6b509ec7ce34d597f0b74fd50073bea488f",
+                "reference": "02caf6b509ec7ce34d597f0b74fd50073bea488f",
                 "shasum": ""
             },
             "require": {
@@ -4452,20 +4452,20 @@
                 "MIT"
             ],
             "description": "Elasticsearch for Shopware",
-            "time": "2021-04-12T11:24:30+00:00"
+            "time": "2021-04-19T08:10:55+00:00"
         },
         {
             "name": "shopware/recovery",
-            "version": "6.3.5.3",
+            "version": "6.3.5.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/recovery.git",
-                "reference": "d37bb41ff16445cd8e3e7fabaf844307023cd577"
+                "reference": "471eacd9a118dc306dc4b9d068563f6ba14eede5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/recovery/zipball/d37bb41ff16445cd8e3e7fabaf844307023cd577",
-                "reference": "d37bb41ff16445cd8e3e7fabaf844307023cd577",
+                "url": "https://api.github.com/repos/shopware/recovery/zipball/471eacd9a118dc306dc4b9d068563f6ba14eede5",
+                "reference": "471eacd9a118dc306dc4b9d068563f6ba14eede5",
                 "shasum": ""
             },
             "require": {
@@ -4485,20 +4485,20 @@
                 "MIT"
             ],
             "description": "Recovery for Shopware",
-            "time": "2021-04-12T11:24:30+00:00"
+            "time": "2021-04-19T08:10:55+00:00"
         },
         {
             "name": "shopware/storefront",
-            "version": "6.3.5.3",
+            "version": "6.3.5.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/storefront.git",
-                "reference": "b63cbc66a858221616c30315f390b9905311d944"
+                "reference": "614c8a5f259bbf8aaf2e1c03a5aac3b283c1aa23"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/storefront/zipball/b63cbc66a858221616c30315f390b9905311d944",
-                "reference": "b63cbc66a858221616c30315f390b9905311d944",
+                "url": "https://api.github.com/repos/shopware/storefront/zipball/614c8a5f259bbf8aaf2e1c03a5aac3b283c1aa23",
+                "reference": "614c8a5f259bbf8aaf2e1c03a5aac3b283c1aa23",
                 "shasum": ""
             },
             "require": {
@@ -4551,7 +4551,7 @@
                 "MIT"
             ],
             "description": "Storefront for Shopware",
-            "time": "2021-04-12T11:24:30+00:00"
+            "time": "2021-04-19T08:10:56+00:00"
         },
         {
             "name": "sroze/messenger-enqueue-transport",
@@ -5671,16 +5671,16 @@
         },
         {
             "name": "symfony/http-client-contracts",
-            "version": "v2.3.1",
+            "version": "v2.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/http-client-contracts.git",
-                "reference": "41db680a15018f9c1d4b23516059633ce280ca33"
+                "reference": "7e82f6084d7cae521a75ef2cb5c9457bbda785f4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/http-client-contracts/zipball/41db680a15018f9c1d4b23516059633ce280ca33",
-                "reference": "41db680a15018f9c1d4b23516059633ce280ca33",
+                "url": "https://api.github.com/repos/symfony/http-client-contracts/zipball/7e82f6084d7cae521a75ef2cb5c9457bbda785f4",
+                "reference": "7e82f6084d7cae521a75ef2cb5c9457bbda785f4",
                 "shasum": ""
             },
             "require": {
@@ -5691,9 +5691,8 @@
             },
             "type": "library",
             "extra": {
-                "branch-version": "2.3",
                 "branch-alias": {
-                    "dev-main": "2.3-dev"
+                    "dev-main": "2.4-dev"
                 },
                 "thanks": {
                     "name": "symfony/contracts",
@@ -5729,7 +5728,7 @@
                 "interoperability",
                 "standards"
             ],
-            "time": "2020-10-14T17:08:19+00:00"
+            "time": "2021-04-11T23:07:08+00:00"
         },
         {
             "name": "symfony/http-foundation",
