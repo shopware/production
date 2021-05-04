@@ -10,7 +10,7 @@
         "sort-packages": true
     },
     "prefer-stable": true,
-    "minimum-stability": "RC",
+    "minimum-stability": "stable",
     "scripts": {
         "pre-install-cmd": [
             "[ ! -f vendor/autoload.php ] || bin/console system:update:prepare"
