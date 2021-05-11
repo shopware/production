@@ -19,20 +19,19 @@ class SystemSetupCommand extends Command
 {
     public static $defaultName = 'system:setup';
 
-    /**
-     * @var string
-     */
-    private $projectDir;
+    private string $projectDir;
 
     public function __construct(string $projectDir)
     {
         parent::__construct();
+
         $this->projectDir = $projectDir;
     }
 
     protected function configure(): void
     {
-        $this->addOption('force', 'f', InputOption::VALUE_NONE, 'Force setup and recreate everything')
+        $this
+            ->addOption('force', 'f', InputOption::VALUE_NONE, 'Force setup and recreate everything')
             ->addOption('no-check-db-connection', null, InputOption::VALUE_NONE, 'dont check db connection')
             ->addOption('database-url', null, InputOption::VALUE_OPTIONAL, 'Database dsn')
             ->addOption('generate-jwt-keys', null, InputOption::VALUE_NONE, 'Generate jwt private and public key')
@@ -42,8 +41,8 @@ class SystemSetupCommand extends Command
             ->addOption('APP_URL', null, InputOption::VALUE_OPTIONAL, 'Application URL')
             ->addOption('BLUE_GREEN_DEPLOYMENT', null, InputOption::VALUE_OPTIONAL, 'Blue green deployment')
             ->addOption('DATABASE_URL', null, InputOption::VALUE_OPTIONAL, 'Database dsn - mysql://user:password@host:port')
-            ->addOption('DATABASE_NAME', null, InputOption::VALUE_OPTIONAL, 'Database name');
-        $this->addOption('force', 'f', InputOption::VALUE_NONE, 'Force setup');
+            ->addOption('DATABASE_NAME', null, InputOption::VALUE_OPTIONAL, 'Database name')
+        ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -62,7 +61,7 @@ class SystemSetupCommand extends Command
             'SHOPWARE_CDN_STRATEGY_DEFAULT' => 'id',
             'BLUE_GREEN_DEPLOYMENT' => '1',
             'MAILER_URL' => 'smtp://localhost:25?encryption=&auth_mode=',
-            'COMPOSER_HOME' => $input->getOption('composer-home') ?: $_SERVER['COMPOSER_HOME'] ?: "{$this->projectDir}/var/cache/composer",
+            'COMPOSER_HOME' => $input->getOption('composer-home') ?? $_SERVER['COMPOSER_HOME'] ?? "{$this->projectDir}/var/cache/composer",
         ];
 
         $io = new SymfonyStyle($input, $output);
