@@ -11,16 +11,22 @@
         "guzzlehttp/guzzle": "^6.5",
         "league/flysystem-aws-s3-v3": "^1.0",
         "league/flysystem-memory": "^1.0",
-        "psalm/phar": "3.18.2",
         "symfony/console": "~5.2.3",
         "symfony/dotenv": "~5.2.3",
         "titasgailius/terminal": "^0.4.0"
     },
     "require-dev": {
-        "phpstan/phpstan": "~0.12.82",
+        "phpstan/extension-installer": "^1.1.0",
+        "phpstan/phpstan": "^0.12.88",
+        "phpstan/phpstan-doctrine": "^0.12.34",
+        "phpstan/phpstan-phpunit": "^0.12.19",
+        "phpstan/phpstan-symfony": "^0.12.33",
         "phpunit/phpunit": "8.5.8",
+        "psalm/plugin-phpunit": "^0.15.1",
+        "psalm/plugin-symfony": "^2.3.0",
         "symfony/debug-bundle": "^5.2",
-        "symplify/easy-coding-standard-prefixed": "8.3.45"
+        "symplify/easy-coding-standard": "^9.3.12",
+        "vimeo/psalm": "^4.7.2"
     },
     "license": "MIT",
     "authors": [

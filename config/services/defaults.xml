@@ -31,12 +31,16 @@
             <tag name="console.command"/>
         </service>
         <service id="Shopware\Production\Command\SystemUpdatePrepareCommand">
-            <argument type="service" id="service_container" />
+            <argument type="string">%kernel.shopware_version%</argument>
+            <argument type="service" id="event_dispatcher"/>
+            <argument type="service" id="service_container"/>
             <tag name="console.command"/>
         </service>
 
         <service id="Shopware\Production\Command\SystemUpdateFinishCommand">
-            <argument type="service" id="service_container" />
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="event_dispatcher"/>
+            <argument type="service" id="service_container"/>
             <tag name="console.command"/>
         </service>
 

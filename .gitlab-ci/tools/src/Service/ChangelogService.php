@@ -37,7 +37,7 @@ class ChangelogService
     {
         $response = $this->client->request('GET', 'project/NEXT/versions');
         $versions = json_decode($response->getBody()->getContents(), true);
-        if (json_last_error() !== JSON_ERROR_NONE) {
+        if (json_last_error() !== \JSON_ERROR_NONE) {
             throw new \RuntimeException('Failed to decode json');
         }
 
@@ -58,12 +58,12 @@ class ChangelogService
     public function findVersion(string $version): string
     {
         $versions = $this->getVersions();
-        if (in_array($version, $versions, true)) {
+        if (\in_array($version, $versions, true)) {
             return $version;
         }
 
-        $version = (string) str_replace('-', ' ', ltrim(trim($version), 'v'));
-        if (in_array($version, $versions, true)) {
+        $version = str_replace('-', ' ', ltrim(trim($version), 'v'));
+        if (\in_array($version, $versions, true)) {
             return $version;
         }
 
@@ -86,7 +86,7 @@ class ChangelogService
         ]);
 
         $items = json_decode($response->getBody()->getContents(), true);
-        if (json_last_error() !== JSON_ERROR_NONE) {
+        if (json_last_error() !== \JSON_ERROR_NONE) {
             throw new \RuntimeException('Failed to decode json');
         }
 
@@ -108,7 +108,7 @@ class ChangelogService
                 $githubAuthor = trim($issue['fields']['customfield_' . self::GITHUB_FIELD_ID] ?? '');
                 $githubAnnotation = '';
 
-                if (strlen($changelogText) < self::CHANGE_LOG_LINE_MIN_LENGTH) {
+                if (\strlen($changelogText) < self::CHANGE_LOG_LINE_MIN_LENGTH) {
                     continue;
                 }
 

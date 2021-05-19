@@ -8,9 +8,6 @@ use Doctrine\DBAL\Connection;
 use Shopware\Core\Framework\Plugin\KernelPluginLoader\KernelPluginLoader;
 use Shopware\Core\Profiling\Doctrine\DebugStack;
 
-/**
- * @psalm-suppress MethodSignatureMismatch
- */
 class Kernel extends \Shopware\Core\Kernel
 {
     public const PLACEHOLDER_DATABASE_URL = 'mysql://_placeholder.test';

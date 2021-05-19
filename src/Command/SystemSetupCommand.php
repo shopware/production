@@ -19,10 +19,7 @@ class SystemSetupCommand extends Command
 {
     public static $defaultName = 'system:setup';
 
-    /**
-     * @var string
-     */
-    private $projectDir;
+    private string $projectDir;
 
     public function __construct(string $projectDir)
     {
@@ -87,8 +84,9 @@ class SystemSetupCommand extends Command
             $env['DATABASE_URL'] = $input->getOption('DATABASE_URL') ? $this->getDsn($input, $io) . '/' . $input->getOption('DATABASE_NAME') : $_ENV['DATABASE_URL'] . '/' . $_ENV['DATABASE_NAME'];
 
             $_ENV['APP_URL'] = $_ENV['APP_URL'] ?? $env['APP_URL'];
-            if ($input->getOption('APP_URL') && !is_array($input->getOption('APP_URL'))) {
-                $env['APP_URL'] = trim((string) $input->getOption('APP_URL'));
+            $appUrlOption = $input->getOption('APP_URL');
+            if (\is_string($appUrlOption)) {
+                $env['APP_URL'] = trim($appUrlOption);
             } else {
                 $env['APP_URL'] = $_ENV['APP_URL'];
             }
@@ -116,7 +114,7 @@ class SystemSetupCommand extends Command
                 throw new \RuntimeException('Shop URL is required.');
             }
 
-            if (!filter_var($value, FILTER_VALIDATE_URL)) {
+            if (!filter_var($value, \FILTER_VALIDATE_URL)) {
                 throw new \RuntimeException('Invalid URL.');
             }
 
@@ -136,8 +134,6 @@ class SystemSetupCommand extends Command
 
         $io->section('Database information');
 
-        /** @var \Throwable|null $exception */
-        $exception = null;
         do {
             try {
                 $exception = null;
@@ -170,6 +166,10 @@ class SystemSetupCommand extends Command
         $dsn = $input->getOption('database-url') ? $input->getOption('database-url') : $input->getOption('DATABASE_URL');
         if (\is_string($dsn)) {
             $params = parse_url($dsn);
+            if ($params === false) {
+                throw new \RuntimeException('invalid dsn');
+            }
+
             $dsnWithoutDb = sprintf(
                 '%s://%s:%s@%s:%s',
                 $params['scheme'],
@@ -213,7 +213,7 @@ class SystemSetupCommand extends Command
         $envFile = $this->projectDir . '/.env';
 
         foreach ($configuration as $key => $value) {
-            $envVars .= $key . '="' . str_replace('"', '\\"', $value) . '"' . PHP_EOL;
+            $envVars .= $key . '="' . str_replace('"', '\\"', $value) . '"' . \PHP_EOL;
         }
 
         $output->text($envFile);

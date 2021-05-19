@@ -14,10 +14,7 @@ class SystemGenerateJwtSecretCommand extends Command
 {
     public static $defaultName = 'system:generate-jwt-secret';
 
-    /**
-     * @var string
-     */
-    private $projectDir;
+    private string $projectDir;
 
     public function __construct(string $projectDir)
     {
@@ -28,14 +25,17 @@ class SystemGenerateJwtSecretCommand extends Command
     public function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        if (!extension_loaded('openssl')) {
+        if (!\extension_loaded('openssl')) {
             $io->error('extension openssl is required');
 
             return 1;
         }
 
         $passphrase = $input->getOption('jwt-passphrase');
-        $privateKeyPath = $input->getOption('private-key-path') ?? ($this->projectDir . '/config/jwt/private.pem');
+        $privateKeyPathOption = $input->getOption('private-key-path');
+
+        $privateKeyPath = $privateKeyPathOption ?? ($this->projectDir . '/config/jwt/private.pem');
+
         $publicKeyPath = $input->getOption('public-key-path');
 
         if (!$publicKeyPath && !$input->getOption('private-key-path')) {
@@ -76,10 +76,16 @@ class SystemGenerateJwtSecretCommand extends Command
 
         $key = openssl_pkey_new([
             'digest_alg' => 'aes256',
-            'private_key_type' => OPENSSL_KEYTYPE_RSA,
+            'private_key_type' => \OPENSSL_KEYTYPE_RSA,
             'encrypt_key' => $passphrase,
-            'encrypt_key_cipher' => OPENSSL_CIPHER_AES_256_CBC,
+            'encrypt_key_cipher' => \OPENSSL_CIPHER_AES_256_CBC,
         ]);
+
+        if ($key === false) {
+            $io->error('Failed to generate key');
+
+            return 1;
+        }
 
         // export private key
         $result = openssl_pkey_export_to_file($key, $privateKeyPath, $passphrase);
@@ -94,6 +100,12 @@ class SystemGenerateJwtSecretCommand extends Command
         if ($publicKeyPath) {
             // export public key
             $keyData = openssl_pkey_get_details($key);
+            if ($keyData === false) {
+                $io->error('Failed to export public key');
+
+                return 1;
+            }
+
             file_put_contents($publicKeyPath, $keyData['key']);
             chmod($publicKeyPath, 0660);
         }

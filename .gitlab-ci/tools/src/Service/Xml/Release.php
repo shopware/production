@@ -6,73 +6,119 @@ use SimpleXMLElement;
 
 class Release extends SimpleXMLElement
 {
-    /** @var Release[]|null */
+    /**
+     * @var Release[]|null
+     */
     public $releases;
 
-    /** @var Release[]|null */
+    /**
+     * @var Release[]|null
+     */
     public $release;
 
-    /** @var string */
+    /**
+     * @var string|Release
+     */
     public $tag = '';
 
-    /** @var string */
+    /**
+     * @var string|Release
+     */
     public $version = '';
 
-    /** @var string */
+    /**
+     * @var string|Release
+     */
     public $version_text = '';
 
-    /** @var string */
+    /**
+     * @var string|Release
+     */
     public $minimum_version = '6.1.0';
 
-    /** @var int */
+    /**
+     * @var int
+     */
     public $security_update = 0;
 
-    /** @var string */
+    /**
+     * @var string|Release
+     */
     public $public = '0';
 
-    /** @var int */
+    /**
+     * @var int|Release
+     */
     public $rc = 0;
 
-    /** @var int */
+    /**
+     * @var int|Release
+     */
     public $ea = 0;
 
-    /** @var string */
+    /**
+     * @var string|Release
+     */
     public $type = '';
 
-    /** @var bool */
+    /**
+     * @var bool|Release
+     */
     public $manual = false;
 
-    /** @var string */
+    /**
+     * @var string|Release
+     */
     public $revision = '';
 
-    /** @var string */
+    /**
+     * @var string|Release
+     */
     public $release_date = '';
 
-    /** @var string */
+    /**
+     * @var string|Release
+     */
     public $github_repo = '';
 
-    /** @var string */
+    /**
+     * @var string|Release
+     */
     public $upgrade_md = '';
 
-    /** @var string */
+    /**
+     * @var string|Release
+     */
     public $download_link_install = '';
 
-    /** @var string */
+    /**
+     * @var string|Release
+     */
     public $download_link_update = '';
 
-    /** @var string */
+    /**
+     * @var string|Release
+     */
     public $sha1_install = '';
 
-    /** @var string */
+    /**
+     * @var string|Release
+     */
     public $sha1_update = '';
 
-    /** @var string */
+    /**
+     * @var string|Release
+     */
     public $sha256_install = '';
 
-    /** @var string */
+    /**
+     * @var string|Release
+     */
     public $sha256_update = '';
 
-    /** @var object|null */
+    /**
+     * @var object|null
+     */
     public $locales;
 
     public function addRelease(string $version): ?Release
@@ -145,6 +191,10 @@ class Release extends SimpleXMLElement
      */
     public function getReleases(): \Generator
     {
+        if ($this->release === null) {
+            throw new \RuntimeException('Releases are not set');
+        }
+
         yield from $this->release;
     }
 
@@ -228,6 +278,16 @@ class Release extends SimpleXMLElement
         return (string) $this->download_link_update;
     }
 
+    public function getSha1Install(): string
+    {
+        return (string) $this->sha1_install;
+    }
+
+    public function getSha1Update(): string
+    {
+        return (string) $this->sha1_update;
+    }
+
     public function getSha256Install(): string
     {
         return (string) $this->sha256_install;
@@ -259,25 +319,25 @@ class Release extends SimpleXMLElement
 
             /** @var SimpleXMLElement $changelog */
             $changelog = $this->locales->$lang->changelog;
-            $this->addCDataToNode($changelog, PHP_EOL . $data['changelog'] . PHP_EOL);
+            $this->addCDataToNode($changelog, \PHP_EOL . $data['changelog'] . \PHP_EOL);
         }
         if (isset($data['important_changes'])) {
             $this->locales->$lang->important_changes = '';
             /** @var SimpleXMLElement $importantChanges */
             $importantChanges = $this->locales->$lang->important_changes;
-            $this->addCDataToNode($importantChanges, PHP_EOL . $data['important_changes'] . PHP_EOL);
+            $this->addCDataToNode($importantChanges, \PHP_EOL . $data['important_changes'] . \PHP_EOL);
         }
     }
 
     public function setLocales(array $locales): void
     {
         foreach ($locales as $lang => $data) {
-            $data['changelog'] = isset($locales[$lang]['changelog']) && is_array($locales[$lang]['changelog'])
-                ? implode(PHP_EOL, $locales[$lang]['changelog'])
+            $data['changelog'] = isset($locales[$lang]['changelog']) && \is_array($locales[$lang]['changelog'])
+                ? implode(\PHP_EOL, $locales[$lang]['changelog'])
                 : $locales[$lang]['changelog'] ?? '';
             if (isset($locales[$lang]['important_changes'])) {
-                $data['important_changes'] = is_array($locales[$lang]['important_changes'])
-                    ? implode(PHP_EOL, $locales[$lang]['important_changes'])
+                $data['important_changes'] = \is_array($locales[$lang]['important_changes'])
+                    ? implode(\PHP_EOL, $locales[$lang]['important_changes'])
                     : $locales[$lang]['important_changes'] ?? '';
             }
 

@@ -7,27 +7,18 @@ namespace Shopware\Production\Command;
 use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\DriverManager;
 use Shopware\Core\Framework\Adapter\Console\ShopwareStyle;
-use Shopware\Production\Kernel;
+use Shopware\Core\Kernel as CoreKernel;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Style\SymfonyStyle;
 
 class SystemInstallCommand extends Command
 {
     public static $defaultName = 'system:install';
 
-    /**
-     * @var SymfonyStyle
-     */
-    protected $io;
-
-    /**
-     * @var string
-     */
-    private $projectDir;
+    private string $projectDir;
 
     public function __construct(string $projectDir)
     {
@@ -40,23 +31,24 @@ class SystemInstallCommand extends Command
         $this->addOption('create-database', null, InputOption::VALUE_NONE, "Create database if it doesn't exist.")
             ->addOption('drop-database', null, InputOption::VALUE_NONE, 'Drop existing database')
             ->addOption('basic-setup', null, InputOption::VALUE_NONE, 'Create storefront sales channel and admin user')
-            ->addOption('force', 'f', InputOption::VALUE_NONE, 'Force install even if install.lock exists');
+            ->addOption('force', 'f', InputOption::VALUE_NONE, 'Force install even if install.lock exists')
+            ->addOption('no-assign-theme', null, InputOption::VALUE_NONE, 'Do nmot assign the default theme')
+        ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $output = new ShopwareStyle($input, $output);
 
-        /*
-         * Needs to be set because migration for testsuite needs the trigger.
-         * Because there are some tests that work directly on the db and so ignore the indexer
-         */
-        putenv('BLUE_GREEN_DEPLOYMENT=1');
-
-        $_ENV['BLUE_GREEN_DEPLOYMENT'] = 1;
+        // set default
+        $_ENV['BLUE_GREEN_DEPLOYMENT'] = $_SERVER['BLUE_GREEN_DEPLOYMENT']
+               = $_ENV['BLUE_GREEN_DEPLOYMENT']
+            ?? $_SERVER['BLUE_GREEN_DEPLOYMENT']
+            ?? '1';
+        putenv('BLUE_GREEN_DEPLOYMENT=' . $_SERVER['BLUE_GREEN_DEPLOYMENT']);
 
         $dsn = trim((string) ($_ENV['DATABASE_URL'] ?? $_SERVER['DATABASE_URL'] ?? getenv('DATABASE_URL')));
-        if ($dsn === '' || $dsn === Kernel::PLACEHOLDER_DATABASE_URL) {
+        if ($dsn === '') {
             $output->error("Environment variable 'DATABASE_URL' not defined.");
 
             return 1;
@@ -69,7 +61,14 @@ class SystemInstallCommand extends Command
         }
 
         $params = parse_url($dsn);
-        $dbName = substr($params['path'], 1);
+        if ($params === false) {
+            $output->error('dsn invalid');
+
+            return 1;
+        }
+
+        $path = $params['path'] ?? '/';
+        $dbName = substr($path, 1);
 
         $dsnWithoutDb = sprintf(
             '%s://%s%s:%s',
@@ -103,14 +102,9 @@ class SystemInstallCommand extends Command
 
         $connection->executeStatement('USE `' . $dbName . '`');
 
-        $hasMigrationTable = false;
-        foreach ($connection->executeQuery('SHOW TABLES') as $row) {
-            if (current($row) === 'migration') {
-                $hasMigrationTable = true;
-            }
-        }
+        $tables = $connection->executeQuery('SHOW TABLES')->fetchAll(\PDO::FETCH_COLUMN);
 
-        if (!$hasMigrationTable) {
+        if (!\in_array('migration', $tables, true)) {
             $output->writeln('Importing base schema.sql');
             $connection->executeStatement($this->getBaseSchema());
         }
@@ -137,6 +131,7 @@ class SystemInstallCommand extends Command
             ],
             [
                 'command' => 'theme:compile',
+                'allowedToFail' => true,
             ],
         ];
 
@@ -154,11 +149,14 @@ class SystemInstallCommand extends Command
                 '--url' => $_SERVER['APP_URL'] ?? 'http://localhost',
             ];
 
-            $commands[] = [
-                'command' => 'theme:change',
-                '--all' => true,
-                'theme-name' => 'Storefront',
-            ];
+            if (!$input->getOption('no-assign-theme')) {
+                $commands[] = [
+                    'command' => 'theme:change',
+                    'allowedToFail' => true,
+                    '--all' => true,
+                    'theme-name' => 'Storefront',
+                ];
+            }
         }
 
         array_push($commands, [
@@ -169,7 +167,9 @@ class SystemInstallCommand extends Command
 
         $this->runCommands($commands, $output);
 
-        if (!file_exists($this->projectDir . '/public/.htaccess')) {
+        if (!file_exists($this->projectDir . '/public/.htaccess')
+            && file_exists($this->projectDir . '/public/.htaccess.dist')
+        ) {
             copy($this->projectDir . '/public/.htaccess.dist', $this->projectDir . '/public/.htaccess');
         }
 
@@ -191,11 +191,19 @@ class SystemInstallCommand extends Command
         foreach ($commands as $parameters) {
             $output->writeln('');
 
-            $command = $application->find((string) ($parameters['command'] ?? ''));
-            unset($parameters['command']);
-            $returnCode = $command->run(new ArrayInput($parameters, $command->getDefinition()), $output);
-            if ($returnCode !== 0) {
-                return $returnCode;
+            $command = $application->find((string) $parameters['command']);
+            $allowedToFail = $parameters['allowedToFail'] ?? false;
+            unset($parameters['command'], $parameters['allowedToFail']);
+
+            try {
+                $returnCode = $command->run(new ArrayInput($parameters, $command->getDefinition()), $output);
+                if ($returnCode !== 0 && !$allowedToFail) {
+                    return $returnCode;
+                }
+            } catch (\Throwable $e) {
+                if (!$allowedToFail) {
+                    throw $e;
+                }
             }
         }
 
@@ -204,18 +212,14 @@ class SystemInstallCommand extends Command
 
     private function getBaseSchema(): string
     {
-        $paths = [
-            'vendor/shopware/core/schema.sql',
-            'vendor/shopware/platform/src/Core/schema.sql',
-        ];
+        $kernelClass = new \ReflectionClass(CoreKernel::class);
+        $directory = \dirname((string) $kernelClass->getFileName());
 
-        foreach ($paths as $path) {
-            $path = rtrim($this->projectDir, '/') . '/' . $path;
-            if (is_readable($path) && !is_dir($path)) {
-                return file_get_contents($path);
-            }
+        $path = $directory . '/schema.sql';
+        if (!is_readable($path) || is_dir($path)) {
+            throw new \RuntimeException('schema.sql not found or readable in ' . $directory);
         }
 
-        throw new \RuntimeException('schema.sql not found or readable in (' . implode(', ', $paths) . ')');
+        return (string) file_get_contents($path);
     }
 }

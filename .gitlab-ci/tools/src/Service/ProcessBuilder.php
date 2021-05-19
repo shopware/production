@@ -21,7 +21,7 @@ class ProcessBuilder extends Builder
      */
     public function with($key, $value = null)
     {
-        $this->with = array_merge($this->with, is_array($key) ? $key : [$key => $value]);
+        $this->with = array_merge($this->with, \is_array($key) ? $key : [$key => $value]);
 
         return $this;
     }

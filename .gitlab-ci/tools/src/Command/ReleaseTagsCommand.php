@@ -21,9 +21,6 @@ class ReleaseTagsCommand extends ReleaseCommand
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $tag = $input->getArgument('tag');
-        if (!\is_string($tag)) {
-            throw new \RuntimeException('Invalid tag given');
-        }
 
         $this->getReleaseService($input, $output)->releaseTags($tag);
 

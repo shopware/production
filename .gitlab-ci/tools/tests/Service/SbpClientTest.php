@@ -49,7 +49,7 @@ class SbpClientTest extends TestCase
     public function testGetVersion(): void
     {
         $expectedVersions = $this->sbpClient->getVersions();
-        $expectedVersions = array_slice($expectedVersions, 0, 10);
+        $expectedVersions = \array_slice($expectedVersions, 0, 10);
         static::assertNotEmpty($expectedVersions);
 
         foreach ($expectedVersions as $expectedVersion) {
@@ -61,7 +61,7 @@ class SbpClientTest extends TestCase
     public function testGetVersionByName(): void
     {
         $expectedVersions = $this->sbpClient->getVersions();
-        $expectedVersions = array_slice($expectedVersions, 0, 10);
+        $expectedVersions = \array_slice($expectedVersions, 0, 10);
         static::assertNotEmpty($expectedVersions);
 
         foreach ($expectedVersions as $expectedVersion) {

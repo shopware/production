@@ -77,7 +77,7 @@ class VersioningService
         $versions = Semver::satisfiedBy($versions, $constraint);
 
         $versions = array_filter($versions, function ($version) {
-            return in_array(VersionParser::parseStability($version), $this->allowedStabilities, true);
+            return \in_array(VersionParser::parseStability($version), $this->allowedStabilities, true);
         });
 
         return Semver::sort($versions);
@@ -90,7 +90,7 @@ class VersioningService
         }
 
         $stability = VersionParser::parseStability($lastVersion);
-        if (!in_array($stability, $this->allowedStabilities, true)) {
+        if (!\in_array($stability, $this->allowedStabilities, true)) {
             return $this->getInitialMinorTag($constraint);
         }
         $normalizedVersion = (string) $this->versionParser->parseConstraints($lastVersion);

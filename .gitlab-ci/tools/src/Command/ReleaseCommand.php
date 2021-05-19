@@ -44,7 +44,7 @@ abstract class ReleaseCommand extends Command
             'projectId' => $_SERVER['CI_PROJECT_ID'] ?? '184',
             'gitlabRemoteUrl' => $_SERVER['CI_REPOSITORY_URL'] ?? 'git@gitlab.shopware.com:/shopware/6/product/production',
             'manyReposBaseUrl' => $_SERVER['MANY_REPO_BASE_URL'] ?? 'git@gitlab.shopware.com:shopware/6/product/many-repositories',
-            'projectRoot' => $_SERVER['PROJECT_ROOT'] ?? dirname(__DIR__, 4),
+            'projectRoot' => $_SERVER['PROJECT_ROOT'] ?? \dirname(__DIR__, 4),
             'jira' => [
                 'api_base_uri' => rtrim($_SERVER['JIRA_API_V2_URL'] ?? 'https://jira.shopware.com/rest/api/2/', '/') . '/',
             ],
@@ -147,7 +147,7 @@ abstract class ReleaseCommand extends Command
             $adapter = new AwsS3Adapter($s3Client, $config['deployFilesystem']['bucket']);
             $this->deployFilesystem = new Filesystem($adapter, ['visibility' => 'public']);
         } else {
-            $this->deployFilesystem = new Filesystem(new Local(dirname(__DIR__, 2) . '/deploy'));
+            $this->deployFilesystem = new Filesystem(new Local(\dirname(__DIR__, 2) . '/deploy'));
         }
 
         return $this->deployFilesystem;

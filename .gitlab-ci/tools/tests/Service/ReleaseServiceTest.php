@@ -20,20 +20,11 @@ class ReleaseServiceTest extends TestCase
 {
     public const FAKE_PLATFORM_COMMIT_SHA = '01c209a305adaabaf894e6929290c69cdeadbeef';
 
-    /**
-     * @var int|null
-     */
-    private $daemonPid;
+    private ?int $daemonPid = null;
 
-    /**
-     * @var string
-     */
-    private $fakeProd;
+    private ?string $fakeProd = null;
 
-    /**
-     * @var string
-     */
-    private $fakeRemoteRepos;
+    private ?string $fakeRemoteRepos = null;
 
     /**
      * @var array
@@ -50,11 +41,11 @@ class ReleaseServiceTest extends TestCase
                 ->run('rm -Rf {{ $dir }}');
         }
 
-        if ($this->fakeProd && trim($this->fakeProd) !== '/') {
+        if ($this->fakeProd !== null && trim($this->fakeProd) !== '/') {
             exec('rm -Rf ' . escapeshellarg($this->fakeProd));
         }
 
-        if ($this->fakeRemoteRepos && trim($this->fakeRemoteRepos) !== '/') {
+        if ($this->fakeRemoteRepos !== null && trim($this->fakeRemoteRepos) !== '/') {
             exec('rm -Rf ' . escapeshellarg($this->fakeRemoteRepos) . '/*');
         }
     }
@@ -279,8 +270,8 @@ class ReleaseServiceTest extends TestCase
         // check that the tags were pushed to the remote repos and that the PLATFORM_COMMIT_SHA matches
         $repos = ['prod', 'core', 'storefront'];
         foreach ($repos as $repo) {
-            $cmd =
-                'git -C '
+            $cmd
+                = 'git -C '
                 . escapeshellarg($this->fakeRemoteRepos . '/' . $repo)
                 . ' archive ' . escapeshellarg($tag) . ' PLATFORM_COMMIT_SHA'
                 . '| tar -xO PLATFORM_COMMIT_SHA';
@@ -502,12 +493,13 @@ class ReleaseServiceTest extends TestCase
 
     private function startGitServer(): void
     {
+        static::assertIsString($this->fakeRemoteRepos);
         $path = escapeshellarg($this->fakeRemoteRepos);
         $daemonCmd = 'git daemon'
             . ' --base-path=' . $path
             . ' --export-all --reuseaddr --enable=receive-pack '
             . $path . '>/dev/null 2>/dev/null &'
-            . PHP_EOL . ' echo $!';
+            . \PHP_EOL . ' echo $!';
 
         echo $daemonCmd;
 
@@ -539,6 +531,7 @@ class ReleaseServiceTest extends TestCase
             $this->execGit(['checkout', $tag], $repoData['path']);
         }
 
+        static::assertIsString($this->fakeProd);
         $base = $this->fakeProd;
         exec('cp ' . $base . '/composer.dev.json ' . $base . '/composer.json');
         exec('composer update --working-dir=' . escapeshellarg($this->fakeProd));
@@ -659,7 +652,7 @@ class ReleaseServiceTest extends TestCase
         $result = exec($cmd, $output, $retCode);
         if ($retCode !== 0) {
             throw new \RuntimeException(
-                sprintf('Error code: %d, Failed to execute: %s, output: %s', $retCode, $cmd, implode(PHP_EOL, $output))
+                sprintf('Error code: %d, Failed to execute: %s, output: %s', $retCode, $cmd, implode(\PHP_EOL, $output))
             );
         }
 

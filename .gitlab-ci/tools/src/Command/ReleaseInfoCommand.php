@@ -15,15 +15,12 @@ class ReleaseInfoCommand extends ReleaseCommand
     {
         $this->setDescription('Release information')
             ->addArgument('tag', InputArgument::REQUIRED, 'Release tag')
-            ->addOption('deploy', null, InputOption::VALUE_NONE, 'asdfds');
+            ->addOption('deploy', null, InputOption::VALUE_NONE, 'Deploy');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $tag = $input->getArgument('tag');
-        if (!\is_string($tag)) {
-            throw new \RuntimeException('Invalid tag given');
-        }
 
         echo \json_encode($this->getReleasePrepareService($input, $output)->getReleaseList()->getRelease($tag));
 

@@ -97,7 +97,7 @@ class TaggingService
 
     public function fetchTagPush(string $tag, string $commitRef, string $remoteName = 'upstream', ?string $repoPath = null, ?string $remoteUrl = null, ?string $message = null): void
     {
-        if ($remoteUrl !== null && filter_var($remoteUrl, FILTER_VALIDATE_URL) === false) {
+        if ($remoteUrl !== null && filter_var($remoteUrl, \FILTER_VALIDATE_URL) === false) {
             throw new TaggingException($tag, $repoPath ?? '', 'remoteUrl is not a valid url');
         }
 

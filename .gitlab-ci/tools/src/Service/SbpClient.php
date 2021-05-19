@@ -6,15 +6,9 @@ use GuzzleHttp\Client;
 
 class SbpClient
 {
-    /**
-     * @var Client
-     */
-    private $client;
+    private Client $client;
 
-    /**
-     * @var string|null
-     */
-    private $token;
+    private ?string $token = null;
 
     public function __construct(Client $client)
     {
@@ -32,7 +26,7 @@ class SbpClient
 
         $response = json_decode($response->getBody()->getContents(), true);
 
-        if (json_last_error() !== JSON_ERROR_NONE) {
+        if (json_last_error() !== \JSON_ERROR_NONE) {
             throw new \RuntimeException('Failed to decode json');
         }
 

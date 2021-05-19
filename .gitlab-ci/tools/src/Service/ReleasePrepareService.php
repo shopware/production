@@ -2,7 +2,7 @@
 
 namespace Shopware\CI\Service;
 
-use League\Flysystem\Filesystem;
+use League\Flysystem\FilesystemInterface;
 use Shopware\CI\Service\Xml\Release;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -10,45 +10,24 @@ class ReleasePrepareService
 {
     public const SHOPWARE_XML_PATH = '_meta/shopware6.xml';
 
-    /**
-     * @var array
-     */
-    private $config;
+    private array $config;
 
-    /**
-     * @var Filesystem
-     */
-    private $deployFilesystem;
+    private FilesystemInterface $deployFilesystem;
 
-    /**
-     * @var ChangelogService
-     */
-    private $changelogService;
+    private ChangelogService $changelogService;
 
-    /**
-     * @var Filesystem
-     */
-    private $artifactsFilesystem;
+    private FilesystemInterface $artifactsFilesystem;
 
-    /**
-     * @var UpdateApiService
-     */
-    private $updateApiService;
+    private UpdateApiService $updateApiService;
 
-    /**
-     * @var SbpClient
-     */
-    private $sbpClient;
+    private SbpClient $sbpClient;
 
-    /**
-     * @var OutputInterface
-     */
-    private $stdout;
+    private OutputInterface $stdout;
 
     public function __construct(
         array $config,
-        Filesystem $deployFilesystem,
-        FileSystem $artifactsFilesystem,
+        FilesystemInterface $deployFilesystem,
+        FilesystemInterface $artifactsFilesystem,
         ChangelogService $changelogService,
         UpdateApiService $updateApiService,
         SbpClient $sbpClient,
@@ -194,24 +173,24 @@ class ReleasePrepareService
     public function registerUpdate(string $tag, Release $release): void
     {
         $baseParams = [
-            '--release-version' => (string) $release->version,
+            '--release-version' => $release->getVersion(),
             '--channel' => VersioningService::getUpdateChannel($tag),
         ];
 
-        if (((string) $release->version_text) !== '') {
-            $baseParams['--version-text'] = (string) $release->version_text;
+        if ($release->getVersionText() !== '') {
+            $baseParams['--version-text'] = $release->getVersionText();
         }
 
         $insertReleaseParameters = array_merge($baseParams, [
             '--min-version' => $this->config['minimumVersion'] ?? '6.2.0',
-            '--install-uri' => (string) $release->download_link_install,
+            '--install-uri' => $release->getDownloadLinkInstall(),
             '--install-size' => (string) $this->artifactsFilesystem->getSize('install.zip'),
-            '--install-sha1' => (string) $release->sha1_install,
-            '--install-sha256' => (string) $release->sha256_install,
-            '--update-uri' => (string) $release->download_link_update,
+            '--install-sha1' => $release->getSha1Install(),
+            '--install-sha256' => $release->getSha256Install(),
+            '--update-uri' => $release->getDownloadLinkUpdate(),
             '--update-size' => (string) $this->artifactsFilesystem->getSize('update.zip'),
-            '--update-sha1' => (string) $release->sha1_update,
-            '--update-sha256' => (string) $release->sha256_update,
+            '--update-sha1' => $release->getSha1Update(),
+            '--update-sha256' => $release->getSha256Update(),
         ]);
 
         $this->updateApiService->insertReleaseData($insertReleaseParameters);

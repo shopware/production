@@ -391,8 +391,8 @@ NEXT-1235 - DE Bar
         $changelogService = $changeLogService ?? $this->createMock(ChangelogService::class);
         $updateApiService = $updateApiService ?? $this->createMock(UpdateApiService::class);
         $sbpClient = $sbpClient ?? $this->createMock(SbpClient::class);
-        $config = $config ??
-            [
+        $config = $config
+            ?? [
                 'minimumVersion' => '6.2.0',
                 'deployFilesystem' => [
                     'publicDomain' => 'https://releases.example.com/',

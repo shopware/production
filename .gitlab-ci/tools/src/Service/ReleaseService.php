@@ -260,7 +260,7 @@ CODE
             $this->stdout->writeln('Updating composer minimum-stability from "' . $currentStability . '" to "' . $newStability . '"');
 
             $composerJson['minimum-stability'] = $newStability;
-            $encoded = \json_encode($composerJson, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+            $encoded = \json_encode($composerJson, \JSON_PRETTY_PRINT | \JSON_UNESCAPED_SLASHES);
             file_put_contents($composerJsonPath, $encoded);
         }
     }

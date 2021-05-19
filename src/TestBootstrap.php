@@ -31,8 +31,8 @@ if (!file_exists($jwtDir) && !mkdir($jwtDir, 0770, true) && !is_dir($jwtDir)) {
 // generate jwt pk
 $key = openssl_pkey_new([
     'digest_alg' => 'aes256',
-    'private_key_type' => OPENSSL_KEYTYPE_RSA,
-    'encrypt_key_cipher' => OPENSSL_CIPHER_AES_256_CBC,
+    'private_key_type' => \OPENSSL_KEYTYPE_RSA,
+    'encrypt_key_cipher' => \OPENSSL_CIPHER_AES_256_CBC,
     'encrypt_key' => $_SERVER['JWT_PRIVATE_KEY_PASSPHRASE'],
 ]);
 

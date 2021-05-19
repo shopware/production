@@ -20,14 +20,23 @@ class SystemUpdatePrepareCommand extends Command
 {
     public static $defaultName = 'system:update:prepare';
 
-    /**
-     * @var ContainerInterface
-     */
-    private $container;
+    private string $shopwareVersion;
 
-    public function __construct(ContainerInterface $container)
-    {
+    private EventDispatcherInterface $eventDispatcher;
+
+    private ContainerInterface $container;
+
+    /**
+     * @psalm-suppress ContainerDependency
+     */
+    public function __construct(
+        string $shopwareVersion,
+        EventDispatcherInterface $eventDispatcher,
+        ContainerInterface $container
+    ) {
         parent::__construct();
+        $this->shopwareVersion = $shopwareVersion;
+        $this->eventDispatcher = $eventDispatcher;
         $this->container = $container;
     }
 
@@ -45,23 +54,16 @@ class SystemUpdatePrepareCommand extends Command
         $output->writeln('Run Update preparations');
 
         $context = Context::createDefaultContext();
-        $currentVersion = $this->container->getParameter('kernel.shopware_version');
-        if (!\is_string($currentVersion)) {
-            throw new \RuntimeException('Container parameter "kernel.shopware_version" needs to be a string');
-        }
-
         // TODO: get new version (from composer.lock?)
         $newVersion = '';
 
-        /** @var EventDispatcherInterface $eventDispatcher */
-        $eventDispatcher = $this->container->get('event_dispatcher');
-        $eventDispatcher->dispatch(new UpdatePrePrepareEvent($context, $currentVersion, $newVersion));
+        $this->eventDispatcher->dispatch(new UpdatePrePrepareEvent($context, $this->shopwareVersion, $newVersion));
 
         /** @var EventDispatcherInterface $eventDispatcherWithoutPlugins */
         $eventDispatcherWithoutPlugins = $this->rebootKernelWithoutPlugins()->get('event_dispatcher');
 
         // @internal plugins are deactivated
-        $eventDispatcherWithoutPlugins->dispatch(new UpdatePostPrepareEvent($context, $currentVersion, $newVersion));
+        $eventDispatcherWithoutPlugins->dispatch(new UpdatePostPrepareEvent($context, $this->shopwareVersion, $newVersion));
 
         return 0;
     }

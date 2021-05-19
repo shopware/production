@@ -137,7 +137,7 @@ Static Analysis:
         - composer install -d .gitlab-ci/tools
         - php .gitlab-ci/tools/vendor/bin/ecs check --config easy-coding-standard.php
         - php .gitlab-ci/tools/vendor/bin/phpstan analyse
-        - php .gitlab-ci/tools/vendor/bin/psalm.phar
+        - php .gitlab-ci/tools/vendor/bin/psalm
 
 Tools unit test:
     stage: test
