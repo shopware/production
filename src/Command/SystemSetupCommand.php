@@ -29,37 +29,42 @@ class SystemSetupCommand extends Command
 
     protected function configure(): void
     {
-        $this->addOption('force', 'f', InputOption::VALUE_NONE, 'Force setup and recreate everything')
+        $this
+            ->addOption('force', 'f', InputOption::VALUE_NONE, 'Force setup and recreate everything')
             ->addOption('no-check-db-connection', null, InputOption::VALUE_NONE, 'dont check db connection')
-            ->addOption('database-url', null, InputOption::VALUE_OPTIONAL, 'Database dsn')
+            ->addOption('database-url', null, InputOption::VALUE_OPTIONAL, 'Database dsn', $this->getDefault('DATABASE_URL', ''))
             ->addOption('generate-jwt-keys', null, InputOption::VALUE_NONE, 'Generate jwt private and public key')
             ->addOption('jwt-passphrase', null, InputOption::VALUE_OPTIONAL, 'JWT private key passphrase', 'shopware')
-            ->addOption('composer-home', null, InputOption::VALUE_REQUIRED, 'Set the composer home directory otherwise the environment variable $COMPOSER_HOME will be used or the project dir as fallback')
-            ->addOption('APP_ENV', null, InputOption::VALUE_OPTIONAL, 'Application environment')
-            ->addOption('APP_URL', null, InputOption::VALUE_OPTIONAL, 'Application URL')
-            ->addOption('BLUE_GREEN_DEPLOYMENT', null, InputOption::VALUE_OPTIONAL, 'Blue green deployment')
-            ->addOption('DATABASE_URL', null, InputOption::VALUE_OPTIONAL, 'Database dsn - mysql://user:password@host:port')
-            ->addOption('DATABASE_NAME', null, InputOption::VALUE_OPTIONAL, 'Database name');
-        $this->addOption('force', 'f', InputOption::VALUE_NONE, 'Force setup');
+            ->addOption('composer-home', null, InputOption::VALUE_REQUIRED, 'Set the composer home directory otherwise the environment variable $COMPOSER_HOME will be used or the project dir as fallback', $this->getDefault('COMPOSER_HOME', "{$this->projectDir}/var/cache/composer"))
+            ->addOption('app-env', null, InputOption::VALUE_OPTIONAL, 'Application environment', $this->getDefault('APP_ENV', 'prod'))
+            ->addOption('app-url', null, InputOption::VALUE_OPTIONAL, 'Application URL', $this->getDefault('APP_URL', 'http://localhost'))
+            ->addOption('blue-green', null, InputOption::VALUE_OPTIONAL, 'Blue green deployment', $this->getDefault('BLUE_GREEN_DEPLOYMENT', '1'))
+            ->addOption('es-enabled', null, InputOption::VALUE_OPTIONAL, 'Elasticsearch enabled', $this->getDefault('SHOPWARE_ES_ENABLED', '0'))
+            ->addOption('es-hosts', null, InputOption::VALUE_OPTIONAL, 'Elasticsearch Hosts', $this->getDefault('SHOPWARE_ES_HOSTS', 'elasticsearch:9200'))
+            ->addOption('es-indexing-enabled', null, InputOption::VALUE_OPTIONAL, 'Elasticsearch Indexing enabled', $this->getDefault('SHOPWARE_ES_INDEXING_ENABLED', '0'))
+            ->addOption('es-index-prefix', null, InputOption::VALUE_OPTIONAL, 'Elasticsearch Index prefix', $this->getDefault('SHOPWARE_ES_INDEX_PREFIX', 'sw'))
+            ->addOption('http-cache-enabled', null, InputOption::VALUE_OPTIONAL, 'Http-Cache enabled', $this->getDefault('SHOPWARE_HTTP_CACHE_ENABLED', '1'))
+            ->addOption('http-cache-ttl', null, InputOption::VALUE_OPTIONAL, 'Http-Cache TTL', $this->getDefault('SHOPWARE_HTTP_DEFAULT_TTL', '7200'))
+            ->addOption('cdn-strategy', null, InputOption::VALUE_OPTIONAL, 'CDN Strategy', $this->getDefault('SHOPWARE_CDN_STRATEGY_DEFAULT', 'id'))
+            ->addOption('mailer-url', null, InputOption::VALUE_OPTIONAL, 'Mailer URL', $this->getDefault('MAILER_URL', 'native://default'));
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $env = [
-            'APP_ENV' => 'prod',
-            'APP_URL' => 'http://127.0.0.1/',
-            'DATABASE_URL' => 'http://127.0.0.1/',
-            'DATABASE_NAME' => 'shopware6',
-            'SHOPWARE_ES_HOSTS' => 'elasticsearch:9200',
-            'SHOPWARE_ES_ENABLED' => '0',
-            'SHOPWARE_ES_INDEXING_ENABLED' => '0',
-            'SHOPWARE_ES_INDEX_PREFIX' => 'sw',
-            'SHOPWARE_HTTP_CACHE_ENABLED' => '1',
-            'SHOPWARE_HTTP_DEFAULT_TTL' => '7200',
-            'SHOPWARE_CDN_STRATEGY_DEFAULT' => 'id',
-            'BLUE_GREEN_DEPLOYMENT' => '1',
-            'MAILER_URL' => 'smtp://localhost:25?encryption=&auth_mode=',
-            'COMPOSER_HOME' => $input->getOption('composer-home') ?: $_SERVER['COMPOSER_HOME'] ?: "{$this->projectDir}/var/cache/composer",
+            'APP_ENV' => $input->getOption('app-env'),
+            'APP_URL' => trim($input->getOption('app-url')),
+            'DATABASE_URL' => $input->getOption('database-url'),
+            'SHOPWARE_ES_HOSTS' => $input->getOption('es-hosts'),
+            'SHOPWARE_ES_ENABLED' => $input->getOption('es-enabled'),
+            'SHOPWARE_ES_INDEXING_ENABLED' => $input->getOption('es-indexing-enabled'),
+            'SHOPWARE_ES_INDEX_PREFIX' => $input->getOption('es-index-prefix'),
+            'SHOPWARE_HTTP_CACHE_ENABLED' => $input->getOption('http-cache-enabled'),
+            'SHOPWARE_HTTP_DEFAULT_TTL' => $input->getOption('http-cache-ttl'),
+            'SHOPWARE_CDN_STRATEGY_DEFAULT' => $input->getOption('cdn-strategy'),
+            'BLUE_GREEN_DEPLOYMENT' => $input->getOption('blue-green'),
+            'MAILER_URL' => $input->getOption('mailer-url'),
+            'COMPOSER_HOME' => $input->getOption('composer-home'),
         ];
 
         $io = new SymfonyStyle($input, $output);
@@ -74,29 +79,10 @@ class SystemSetupCommand extends Command
         }
 
         if (!$input->isInteractive()) {
-            $env['APP_ENV'] = $input->getOption('APP_ENV') ?? $_ENV['APP_ENV'] ?? $env['APP_ENV'];
             $this->generateJwt($input, $io);
             $key = Key::createNewRandomKey();
             $env['APP_SECRET'] = $key->saveToAsciiSafeString();
             $env['INSTANCE_ID'] = $this->generateInstanceId();
-            $_ENV['DATABASE_URL'] = $_ENV['DATABASE_URL'] ?? $env['DATABASE_URL'];
-            $_ENV['DATABASE_NAME'] = $_ENV['DATABASE_NAME'] ?? $env['DATABASE_NAME'];
-            $env['DATABASE_URL'] = $input->getOption('DATABASE_URL') ? $this->getDsn($input, $io) . '/' . $input->getOption('DATABASE_NAME') : $_ENV['DATABASE_URL'] . '/' . $_ENV['DATABASE_NAME'];
-
-            $_ENV['APP_URL'] = $_ENV['APP_URL'] ?? $env['APP_URL'];
-            $appUrlOption = $input->getOption('APP_URL');
-            if (\is_string($appUrlOption)) {
-                $env['APP_URL'] = trim($appUrlOption);
-            } else {
-                $env['APP_URL'] = $_ENV['APP_URL'];
-            }
-
-            $_ENV['BLUE_GREEN_DEPLOYMENT'] = $_ENV['BLUE_GREEN_DEPLOYMENT'] ?? $env['BLUE_GREEN_DEPLOYMENT'];
-            if ($input->getOption('BLUE_GREEN_DEPLOYMENT')) {
-                $env['BLUE_GREEN_DEPLOYMENT'] = (int) $input->getOption('BLUE_GREEN_DEPLOYMENT');
-            } else {
-                $env['BLUE_GREEN_DEPLOYMENT'] = $_ENV['BLUE_GREEN_DEPLOYMENT'];
-            }
 
             $this->createEnvFile($input, $io, $env);
 
@@ -104,10 +90,10 @@ class SystemSetupCommand extends Command
         }
 
         $io->section('Application information');
-        $env['APP_ENV'] = $io->choice('Application environment', ['prod', 'dev'], 'prod');
+        $env['APP_ENV'] = $io->choice('Application environment', ['prod', 'dev'], $input->getOption('app-env'));
 
         // TODO: optionally check http connection (create test file in public and request)
-        $env['APP_URL'] = $io->ask('URL to your /public folder', 'http://shopware.local', static function (string $value): string {
+        $env['APP_URL'] = $io->ask('URL to your /public folder', $input->getOption('app-url'), static function (string $value): string {
             $value = trim($value);
 
             if ($value === '') {
@@ -122,7 +108,7 @@ class SystemSetupCommand extends Command
         });
 
         $io->section('Application information');
-        $env['BLUE_GREEN_DEPLOYMENT'] = (int) ($io->choice('Blue Green Deployment', ['yes', 'no'], 'yes') === 'yes');
+        $env['BLUE_GREEN_DEPLOYMENT'] = $io->confirm('Blue Green Deployment') ? '1' : '0';
 
         $io->section('Generate keys and secrets');
 
@@ -163,37 +149,20 @@ class SystemSetupCommand extends Command
             return $value;
         };
 
-        $dsn = $input->getOption('database-url') ? $input->getOption('database-url') : $input->getOption('DATABASE_URL');
-        if (\is_string($dsn)) {
-            $params = parse_url($dsn);
-            if ($params === false) {
-                throw new \RuntimeException('invalid dsn');
-            }
+        $dbUser = $io->ask('Database user', 'app', $emptyValidation);
+        $dbPass = $io->askHidden('Database password');
+        $dbHost = $io->ask('Database host', 'localhost', $emptyValidation);
+        $dbPort = $io->ask('Database port', '3306', $emptyValidation);
+        $dbName = $io->ask('Database name', 'shopware', $emptyValidation);
 
-            $dsnWithoutDb = sprintf(
-                '%s://%s:%s@%s:%s',
-                $params['scheme'],
-                $params['user'],
-                $params['pass'],
-                $params['host'],
-                $params['port']
-            );
-        } else {
-            $dbUser = $io->ask('Database user', 'app', $emptyValidation);
-            $dbPass = $io->askHidden('Database password');
-            $dbHost = $io->ask('Database host', 'localhost', $emptyValidation);
-            $dbPort = $io->ask('Database port', '3306', $emptyValidation);
-            $dbName = $io->ask('Database name', 'shopware', $emptyValidation);
-
-            $dsnWithoutDb = sprintf(
-                'mysql://%s:%s@%s:%d',
-                $dbUser,
-                $dbPass,
-                $dbHost,
-                $dbPort
-            );
-            $dsn = $dsnWithoutDb . '/' . $dbName;
-        }
+        $dsnWithoutDb = sprintf(
+            'mysql://%s:%s@%s:%d',
+            $dbUser,
+            rawurlencode($dbPass),
+            $dbHost,
+            $dbPort
+        );
+        $dsn = $dsnWithoutDb . '/' . $dbName;
 
         if (!$input->getOption('no-check-db-connection')) {
             $io->note('Checking database credentials');
@@ -283,5 +252,10 @@ class SystemSetupCommand extends Command
         }
 
         return $str;
+    }
+
+    private function getDefault(string $var, string $default): string
+    {
+        return (string) ($_SERVER[$var] ?? $default);
     }
 }
