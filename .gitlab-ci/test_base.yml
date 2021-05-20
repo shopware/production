@@ -22,7 +22,7 @@
         DATABASE_URL: mysql://root:root@mysql:3306/sw6
         APP_URL: http://localhost:8000
         INSTANCE_ID: ""
-        MAILER_URL: smtp://localhost:25?encryption=&auth_mode=
+        MAILER_URL: "null://localhost"
         SHOPWARE_CDN_STRATEGY_DEFAULT: id
         BLUE_GREEN_DEPLOYMENT: 1
         SHOPWARE_ES_ENABLED: 1
