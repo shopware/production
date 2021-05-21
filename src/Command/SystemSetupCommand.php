@@ -35,7 +35,7 @@ class SystemSetupCommand extends Command
             ->addOption('database-url', null, InputOption::VALUE_OPTIONAL, 'Database dsn', $this->getDefault('DATABASE_URL', ''))
             ->addOption('generate-jwt-keys', null, InputOption::VALUE_NONE, 'Generate jwt private and public key')
             ->addOption('jwt-passphrase', null, InputOption::VALUE_OPTIONAL, 'JWT private key passphrase', 'shopware')
-            ->addOption('composer-home', null, InputOption::VALUE_REQUIRED, 'Set the composer home directory otherwise the environment variable $COMPOSER_HOME will be used or the project dir as fallback', $this->getDefault('COMPOSER_HOME', "{$this->projectDir}/var/cache/composer"))
+            ->addOption('composer-home', null, InputOption::VALUE_REQUIRED, 'Set the composer home directory otherwise the environment variable $COMPOSER_HOME will be used or the project dir as fallback', $this->getDefault('COMPOSER_HOME', ''))
             ->addOption('app-env', null, InputOption::VALUE_OPTIONAL, 'Application environment', $this->getDefault('APP_ENV', 'prod'))
             ->addOption('app-url', null, InputOption::VALUE_OPTIONAL, 'Application URL', $this->getDefault('APP_URL', 'http://localhost'))
             ->addOption('blue-green', null, InputOption::VALUE_OPTIONAL, 'Blue green deployment', $this->getDefault('BLUE_GREEN_DEPLOYMENT', '1'))
@@ -66,6 +66,10 @@ class SystemSetupCommand extends Command
             'MAILER_URL' => $input->getOption('mailer-url'),
             'COMPOSER_HOME' => $input->getOption('composer-home'),
         ];
+
+        if (empty($env['COMPOSER_HOME'])) {
+            $env['COMPOSER_HOME'] = "{$this->projectDir}/var/cache/composer";
+        }
 
         $io = new SymfonyStyle($input, $output);
 
