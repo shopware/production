@@ -44,7 +44,7 @@ class UpdateApiService
             $escapedParameters[] = $key . '=' . escapeshellarg((string) $value);
         }
         $command = sprintf(
-            'ssh shopware@%s php /var/www/shopware-update-api/bin/console %s %s',
+            'ssh shopware@%s /var/www/shopware-update-api/bin/console %s %s',
             escapeshellarg($this->updateApiHost),
             escapeshellarg($cmd),
             implode(' ', $escapedParameters)
