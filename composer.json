@@ -13,20 +13,20 @@
     "minimum-stability": "stable",
     "scripts": {
         "pre-install-cmd": [
-            "[ ! -f vendor/autoload.php ] || bin/console system:update:prepare"
+            "[ ! -f vendor/autoload.php ] || $PHP_BINARY bin/console system:update:prepare"
         ],
         "pre-update-cmd": [
-            "[ ! -f vendor/autoload.php ] || bin/console system:update:prepare"
+            "[ ! -f vendor/autoload.php ] || $PHP_BINARY bin/console system:update:prepare"
         ],
         "post-install-cmd": [
             "@composer install --working-dir vendor/shopware/recovery --no-interaction --no-scripts",
             "@composer install --working-dir=vendor/shopware/recovery/Common --no-interaction --optimize-autoloader --no-suggest",
-            "[ ! -f install.lock ] || bin/console system:update:finish"
+            "[ ! -f install.lock ] || $PHP_BINARY bin/console system:update:finish"
         ],
         "post-update-cmd": [
             "@composer install --working-dir vendor/shopware/recovery --no-interaction --no-scripts",
             "@composer install --working-dir=vendor/shopware/recovery/Common --no-interaction --optimize-autoloader --no-suggest",
-            "[ ! -f install.lock ] || bin/console system:update:finish"
+            "[ ! -f install.lock ] || $PHP_BINARY bin/console system:update:finish"
         ]
     },
     "autoload": {
