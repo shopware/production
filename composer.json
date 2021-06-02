@@ -5,7 +5,7 @@
     "config": {
         "optimize-autoloader": true,
         "platform": {
-            "php": "7.4.0"
+            "php": "7.4.3"
         },
         "sort-packages": true
     },
@@ -51,7 +51,7 @@
         }
     ],
     "require": {
-        "php": "^7.4 || ^8.0",
+        "php": "^7.4.3 || ^8.0",
         "composer-runtime-api": "^2.0",
         "shopware/administration": "~v6.4.0",
         "shopware/core": "~v6.4.0",
