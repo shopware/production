@@ -66,6 +66,21 @@ Release tags:
         # create tags, push repos/*, update composer.lock with pushed versions, tag prod, push tag, create mr
         - .gitlab-ci/tools/console release:tags $TAG
 
+Clear cache:
+    stage: release
+    image: alpine:3.13
+    when: manual
+    only:
+        refs:
+            - schedules
+        variables:
+            # only run this job if it's protected
+            - $CI_COMMIT_REF_PROTECTED == "true"
+    before_script:
+        - apk --no-cache add curl
+    script:
+        - curl -X DELETE --user "$SHOPWARE_COM_API_AUTH" "$SHOPWARE_COM_API_URL"
+
 Build package:
     stage: build
     only:
