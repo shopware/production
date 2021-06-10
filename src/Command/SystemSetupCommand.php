@@ -12,6 +12,7 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Style\OutputStyle;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -33,6 +34,10 @@ class SystemSetupCommand extends Command
             ->addOption('force', 'f', InputOption::VALUE_NONE, 'Force setup and recreate everything')
             ->addOption('no-check-db-connection', null, InputOption::VALUE_NONE, 'dont check db connection')
             ->addOption('database-url', null, InputOption::VALUE_OPTIONAL, 'Database dsn', $this->getDefault('DATABASE_URL', ''))
+            ->addOption('database-ssl-ca', null, InputOption::VALUE_OPTIONAL, 'Database SSL CA path', $this->getDefault('DATABASE_SSL_CA', ''))
+            ->addOption('database-ssl-cert', null, InputOption::VALUE_OPTIONAL, 'Database SSL Cert path', $this->getDefault('DATABASE_SSL_CERT', ''))
+            ->addOption('database-ssl-key', null, InputOption::VALUE_OPTIONAL, 'Database SSL Key path', $this->getDefault('DATABASE_SSL_KEY', ''))
+            ->addOption('database-ssl-dont-verify-cert', null, InputOption::VALUE_OPTIONAL, 'Database Don\'t verify server cert', $this->getDefault('DATABASE_SSL_DONT_VERIFY_SERVER_CERT', ''))
             ->addOption('generate-jwt-keys', null, InputOption::VALUE_NONE, 'Generate jwt private and public key')
             ->addOption('jwt-passphrase', null, InputOption::VALUE_OPTIONAL, 'JWT private key passphrase', 'shopware')
             ->addOption('composer-home', null, InputOption::VALUE_REQUIRED, 'Set the composer home directory otherwise the environment variable $COMPOSER_HOME will be used or the project dir as fallback', $this->getDefault('COMPOSER_HOME', ''))
@@ -66,6 +71,22 @@ class SystemSetupCommand extends Command
             'MAILER_URL' => $input->getOption('mailer-url'),
             'COMPOSER_HOME' => $input->getOption('composer-home'),
         ];
+
+        if ($ca = $input->getOption('database-ssl-ca')) {
+            $env['DATABASE_SSL_CA'] = $ca;
+        }
+
+        if ($cert = $input->getOption('database-ssl-cert')) {
+            $env['DATABASE_SSL_CERT'] = $cert;
+        }
+
+        if ($certKey = $input->getOption('database-ssl-key')) {
+            $env['DATABASE_SSL_KEY'] = $certKey;
+        }
+
+        if ($input->getOption('database-ssl-dont-verify-cert')) {
+            $env['DATABASE_SSL_DONT_VERIFY_SERVER_CERT'] = '1';
+        }
 
         if (empty($env['COMPOSER_HOME'])) {
             $env['COMPOSER_HOME'] = "{$this->projectDir}/var/cache/composer";
@@ -127,7 +148,7 @@ class SystemSetupCommand extends Command
         do {
             try {
                 $exception = null;
-                $env['DATABASE_URL'] = $this->getDsn($input, $io);
+                $env = array_merge($env, $this->getDsn($input, $io));
             } catch (\Throwable $e) {
                 $exception = $e;
                 $io->error($exception->getMessage());
@@ -143,8 +164,10 @@ class SystemSetupCommand extends Command
         return 0;
     }
 
-    private function getDsn(InputInterface $input, SymfonyStyle $io): string
+    private function getDsn(InputInterface $input, SymfonyStyle $io): array
     {
+        $env = [];
+
         $emptyValidation = static function (string $value): string {
             if (trim($value) === '') {
                 throw new \RuntimeException('This value is required.');
@@ -158,6 +181,10 @@ class SystemSetupCommand extends Command
         $dbHost = $io->ask('Database host', 'localhost', $emptyValidation);
         $dbPort = $io->ask('Database port', '3306', $emptyValidation);
         $dbName = $io->ask('Database name', 'shopware', $emptyValidation);
+        $dbSslCa = $io->ask('Database SSL CA Path', '');
+        $dbSslCert = $io->ask('Database SSL Cert Path', '');
+        $dbSslKey = $io->ask('Database SSL Key Path', '');
+        $dbSslDontVerify = $io->askQuestion(new ConfirmationQuestion('Skip verification of the database server\'s SSL certificate?', false));
 
         $dsnWithoutDb = sprintf(
             'mysql://%s:%s@%s:%d',
@@ -168,14 +195,38 @@ class SystemSetupCommand extends Command
         );
         $dsn = $dsnWithoutDb . '/' . $dbName;
 
+        $params = ['url' => $dsnWithoutDb, 'charset' => 'utf8mb4'];
+
+        if ($dbSslCa) {
+            $params['driverOptions'][\PDO::MYSQL_ATTR_SSL_CA] = $dbSslCa;
+            $env['DATABASE_SSL_CA'] = $dbSslCa;
+        }
+
+        if ($dbSslCert) {
+            $params['driverOptions'][\PDO::MYSQL_ATTR_SSL_CERT] = $dbSslCert;
+            $env['DATABASE_SSL_CERT'] = $dbSslCert;
+        }
+
+        if ($dbSslKey) {
+            $params['driverOptions'][\PDO::MYSQL_ATTR_SSL_KEY] = $dbSslKey;
+            $env['DATABASE_SSL_KEY'] = $dbSslKey;
+        }
+
+        if ($dbSslDontVerify) {
+            $params['driverOptions'][\PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = false;
+            $env['DATABASE_SSL_DONT_VERIFY_SERVER_CERT'] = '1';
+        }
+
         if (!$input->getOption('no-check-db-connection')) {
             $io->note('Checking database credentials');
 
-            $connection = DriverManager::getConnection(['url' => $dsnWithoutDb, 'charset' => 'utf8mb4'], new Configuration());
+            $connection = DriverManager::getConnection($params, new Configuration());
             $connection->executeStatement('SELECT 1');
         }
 
-        return $dsn;
+        $env['DATABASE_URL'] = $dsn;
+
+        return $env;
     }
 
     private function createEnvFile(InputInterface $input, SymfonyStyle $output, array $configuration): void

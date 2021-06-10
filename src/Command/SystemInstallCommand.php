@@ -32,8 +32,7 @@ class SystemInstallCommand extends Command
             ->addOption('drop-database', null, InputOption::VALUE_NONE, 'Drop existing database')
             ->addOption('basic-setup', null, InputOption::VALUE_NONE, 'Create storefront sales channel and admin user')
             ->addOption('force', 'f', InputOption::VALUE_NONE, 'Force install even if install.lock exists')
-            ->addOption('no-assign-theme', null, InputOption::VALUE_NONE, 'Do nmot assign the default theme')
-        ;
+            ->addOption('no-assign-theme', null, InputOption::VALUE_NONE, 'Do not assign the default theme');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -42,7 +41,7 @@ class SystemInstallCommand extends Command
 
         // set default
         $_ENV['BLUE_GREEN_DEPLOYMENT'] = $_SERVER['BLUE_GREEN_DEPLOYMENT']
-               = $_ENV['BLUE_GREEN_DEPLOYMENT']
+            = $_ENV['BLUE_GREEN_DEPLOYMENT']
             ?? $_SERVER['BLUE_GREEN_DEPLOYMENT']
             ?? '1';
         putenv('BLUE_GREEN_DEPLOYMENT=' . $_SERVER['BLUE_GREEN_DEPLOYMENT']);
@@ -82,6 +81,22 @@ class SystemInstallCommand extends Command
             'url' => $dsnWithoutDb,
             'charset' => 'utf8mb4',
         ];
+
+        if (isset($_ENV['DATABASE_SSL_CA'])) {
+            $parameters['driverOptions'][\PDO::MYSQL_ATTR_SSL_CA] = $_ENV['DATABASE_SSL_CA'];
+        }
+
+        if (isset($_ENV['DATABASE_SSL_CERT'])) {
+            $parameters['driverOptions'][\PDO::MYSQL_ATTR_SSL_CERT] = $_ENV['DATABASE_SSL_CERT'];
+        }
+
+        if (isset($_ENV['DATABASE_SSL_KEY'])) {
+            $parameters['driverOptions'][\PDO::MYSQL_ATTR_SSL_KEY] = $_ENV['DATABASE_SSL_KEY'];
+        }
+
+        if (isset($_ENV['DATABASE_SSL_DONT_VERIFY_SERVER_CERT'])) {
+            $parameters['driverOptions'][\PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = false;
+        }
 
         $connection = DriverManager::getConnection($parameters, new Configuration());
 
