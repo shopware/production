@@ -1,5 +1,5 @@
 #!/usr/bin/env php
-<?php declare(strict_types=1);
+<?php
 
 use Composer\InstalledVersions;
 use Shopware\Core\Framework\Plugin\KernelPluginLoader\DbalKernelPluginLoader;
@@ -8,63 +8,56 @@ use Shopware\Production\HttpKernel;
 use Shopware\Production\Kernel;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArgvInput;
-use Symfony\Component\Dotenv\Dotenv;
-use Symfony\Component\ErrorHandler\Debug;
-
-if (\PHP_VERSION_ID < 70400) {
-    echo 'Your cli is running PHP version ' . \PHP_VERSION . ' but Shopware 6 requires at least PHP 7.4.0' . \PHP_EOL;
-    exit(1);
-}
-
-set_time_limit(0);
-
-$classLoader = require __DIR__ . '/../vendor/autoload.php';
-
-if (!class_exists(Application::class)) {
-    throw new RuntimeException('You need to add "symfony/framework-bundle" as a Composer dependency.');
-}
 
 $envFile = __DIR__ . '/../.env';
 
-if (class_exists(Dotenv::class) && is_readable($envFile) && !is_dir($envFile)) {
-    (new Dotenv())->usePutenv()->load($envFile);
+if (!file_exists(__DIR__ . '/../.env')) {
+    $_SERVER['APP_RUNTIME_OPTIONS']['disable_dotenv'] = true;
 }
 
-if (!isset($_SERVER['PROJECT_ROOT'])) {
-    $_SERVER['PROJECT_ROOT'] = dirname(__DIR__);
-}
+require_once __DIR__ . '/../vendor/autoload_runtime.php';
 
-$input = new ArgvInput();
-$env = $input->getParameterOption(['--env', '-e'], $_SERVER['APP_ENV'] ?? 'prod', true);
-$debug = ($_SERVER['APP_DEBUG'] ?? ($env !== 'prod')) && !$input->hasParameterOption('--no-debug', true);
-
-if ($debug) {
-    umask(0000);
-
-    if (class_exists(Debug::class)) {
-        Debug::enable();
+return function (array $context) {
+    if (\PHP_VERSION_ID < 70400) {
+        echo 'Your cli is running PHP version ' . \PHP_VERSION . ' but Shopware 6 requires at least PHP 7.4.0' . \PHP_EOL;
+        exit(1);
     }
-}
 
-$pluginLoader = new StaticKernelPluginLoader($classLoader, null);
+    set_time_limit(0);
 
-$shopwareVersion = InstalledVersions::getVersion('shopware/core') . '@' . InstalledVersions::getReference('shopware/core');
+    $classLoader = require __DIR__ . '/../vendor/autoload.php';
 
-if ($input->getFirstArgument() === 'system:install') {
-    $_SERVER['INSTALL'] = true;
-}
-
-if (trim($_SERVER['DATABASE_URL'] ?? '') === '') {
-    // fake DATABASE_URL
-    $_SERVER['DATABASE_URL'] = Kernel::PLACEHOLDER_DATABASE_URL;
-} else {
-    if (!isset($_SERVER['INSTALL'])) {
-        $pluginLoader = new DbalKernelPluginLoader($classLoader, null, \Shopware\Core\Kernel::getConnection());
+    if (!class_exists(Application::class)) {
+        throw new RuntimeException('You need to add "symfony/framework-bundle" as a Composer dependency.');
     }
-}
 
-$kernel = new HttpKernel($env, $debug, $classLoader);
-$kernel->setPluginLoader($pluginLoader);
+    if (!isset($context['PROJECT_ROOT'])) {
+        $context['PROJECT_ROOT'] = dirname(__DIR__);
+    }
 
-$application = new Application($kernel->getKernel());
-$application->run($input);
+    $input = new ArgvInput();
+    $env = $input->getParameterOption(['--env', '-e'], $context['APP_ENV'] ?? 'prod', true);
+    $debug = ($context['APP_DEBUG'] ?? ($env !== 'prod')) && !$input->hasParameterOption('--no-debug', true);
+
+    $pluginLoader = new StaticKernelPluginLoader($classLoader, null);
+
+    $shopwareVersion = InstalledVersions::getVersion('shopware/core') . '@' . InstalledVersions::getReference('shopware/core');
+
+    if ($input->getFirstArgument() === 'system:install') {
+        $context['INSTALL'] = true;
+    }
+
+    if (trim($context['DATABASE_URL'] ?? '') === '') {
+        // fake DATABASE_URL
+        putenv('DATABASE_URL=' . Kernel::PLACEHOLDER_DATABASE_URL);
+    } else {
+        if (!isset($context['INSTALL'])) {
+            $pluginLoader = new DbalKernelPluginLoader($classLoader, null, \Shopware\Core\Kernel::getConnection());
+        }
+    }
+
+    $kernel = new HttpKernel($env, $debug, $classLoader);
+    $kernel->setPluginLoader($pluginLoader);
+
+    return new Application($kernel->getKernel());
+};
