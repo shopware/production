@@ -378,5 +378,6 @@ Finalize Percy Build:
         - export PERCY_BUILD_NAME=$CI_PIPELINE_ID
         - export PERCY_PARALLEL_NONCE=$PERCY_BUILD_NAME
         - export PERCY_PARALLEL_TOTAL=-1
-        - npx percy finalize --all
+        - npm install -g percy --unsafe-perm=true
+        - percy finalize --all
 
