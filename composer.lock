@@ -2088,16 +2088,16 @@
         },
         {
             "name": "firebase/php-jwt",
-            "version": "v5.3.0",
+            "version": "v5.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/firebase/php-jwt.git",
-                "reference": "3c2d70f2e64e2922345e89f2ceae47d2463faae1"
+                "reference": "d2113d9b2e0e349796e72d2a63cf9319100382d2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/firebase/php-jwt/zipball/3c2d70f2e64e2922345e89f2ceae47d2463faae1",
-                "reference": "3c2d70f2e64e2922345e89f2ceae47d2463faae1",
+                "url": "https://api.github.com/repos/firebase/php-jwt/zipball/d2113d9b2e0e349796e72d2a63cf9319100382d2",
+                "reference": "d2113d9b2e0e349796e72d2a63cf9319100382d2",
                 "shasum": ""
             },
             "require": {
@@ -2105,6 +2105,9 @@
             },
             "require-dev": {
                 "phpunit/phpunit": ">=4.8 <=9"
+            },
+            "suggest": {
+                "paragonie/sodium_compat": "Support EdDSA (Ed25519) signatures when libsodium is not present"
             },
             "type": "library",
             "autoload": {
@@ -2136,9 +2139,9 @@
             ],
             "support": {
                 "issues": "https://github.com/firebase/php-jwt/issues",
-                "source": "https://github.com/firebase/php-jwt/tree/v5.3.0"
+                "source": "https://github.com/firebase/php-jwt/tree/v5.4.0"
             },
-            "time": "2021-05-20T17:37:02+00:00"
+            "time": "2021-06-23T19:00:23+00:00"
         },
         {
             "name": "friendsofphp/proxy-manager-lts",
@@ -2224,16 +2227,16 @@
         },
         {
             "name": "google/auth",
-            "version": "v1.15.1",
+            "version": "v1.16.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/googleapis/google-auth-library-php.git",
-                "reference": "4e0c9367719df9703e96f5ad613041b87742471c"
+                "reference": "c747738d2dd450f541f09f26510198fbedd1c8a0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/googleapis/google-auth-library-php/zipball/4e0c9367719df9703e96f5ad613041b87742471c",
-                "reference": "4e0c9367719df9703e96f5ad613041b87742471c",
+                "url": "https://api.github.com/repos/googleapis/google-auth-library-php/zipball/c747738d2dd450f541f09f26510198fbedd1c8a0",
+                "reference": "c747738d2dd450f541f09f26510198fbedd1c8a0",
                 "shasum": ""
             },
             "require": {
@@ -2241,7 +2244,7 @@
                 "guzzlehttp/guzzle": "^5.3.1|^6.2.1|^7.0",
                 "guzzlehttp/psr7": "^1.2",
                 "php": ">=5.4",
-                "psr/cache": "^1.0",
+                "psr/cache": "^1.0|^2.0",
                 "psr/http-message": "^1.0"
             },
             "require-dev": {
@@ -2275,9 +2278,9 @@
             "support": {
                 "docs": "https://googleapis.github.io/google-auth-library-php/master/",
                 "issues": "https://github.com/googleapis/google-auth-library-php/issues",
-                "source": "https://github.com/googleapis/google-auth-library-php/tree/v1.15.1"
+                "source": "https://github.com/googleapis/google-auth-library-php/tree/v1.16.0"
             },
-            "time": "2021-04-21T17:42:05+00:00"
+            "time": "2021-06-22T18:06:03+00:00"
         },
         {
             "name": "google/cloud-core",
@@ -3058,31 +3061,31 @@
         },
         {
             "name": "league/flysystem",
-            "version": "1.0.63",
+            "version": "1.1.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/flysystem.git",
-                "reference": "8132daec326565036bc8e8d1876f77ec183a7bd6"
+                "reference": "f3ad69181b8afed2c9edf7be5a2918144ff4ea32"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/8132daec326565036bc8e8d1876f77ec183a7bd6",
-                "reference": "8132daec326565036bc8e8d1876f77ec183a7bd6",
+                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/f3ad69181b8afed2c9edf7be5a2918144ff4ea32",
+                "reference": "f3ad69181b8afed2c9edf7be5a2918144ff4ea32",
                 "shasum": ""
             },
             "require": {
                 "ext-fileinfo": "*",
-                "php": ">=5.5.9"
+                "league/mime-type-detection": "^1.3",
+                "php": "^7.2.5 || ^8.0"
             },
             "conflict": {
                 "league/flysystem-sftp": "<1.0.6"
             },
             "require-dev": {
-                "phpspec/phpspec": "^3.4",
-                "phpunit/phpunit": "^5.7.10"
+                "phpspec/prophecy": "^1.11.1",
+                "phpunit/phpunit": "^8.5.8"
             },
             "suggest": {
-                "ext-fileinfo": "Required for MimeType",
                 "ext-ftp": "Allows you to use FTP server storage",
                 "ext-openssl": "Allows you to use FTPS server storage",
                 "league/flysystem-aws-s3-v2": "Allows you to use S3 storage with AWS SDK v2",
@@ -3140,26 +3143,32 @@
             ],
             "support": {
                 "issues": "https://github.com/thephpleague/flysystem/issues",
-                "source": "https://github.com/thephpleague/flysystem/tree/master"
+                "source": "https://github.com/thephpleague/flysystem/tree/1.1.4"
             },
-            "time": "2020-01-04T16:30:31+00:00"
+            "funding": [
+                {
+                    "url": "https://offset.earth/frankdejonge",
+                    "type": "other"
+                }
+            ],
+            "time": "2021-06-23T21:56:05+00:00"
         },
         {
             "name": "league/flysystem-aws-s3-v3",
-            "version": "1.0.23",
+            "version": "1.0.29",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/flysystem-aws-s3-v3.git",
-                "reference": "15b0cdeab7240bf8e8bffa85ae5275bbc3692bf4"
+                "reference": "4e25cc0582a36a786c31115e419c6e40498f6972"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/flysystem-aws-s3-v3/zipball/15b0cdeab7240bf8e8bffa85ae5275bbc3692bf4",
-                "reference": "15b0cdeab7240bf8e8bffa85ae5275bbc3692bf4",
+                "url": "https://api.github.com/repos/thephpleague/flysystem-aws-s3-v3/zipball/4e25cc0582a36a786c31115e419c6e40498f6972",
+                "reference": "4e25cc0582a36a786c31115e419c6e40498f6972",
                 "shasum": ""
             },
             "require": {
-                "aws/aws-sdk-php": "^3.0.0",
+                "aws/aws-sdk-php": "^3.20.0",
                 "league/flysystem": "^1.0.40",
                 "php": ">=5.5.0"
             },
@@ -3191,9 +3200,65 @@
             "description": "Flysystem adapter for the AWS S3 SDK v3.x",
             "support": {
                 "issues": "https://github.com/thephpleague/flysystem-aws-s3-v3/issues",
-                "source": "https://github.com/thephpleague/flysystem-aws-s3-v3/tree/master"
+                "source": "https://github.com/thephpleague/flysystem-aws-s3-v3/tree/1.0.29"
             },
-            "time": "2019-06-05T17:18:29+00:00"
+            "time": "2020-10-08T18:58:37+00:00"
+        },
+        {
+            "name": "league/mime-type-detection",
+            "version": "1.7.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/thephpleague/mime-type-detection.git",
+                "reference": "3b9dff8aaf7323590c1d2e443db701eb1f9aa0d3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/thephpleague/mime-type-detection/zipball/3b9dff8aaf7323590c1d2e443db701eb1f9aa0d3",
+                "reference": "3b9dff8aaf7323590c1d2e443db701eb1f9aa0d3",
+                "shasum": ""
+            },
+            "require": {
+                "ext-fileinfo": "*",
+                "php": "^7.2 || ^8.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^2.18",
+                "phpstan/phpstan": "^0.12.68",
+                "phpunit/phpunit": "^8.5.8 || ^9.3"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "League\\MimeTypeDetection\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Frank de Jonge",
+                    "email": "info@frankdejonge.nl"
+                }
+            ],
+            "description": "Mime-type detection for Flysystem",
+            "support": {
+                "issues": "https://github.com/thephpleague/mime-type-detection/issues",
+                "source": "https://github.com/thephpleague/mime-type-detection/tree/1.7.0"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/frankdejonge",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/league/flysystem",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2021-01-18T20:58:21+00:00"
         },
         {
             "name": "league/oauth2-server",
@@ -4840,20 +4905,20 @@
         },
         {
             "name": "shopware/administration",
-            "version": "6.4.1.1",
+            "version": "6.4.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/administration.git",
-                "reference": "0bb199a86e4c40f6aba8104dbc9d88bf68d3e0cf"
+                "reference": "b7b2aba2dd7fd2b249fe14e65154c301d6b96d3c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/administration/zipball/0bb199a86e4c40f6aba8104dbc9d88bf68d3e0cf",
-                "reference": "0bb199a86e4c40f6aba8104dbc9d88bf68d3e0cf",
+                "url": "https://api.github.com/repos/shopware/administration/zipball/b7b2aba2dd7fd2b249fe14e65154c301d6b96d3c",
+                "reference": "b7b2aba2dd7fd2b249fe14e65154c301d6b96d3c",
                 "shasum": ""
             },
             "require": {
-                "shopware/core": "v6.4.1.1",
+                "shopware/core": "v6.4.1.2",
                 "symfony/framework-bundle": "~5.2.3",
                 "symfony/http-foundation": "~5.2.3",
                 "symfony/mime": "~5.2.3",
@@ -4877,22 +4942,22 @@
             ],
             "description": "Administration frontend for the Shopware Core",
             "support": {
-                "source": "https://github.com/shopware/administration/tree/v6.4.1.1"
+                "source": "https://github.com/shopware/administration/tree/v6.4.1.2"
             },
-            "time": "2021-06-21T06:39:35+00:00"
+            "time": "2021-06-25T01:09:28+00:00"
         },
         {
             "name": "shopware/core",
-            "version": "6.4.1.1",
+            "version": "6.4.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/core.git",
-                "reference": "9c5e879f55ec6450f9a6b8fb9c4c54dc13330033"
+                "reference": "8a1e9bdf79c612965b2dc6fbe5473f31be853bc6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/core/zipball/9c5e879f55ec6450f9a6b8fb9c4c54dc13330033",
-                "reference": "9c5e879f55ec6450f9a6b8fb9c4c54dc13330033",
+                "url": "https://api.github.com/repos/shopware/core/zipball/8a1e9bdf79c612965b2dc6fbe5473f31be853bc6",
+                "reference": "8a1e9bdf79c612965b2dc6fbe5473f31be853bc6",
                 "shasum": ""
             },
             "require": {
@@ -4926,8 +4991,8 @@
                 "guzzlehttp/guzzle": "~7.2",
                 "jdorn/sql-formatter": "1.2.17",
                 "lcobucci/jwt": "4.1.4",
-                "league/flysystem": "1.0.63",
-                "league/flysystem-aws-s3-v3": "1.0.23",
+                "league/flysystem": "~1.1.4",
+                "league/flysystem-aws-s3-v3": "~1.0.29",
                 "league/oauth2-server": "8.2.4",
                 "marc1706/fast-image-size": "1.1.6",
                 "nyholm/psr7": "1.2.1",
@@ -5038,22 +5103,22 @@
                 "shopware"
             ],
             "support": {
-                "source": "https://github.com/shopware/core/tree/v6.4.1.1"
+                "source": "https://github.com/shopware/core/tree/v6.4.1.2"
             },
-            "time": "2021-06-21T06:39:35+00:00"
+            "time": "2021-06-25T01:09:27+00:00"
         },
         {
             "name": "shopware/elasticsearch",
-            "version": "6.4.1.1",
+            "version": "6.4.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/elasticsearch.git",
-                "reference": "eb5fbc79cdc0e8fb1234a2caff9e4adc665be87d"
+                "reference": "d0ea614723bbed8aa3a0c694e3c9a1963835bf5f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/elasticsearch/zipball/eb5fbc79cdc0e8fb1234a2caff9e4adc665be87d",
-                "reference": "eb5fbc79cdc0e8fb1234a2caff9e4adc665be87d",
+                "url": "https://api.github.com/repos/shopware/elasticsearch/zipball/d0ea614723bbed8aa3a0c694e3c9a1963835bf5f",
+                "reference": "d0ea614723bbed8aa3a0c694e3c9a1963835bf5f",
                 "shasum": ""
             },
             "require": {
@@ -5061,7 +5126,7 @@
                 "elasticsearch/elasticsearch": "7.11.0",
                 "ext-curl": "*",
                 "ongr/elasticsearch-dsl": "7.2.1",
-                "shopware/core": "v6.4.1.1",
+                "shopware/core": "v6.4.1.2",
                 "symfony/http-foundation": "~5.2.3",
                 "symfony/messenger": "~5.2.3"
             },
@@ -5089,27 +5154,27 @@
             ],
             "description": "Elasticsearch for Shopware",
             "support": {
-                "source": "https://github.com/shopware/elasticsearch/tree/v6.4.1.1"
+                "source": "https://github.com/shopware/elasticsearch/tree/v6.4.1.2"
             },
-            "time": "2021-06-21T06:39:35+00:00"
+            "time": "2021-06-25T01:09:27+00:00"
         },
         {
             "name": "shopware/recovery",
-            "version": "6.4.1.1",
+            "version": "6.4.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/recovery.git",
-                "reference": "ee6a341bafbc00ed558c5083ca08f55f20ba74b1"
+                "reference": "fd4454f46ca4d5b57b0d09ed41dd91f282e85b2c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/recovery/zipball/ee6a341bafbc00ed558c5083ca08f55f20ba74b1",
-                "reference": "ee6a341bafbc00ed558c5083ca08f55f20ba74b1",
+                "url": "https://api.github.com/repos/shopware/recovery/zipball/fd4454f46ca4d5b57b0d09ed41dd91f282e85b2c",
+                "reference": "fd4454f46ca4d5b57b0d09ed41dd91f282e85b2c",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.4 || ^8.0",
-                "shopware/core": "v6.4.1.1"
+                "shopware/core": "v6.4.1.2"
             },
             "require-dev": {
                 "phpunit/phpunit": "^9.5"
@@ -5127,22 +5192,22 @@
             ],
             "description": "Recovery for Shopware",
             "support": {
-                "source": "https://github.com/shopware/recovery/tree/v6.4.1.1"
+                "source": "https://github.com/shopware/recovery/tree/v6.4.1.2"
             },
-            "time": "2021-06-21T06:39:35+00:00"
+            "time": "2021-06-25T01:09:27+00:00"
         },
         {
             "name": "shopware/storefront",
-            "version": "6.4.1.1",
+            "version": "6.4.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/storefront.git",
-                "reference": "27f0540f029e665c0d31b127409eb34340f5e9ac"
+                "reference": "f21c5806d1e7d166f7af3e98c251b0989aa44366"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/storefront/zipball/27f0540f029e665c0d31b127409eb34340f5e9ac",
-                "reference": "27f0540f029e665c0d31b127409eb34340f5e9ac",
+                "url": "https://api.github.com/repos/shopware/storefront/zipball/f21c5806d1e7d166f7af3e98c251b0989aa44366",
+                "reference": "f21c5806d1e7d166f7af3e98c251b0989aa44366",
                 "shasum": ""
             },
             "require": {
@@ -5151,7 +5216,7 @@
                 "ezyang/htmlpurifier": "4.13.0",
                 "padaliyajay/php-autoprefixer": "1.3",
                 "scssphp/scssphp": "1.0.6",
-                "shopware/core": "v6.4.1.1",
+                "shopware/core": "v6.4.1.2",
                 "symfony/cache": "~5.2.3",
                 "symfony/cache-contracts": "2.2.0",
                 "symfony/config": "~5.2.3",
@@ -5197,9 +5262,9 @@
             ],
             "description": "Storefront for Shopware",
             "support": {
-                "source": "https://github.com/shopware/storefront/tree/v6.4.1.1"
+                "source": "https://github.com/shopware/storefront/tree/v6.4.1.2"
             },
-            "time": "2021-06-21T06:39:36+00:00"
+            "time": "2021-06-25T01:09:28+00:00"
         },
         {
             "name": "sroze/messenger-enqueue-transport",
@@ -11570,16 +11635,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "9.5.5",
+            "version": "9.5.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "89ff45ea9d70e35522fb6654a2ebc221158de276"
+                "reference": "fb9b8333f14e3dce976a60ef6a7e05c7c7ed8bfb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/89ff45ea9d70e35522fb6654a2ebc221158de276",
-                "reference": "89ff45ea9d70e35522fb6654a2ebc221158de276",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/fb9b8333f14e3dce976a60ef6a7e05c7c7ed8bfb",
+                "reference": "fb9b8333f14e3dce976a60ef6a7e05c7c7ed8bfb",
                 "shasum": ""
             },
             "require": {
@@ -11609,7 +11674,7 @@
                 "sebastian/global-state": "^5.0.1",
                 "sebastian/object-enumerator": "^4.0.3",
                 "sebastian/resource-operations": "^3.0.3",
-                "sebastian/type": "^2.3.2",
+                "sebastian/type": "^2.3.4",
                 "sebastian/version": "^3.0.2"
             },
             "require-dev": {
@@ -11657,7 +11722,7 @@
             ],
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/9.5.5"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/9.5.6"
             },
             "funding": [
                 {
@@ -11669,7 +11734,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2021-06-05T04:49:07+00:00"
+            "time": "2021-06-23T05:14:38+00:00"
         },
         {
             "name": "sebastian/cli-parser",
@@ -12524,7 +12589,6 @@
                     "type": "github"
                 }
             ],
-            "abandoned": true,
             "time": "2020-09-28T06:45:17+00:00"
         },
         {
