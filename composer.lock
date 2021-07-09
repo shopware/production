@@ -5273,21 +5273,21 @@
         },
         {
             "name": "shopware/administration",
-            "version": "6.4.2.0",
+            "version": "6.4.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/administration.git",
-                "reference": "76ce999acde990137346c99c56eec7e0502b2ee5"
+                "reference": "9fbb58ba4e75b789261ff46a7ded0a9b8c12cdfd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/administration/zipball/76ce999acde990137346c99c56eec7e0502b2ee5",
-                "reference": "76ce999acde990137346c99c56eec7e0502b2ee5",
+                "url": "https://api.github.com/repos/shopware/administration/zipball/9fbb58ba4e75b789261ff46a7ded0a9b8c12cdfd",
+                "reference": "9fbb58ba4e75b789261ff46a7ded0a9b8c12cdfd",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.4.3 || ^8.0",
-                "shopware/core": "v6.4.2.0",
+                "shopware/core": "v6.4.2.1",
                 "symfony/framework-bundle": "~5.2.3",
                 "symfony/http-foundation": "~5.2.3",
                 "symfony/mime": "~5.2.3",
@@ -5311,22 +5311,22 @@
             ],
             "description": "Administration frontend for the Shopware Core",
             "support": {
-                "source": "https://github.com/shopware/administration/tree/v6.4.2.0"
+                "source": "https://github.com/shopware/administration/tree/v6.4.2.1"
             },
-            "time": "2021-07-07T06:35:56+00:00"
+            "time": "2021-07-08T12:07:44+00:00"
         },
         {
             "name": "shopware/core",
-            "version": "6.4.2.0",
+            "version": "6.4.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/core.git",
-                "reference": "4bc60074095b509cbaec777e453b070a95567c3e"
+                "reference": "42c4937398d365c3b03dd8a5e6d64454202c3b46"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/core/zipball/4bc60074095b509cbaec777e453b070a95567c3e",
-                "reference": "4bc60074095b509cbaec777e453b070a95567c3e",
+                "url": "https://api.github.com/repos/shopware/core/zipball/42c4937398d365c3b03dd8a5e6d64454202c3b46",
+                "reference": "42c4937398d365c3b03dd8a5e6d64454202c3b46",
                 "shasum": ""
             },
             "require": {
@@ -5472,22 +5472,22 @@
                 "shopware"
             ],
             "support": {
-                "source": "https://github.com/shopware/core/tree/v6.4.2.0"
+                "source": "https://github.com/shopware/core/tree/v6.4.2.1"
             },
-            "time": "2021-07-07T06:35:55+00:00"
+            "time": "2021-07-08T12:07:43+00:00"
         },
         {
             "name": "shopware/elasticsearch",
-            "version": "6.4.2.0",
+            "version": "6.4.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/elasticsearch.git",
-                "reference": "18ce055f90866e4bd662ca8c20b5289bd408ead5"
+                "reference": "c55a30d141bfa15f6dd2afdf5d4c706358b5c9a3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/elasticsearch/zipball/18ce055f90866e4bd662ca8c20b5289bd408ead5",
-                "reference": "18ce055f90866e4bd662ca8c20b5289bd408ead5",
+                "url": "https://api.github.com/repos/shopware/elasticsearch/zipball/c55a30d141bfa15f6dd2afdf5d4c706358b5c9a3",
+                "reference": "c55a30d141bfa15f6dd2afdf5d4c706358b5c9a3",
                 "shasum": ""
             },
             "require": {
@@ -5496,7 +5496,7 @@
                 "ext-curl": "*",
                 "ongr/elasticsearch-dsl": "7.2.1",
                 "php": "^7.4.3 || ^8.0",
-                "shopware/core": "v6.4.2.0",
+                "shopware/core": "v6.4.2.1",
                 "symfony/http-foundation": "~5.2.3",
                 "symfony/messenger": "~5.2.3"
             },
@@ -5524,27 +5524,27 @@
             ],
             "description": "Elasticsearch for Shopware",
             "support": {
-                "source": "https://github.com/shopware/elasticsearch/tree/v6.4.2.0"
+                "source": "https://github.com/shopware/elasticsearch/tree/v6.4.2.1"
             },
-            "time": "2021-07-07T06:35:55+00:00"
+            "time": "2021-07-08T12:07:44+00:00"
         },
         {
             "name": "shopware/recovery",
-            "version": "6.4.2.0",
+            "version": "6.4.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/recovery.git",
-                "reference": "5a6613d86df81c5e7bb01a01dc4e750e87d13200"
+                "reference": "21d648f0fe5d35447652322a3968c3a3cf5895c9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/recovery/zipball/5a6613d86df81c5e7bb01a01dc4e750e87d13200",
-                "reference": "5a6613d86df81c5e7bb01a01dc4e750e87d13200",
+                "url": "https://api.github.com/repos/shopware/recovery/zipball/21d648f0fe5d35447652322a3968c3a3cf5895c9",
+                "reference": "21d648f0fe5d35447652322a3968c3a3cf5895c9",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.4.3 || ^8.0",
-                "shopware/core": "v6.4.2.0"
+                "shopware/core": "v6.4.2.1"
             },
             "require-dev": {
                 "phpunit/phpunit": "^9.5"
@@ -5562,22 +5562,22 @@
             ],
             "description": "Recovery for Shopware",
             "support": {
-                "source": "https://github.com/shopware/recovery/tree/v6.4.2.0"
+                "source": "https://github.com/shopware/recovery/tree/v6.4.2.1"
             },
-            "time": "2021-07-07T06:35:55+00:00"
+            "time": "2021-07-08T12:07:43+00:00"
         },
         {
             "name": "shopware/storefront",
-            "version": "6.4.2.0",
+            "version": "6.4.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/storefront.git",
-                "reference": "6129f9a0378533a79f6b05bb4662545ad2bcf309"
+                "reference": "ced0b4c17b23c1437c0b56cbdc514126272170b0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/storefront/zipball/6129f9a0378533a79f6b05bb4662545ad2bcf309",
-                "reference": "6129f9a0378533a79f6b05bb4662545ad2bcf309",
+                "url": "https://api.github.com/repos/shopware/storefront/zipball/ced0b4c17b23c1437c0b56cbdc514126272170b0",
+                "reference": "ced0b4c17b23c1437c0b56cbdc514126272170b0",
                 "shasum": ""
             },
             "require": {
@@ -5587,7 +5587,7 @@
                 "padaliyajay/php-autoprefixer": "1.3",
                 "php": "^7.4.3 || ^8.0",
                 "scssphp/scssphp": "1.0.6",
-                "shopware/core": "v6.4.2.0",
+                "shopware/core": "v6.4.2.1",
                 "symfony/cache": "~5.2.3",
                 "symfony/cache-contracts": "2.2.0",
                 "symfony/config": "~5.2.3",
@@ -5633,9 +5633,9 @@
             ],
             "description": "Storefront for Shopware",
             "support": {
-                "source": "https://github.com/shopware/storefront/tree/v6.4.2.0"
+                "source": "https://github.com/shopware/storefront/tree/v6.4.2.1"
             },
-            "time": "2021-07-07T06:35:57+00:00"
+            "time": "2021-07-08T12:07:45+00:00"
         },
         {
             "name": "sroze/messenger-enqueue-transport",
