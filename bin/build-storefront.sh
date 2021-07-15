@@ -8,28 +8,27 @@ STOREFRONT_ROOT="${STOREFRONT_ROOT:-"${PROJECT_ROOT}/vendor/shopware/storefront"
 # build storefront
 [[ ${CI} ]] || "${CWD}/console" bundle:dump
 
-if [[ `command -v jq` ]]; then
+if [[ $(command -v jq) ]]; then
     OLDPWD=$(pwd)
-    cd $PROJECT_ROOT
+    cd "$PROJECT_ROOT" || exit
 
-    jq -c '.[]' "var/plugins.json" | while read config; do
-        srcPath=$(echo $config | jq -r '(.basePath + .storefront.path)')
+    jq -c '.[]' "var/plugins.json" | while read -r config; do
+        srcPath=$(echo "$config" | jq -r '(.basePath + .storefront.path)')
 
         # the package.json files are always one upper
-        path=$(dirname $srcPath)
-        name=$(echo $config | jq -r '.technicalName' )
+        path=$(dirname "$srcPath")
+        name=$(echo "$config" | jq -r '.technicalName' )
 
-        if [[ -f "$packageJsonPath/package.json" && ! -f "$packageJsonPath/node_modules" && $name != "storefront" ]]; then
+        if [[ -f "$path/package.json" && ! -f "$path/node_modules" && $name != "storefront" ]]; then
             echo "=> Installing npm dependencies for ${name}"
 
-            npm install --prefix "$packageJsonPath"
+            npm install --prefix "$path"
         fi
     done
-    cd "$OLDPWD"
+    cd "$OLDPWD" || exit
 else
     echo "Cannot check extensions for required npm installations as jq is not installed"
 fi
-
 
 npm --prefix "${STOREFRONT_ROOT}"/Resources/app/storefront clean-install
 node "${STOREFRONT_ROOT}"/Resources/app/storefront/copy-to-vendor.js

@@ -10,16 +10,16 @@ ADMIN_ROOT="${ADMIN_ROOT:-"${PROJECT_ROOT}/vendor/shopware/administration"}"
 # build admin
 [[ ${CI} ]] || "${CWD}/console" bundle:dump
 
-if [[ `command -v jq` ]]; then
+if [[ $(command -v jq) ]]; then
     OLDPWD=$(pwd)
-    cd $PROJECT_ROOT
+    cd "$PROJECT_ROOT" || exit
 
-    jq -c '.[]' "var/plugins.json" | while read config; do
-        srcPath=$(echo $config | jq -r '(.basePath + .administration.path)')
+    jq -c '.[]' "var/plugins.json" | while read -r config; do
+        srcPath=$(echo "$config" | jq -r '(.basePath + .administration.path)')
 
         # the package.json files are always one upper
-        path=$(dirname $srcPath)
-        name=$(echo $config | jq -r '.technicalName' )
+        path=$(dirname "$srcPath")
+        name=$(echo "$config" | jq -r '.technicalName' )
 
         if [[ -f "$path/package.json" && ! -f "$path/node_modules" && $name != "administration" ]]; then
             echo "=> Installing npm dependencies for ${name}"
@@ -27,7 +27,7 @@ if [[ `command -v jq` ]]; then
             npm install --prefix "$path"
         fi
     done
-    cd "$OLDPWD"
+    cd "$OLDPWD" || exit
 else
     echo "Cannot check extensions for required npm installations as jq is not installed"
 fi
