@@ -39,7 +39,7 @@ services:
       - MYSQL_ROOT_PASSWORD=root
 
   elasticsearch:
-    image: elastic/elasticsearch:7.1.1
+    image: elastic/elasticsearch:7.8.0
     environment:
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
       - discovery.type=single-node

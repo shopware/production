@@ -8,7 +8,7 @@
     services:
         -   name: mariadb:10.3
             alias: mysql
-        -   name: elastic/elasticsearch:7.1.1
+        -   name: elastic/elasticsearch:7.8.0
             alias: elasticsearch
             command: [ "bin/elasticsearch", "-Expack.security.enabled=false", "-Ediscovery.type=single-node" ]
 
@@ -73,7 +73,7 @@
     services:
         -   name: mysql:5.7
             alias: mysql
-        -   name: elastic/elasticsearch:7.1.1
+        -   name: elastic/elasticsearch:7.8.0
             alias: elasticsearch
             command: [ "bin/elasticsearch", "-Expack.security.enabled=false", "-Ediscovery.type=single-node" ]
     cache:
