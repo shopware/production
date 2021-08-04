@@ -30,7 +30,7 @@ See also: https://www.shopware.com/en/news/shopware-6-versioning-strategy/
 
 ## Requirements
 
-See [https://docs.shopware.com/en/shopware-platform-dev-en/getting-started/requirements](https://docs.shopware.com/en/shopware-platform-dev-en/getting-started/requirements)
+See [https://developer.shopware.com/docs/guides/installation/overview#prerequisites](https://developer.shopware.com/docs/guides/installation/overview#prerequisites)
 
 NPM and Node are only required during the build process and for development. If you don't have javascript customizations it's not required at all because the storefront and admin are prebuilt.
 
