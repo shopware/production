@@ -95,6 +95,9 @@ Build package:
             alias: docker
     variables:
         GIT_STRATEGY: none
+        SHOPWARE_SKIP_BUNDLE_DUMP: 1
+        SHOPWARE_SKIP_ASSET_COPY: 1
+        SHOPWARE_SKIP_THEME_COMPILE: 1
     before_script:
         - apk --no-cache add git bash jq composer npm openssh-client php-ctype php-curl php-dom php-fileinfo php-gd php-iconv php-intl php-json php-mbstring php-pdo php-pdo_mysql php-simplexml php-xml php-zip php-xmlwriter php-tokenizer php-sodium
         - umask 0022

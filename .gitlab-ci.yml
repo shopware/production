@@ -39,6 +39,9 @@ Build Test Package:
         GIT_STRATEGY: none
         SPLIT_REPOS: "Administration Storefront Core Elasticsearch Recovery"
         SPLITSH: /opt/splitsh-lite
+        SHOPWARE_SKIP_BUNDLE_DUMP: 1
+        SHOPWARE_SKIP_ASSET_COPY: 1
+        SHOPWARE_SKIP_THEME_COMPILE: 1
     cache:
         key: "package_$CI_COMMIT_BRANCH"
         paths:
@@ -49,7 +52,7 @@ Build Test Package:
         policy: pull-push
     before_script:
         - apt-get update
-        - DEB_PACKAGES="git jq composer curl docker.io build-essential nodejs php-ctype php-curl php-dom php-fileinfo php-gd php-iconv php-intl php-json php-mbstring php-pdo php-mysql php-simplexml php-xml php-zip"
+        - DEB_PACKAGES="git jq curl docker.io build-essential nodejs php-cli php-ctype php-curl php-dom php-fileinfo php-gd php-iconv php-intl php-json php-mbstring php-pdo php-mysql php-simplexml php-xml php-zip"
         # setup caching
         - rm /etc/apt/apt.conf.d/docker-clean
         - cp -a /var/cache/apt .apt
@@ -57,6 +60,7 @@ Build Test Package:
         - apt-get install -y --download-only curl && apt-get install -y curl
         - curl -sL https://deb.nodesource.com/setup_12.x | bash -
         - apt-get install -y --download-only $DEB_PACKAGES && apt-get install -y $DEB_PACKAGES
+        - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
         - npm config set cache $PWD/.npm
         # we need to do the checkout to have correct permissions. See: https://gitlab.com/gitlab-org/gitlab-runner/-/issues/1736
         - umask 0022

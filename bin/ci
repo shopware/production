@@ -1,0 +1,57 @@
+#!/usr/bin/env php
+<?php declare(strict_types=1);
+
+use Composer\InstalledVersions;
+use Shopware\Core\Framework\Plugin\KernelPluginLoader\ComposerPluginLoader;
+use Shopware\Core\Framework\Plugin\KernelPluginLoader\DbalKernelPluginLoader;
+use Shopware\Core\Framework\Plugin\KernelPluginLoader\StaticKernelPluginLoader;
+use Shopware\Production\HttpKernel;
+use Shopware\Production\Kernel;
+use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Component\Console\Input\ArgvInput;
+use Symfony\Component\Dotenv\Dotenv;
+use Symfony\Component\ErrorHandler\Debug;
+
+set_time_limit(0);
+
+$classLoader = require __DIR__ . '/../vendor/autoload.php';
+$envFile = __DIR__ . '/../.env';
+
+if (class_exists(Dotenv::class) && is_readable($envFile) && !is_dir($envFile)) {
+    (new Dotenv())->usePutenv()->load($envFile);
+}
+
+if (!isset($_SERVER['PROJECT_ROOT'])) {
+    $_SERVER['PROJECT_ROOT'] = dirname(__DIR__);
+}
+
+$input = new ArgvInput();
+$env = $input->getParameterOption(['--env', '-e'], $_SERVER['APP_ENV'] ?? 'prod', true);
+$debug = ($_SERVER['APP_DEBUG'] ?? ($env !== 'prod')) && !$input->hasParameterOption('--no-debug', true);
+
+$pluginLoader = new StaticKernelPluginLoader($classLoader, null);
+
+if (trim($_SERVER['DATABASE_URL'] ?? '') === '') {
+    // fake DATABASE_URL
+    $_SERVER['DATABASE_URL'] = Kernel::PLACEHOLDER_DATABASE_URL;
+
+    if (\class_exists(ComposerPluginLoader::class) && method_exists(InstalledVersions::class, 'getInstalledPackagesByType')) {
+        $pluginLoader = new ComposerPluginLoader($classLoader, null);
+    }
+} else {
+    if (!isset($_SERVER['INSTALL'])) {
+        $pluginLoader = new DbalKernelPluginLoader($classLoader, null, \Shopware\Core\Kernel::getConnection());
+    }
+}
+
+if ($debug) {
+    umask(0000);
+    if (class_exists(Debug::class)) {
+        Debug::enable();
+    }
+}
+
+$kernel = new HttpKernel($env, $debug, $classLoader);
+$kernel->setPluginLoader($pluginLoader);
+$application = new Application($kernel->getKernel());
+$application->run($input);
