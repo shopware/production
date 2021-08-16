@@ -97,16 +97,16 @@
         },
         {
             "name": "brick/math",
-            "version": "0.9.2",
+            "version": "0.9.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/brick/math.git",
-                "reference": "dff976c2f3487d42c1db75a3b180e2b9f0e72ce0"
+                "reference": "ca57d18f028f84f777b2168cd1911b0dee2343ae"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/brick/math/zipball/dff976c2f3487d42c1db75a3b180e2b9f0e72ce0",
-                "reference": "dff976c2f3487d42c1db75a3b180e2b9f0e72ce0",
+                "url": "https://api.github.com/repos/brick/math/zipball/ca57d18f028f84f777b2168cd1911b0dee2343ae",
+                "reference": "ca57d18f028f84f777b2168cd1911b0dee2343ae",
                 "shasum": ""
             },
             "require": {
@@ -116,7 +116,7 @@
             "require-dev": {
                 "php-coveralls/php-coveralls": "^2.2",
                 "phpunit/phpunit": "^7.5.15 || ^8.5 || ^9.0",
-                "vimeo/psalm": "4.3.2"
+                "vimeo/psalm": "4.9.2"
             },
             "type": "library",
             "autoload": {
@@ -141,15 +141,19 @@
             ],
             "support": {
                 "issues": "https://github.com/brick/math/issues",
-                "source": "https://github.com/brick/math/tree/0.9.2"
+                "source": "https://github.com/brick/math/tree/0.9.3"
             },
             "funding": [
+                {
+                    "url": "https://github.com/BenMorel",
+                    "type": "github"
+                },
                 {
                     "url": "https://tidelift.com/funding/github/packagist/brick/math",
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-01-20T22:51:39+00:00"
+            "time": "2021-08-15T20:50:18+00:00"
         },
         {
             "name": "cocur/slugify",
@@ -1005,26 +1009,26 @@
         },
         {
             "name": "doctrine/collections",
-            "version": "1.6.7",
+            "version": "1.6.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/collections.git",
-                "reference": "55f8b799269a1a472457bd1a41b4f379d4cfba4a"
+                "reference": "1958a744696c6bb3bb0d28db2611dc11610e78af"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/collections/zipball/55f8b799269a1a472457bd1a41b4f379d4cfba4a",
-                "reference": "55f8b799269a1a472457bd1a41b4f379d4cfba4a",
+                "url": "https://api.github.com/repos/doctrine/collections/zipball/1958a744696c6bb3bb0d28db2611dc11610e78af",
+                "reference": "1958a744696c6bb3bb0d28db2611dc11610e78af",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.1.3 || ^8.0"
             },
             "require-dev": {
-                "doctrine/coding-standard": "^6.0",
-                "phpstan/phpstan-shim": "^0.9.2",
-                "phpunit/phpunit": "^7.0",
-                "vimeo/psalm": "^3.8.1"
+                "doctrine/coding-standard": "^9.0",
+                "phpstan/phpstan": "^0.12",
+                "phpunit/phpunit": "^7.5 || ^8.5 || ^9.1.5",
+                "vimeo/psalm": "^4.2.1"
             },
             "type": "library",
             "autoload": {
@@ -1068,9 +1072,9 @@
             ],
             "support": {
                 "issues": "https://github.com/doctrine/collections/issues",
-                "source": "https://github.com/doctrine/collections/tree/1.6.7"
+                "source": "https://github.com/doctrine/collections/tree/1.6.8"
             },
-            "time": "2020-07-27T17:53:49+00:00"
+            "time": "2021-08-10T18:51:53+00:00"
         },
         {
             "name": "doctrine/dbal",
@@ -1498,16 +1502,16 @@
         },
         {
             "name": "doctrine/persistence",
-            "version": "2.2.1",
+            "version": "2.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/persistence.git",
-                "reference": "d138f3ab5f761055cab1054070377cfd3222e368"
+                "reference": "4ce4712e6dc84a156176a0fbbb11954a25c93103"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/persistence/zipball/d138f3ab5f761055cab1054070377cfd3222e368",
-                "reference": "d138f3ab5f761055cab1054070377cfd3222e368",
+                "url": "https://api.github.com/repos/doctrine/persistence/zipball/4ce4712e6dc84a156176a0fbbb11954a25c93103",
+                "reference": "4ce4712e6dc84a156176a0fbbb11954a25c93103",
                 "shasum": ""
             },
             "require": {
@@ -1579,9 +1583,9 @@
             ],
             "support": {
                 "issues": "https://github.com/doctrine/persistence/issues",
-                "source": "https://github.com/doctrine/persistence/tree/2.2.1"
+                "source": "https://github.com/doctrine/persistence/tree/2.2.2"
             },
-            "time": "2021-05-19T07:07:01+00:00"
+            "time": "2021-08-10T19:01:29+00:00"
         },
         {
             "name": "dompdf/dompdf",
@@ -4701,20 +4705,21 @@
         },
         {
             "name": "ramsey/collection",
-            "version": "1.1.4",
+            "version": "1.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ramsey/collection.git",
-                "reference": "ab2237657ad99667a5143e32ba2683c8029563d4"
+                "reference": "eaca1dc1054ddd10cbd83c1461907bee6fb528fa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ramsey/collection/zipball/ab2237657ad99667a5143e32ba2683c8029563d4",
-                "reference": "ab2237657ad99667a5143e32ba2683c8029563d4",
+                "url": "https://api.github.com/repos/ramsey/collection/zipball/eaca1dc1054ddd10cbd83c1461907bee6fb528fa",
+                "reference": "eaca1dc1054ddd10cbd83c1461907bee6fb528fa",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.2 || ^8"
+                "php": "^7.3 || ^8",
+                "symfony/polyfill-php81": "^1.23"
             },
             "require-dev": {
                 "captainhook/captainhook": "^5.3",
@@ -4724,6 +4729,7 @@
                 "hamcrest/hamcrest-php": "^2",
                 "jangregor/phpstan-prophecy": "^0.8",
                 "mockery/mockery": "^1.3",
+                "phpspec/prophecy-phpunit": "^2.0",
                 "phpstan/extension-installer": "^1",
                 "phpstan/phpstan": "^0.12.32",
                 "phpstan/phpstan-mockery": "^0.12.5",
@@ -4751,7 +4757,7 @@
                     "homepage": "https://benramsey.com"
                 }
             ],
-            "description": "A PHP 7.2+ library for representing and manipulating collections.",
+            "description": "A PHP library for representing and manipulating collections.",
             "keywords": [
                 "array",
                 "collection",
@@ -4762,7 +4768,7 @@
             ],
             "support": {
                 "issues": "https://github.com/ramsey/collection/issues",
-                "source": "https://github.com/ramsey/collection/tree/1.1.4"
+                "source": "https://github.com/ramsey/collection/tree/1.2.1"
             },
             "funding": [
                 {
@@ -4774,20 +4780,20 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-07-30T00:58:27+00:00"
+            "time": "2021-08-06T03:41:06+00:00"
         },
         {
             "name": "ramsey/uuid",
-            "version": "4.1.1",
+            "version": "4.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ramsey/uuid.git",
-                "reference": "cd4032040a750077205918c86049aa0f43d22947"
+                "reference": "fe665a03df4f056aa65af552a96e1976df8c8dae"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ramsey/uuid/zipball/cd4032040a750077205918c86049aa0f43d22947",
-                "reference": "cd4032040a750077205918c86049aa0f43d22947",
+                "url": "https://api.github.com/repos/ramsey/uuid/zipball/fe665a03df4f056aa65af552a96e1976df8c8dae",
+                "reference": "fe665a03df4f056aa65af552a96e1976df8c8dae",
                 "shasum": ""
             },
             "require": {
@@ -4801,26 +4807,26 @@
                 "rhumsaa/uuid": "self.version"
             },
             "require-dev": {
-                "codeception/aspect-mock": "^3",
-                "dealerdirect/phpcodesniffer-composer-installer": "^0.6.2 || ^0.7.0",
+                "captainhook/captainhook": "^5.10",
+                "captainhook/plugin-composer": "^5.3",
+                "dealerdirect/phpcodesniffer-composer-installer": "^0.7.0",
                 "doctrine/annotations": "^1.8",
-                "goaop/framework": "^2",
+                "ergebnis/composer-normalize": "^2.15",
                 "mockery/mockery": "^1.3",
                 "moontoast/math": "^1.1",
                 "paragonie/random-lib": "^2",
+                "php-mock/php-mock": "^2.2",
                 "php-mock/php-mock-mockery": "^1.3",
-                "php-mock/php-mock-phpunit": "^2.5",
                 "php-parallel-lint/php-parallel-lint": "^1.1",
-                "phpbench/phpbench": "^0.17.1",
+                "phpbench/phpbench": "^1.0",
                 "phpstan/extension-installer": "^1.0",
                 "phpstan/phpstan": "^0.12",
                 "phpstan/phpstan-mockery": "^0.12",
                 "phpstan/phpstan-phpunit": "^0.12",
-                "phpunit/phpunit": "^8.5",
-                "psy/psysh": "^0.10.0",
-                "slevomat/coding-standard": "^6.0",
+                "phpunit/phpunit": "^8.5 || ^9",
+                "slevomat/coding-standard": "^7.0",
                 "squizlabs/php_codesniffer": "^3.5",
-                "vimeo/psalm": "3.9.4"
+                "vimeo/psalm": "^4.9"
             },
             "suggest": {
                 "ext-bcmath": "Enables faster math with arbitrary-precision integers using BCMath.",
@@ -4833,7 +4839,10 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "4.x-dev"
+                    "dev-main": "4.x-dev"
+                },
+                "captainhook": {
+                    "force-install": true
                 }
             },
             "autoload": {
@@ -4849,7 +4858,6 @@
                 "MIT"
             ],
             "description": "A PHP library for generating and working with universally unique identifiers (UUIDs).",
-            "homepage": "https://github.com/ramsey/uuid",
             "keywords": [
                 "guid",
                 "identifier",
@@ -4857,16 +4865,19 @@
             ],
             "support": {
                 "issues": "https://github.com/ramsey/uuid/issues",
-                "rss": "https://github.com/ramsey/uuid/releases.atom",
-                "source": "https://github.com/ramsey/uuid"
+                "source": "https://github.com/ramsey/uuid/tree/4.2.1"
             },
             "funding": [
                 {
                     "url": "https://github.com/ramsey",
                     "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/ramsey/uuid",
+                    "type": "tidelift"
                 }
             ],
-            "time": "2020-08-18T17:17:46+00:00"
+            "time": "2021-08-11T01:06:55+00:00"
         },
         {
             "name": "react/promise",
@@ -5270,21 +5281,21 @@
         },
         {
             "name": "shopware/administration",
-            "version": "6.4.3.0",
+            "version": "6.4.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/administration.git",
-                "reference": "0e16fd8acc81685d33187fe939a8e031729567ae"
+                "reference": "3ae38abad294682bae0d6fdc682624147f5f136c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/administration/zipball/0e16fd8acc81685d33187fe939a8e031729567ae",
-                "reference": "0e16fd8acc81685d33187fe939a8e031729567ae",
+                "url": "https://api.github.com/repos/shopware/administration/zipball/3ae38abad294682bae0d6fdc682624147f5f136c",
+                "reference": "3ae38abad294682bae0d6fdc682624147f5f136c",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.4.3 || ^8.0",
-                "shopware/core": "v6.4.3.0",
+                "shopware/core": "v6.4.3.1",
                 "symfony/framework-bundle": "~5.3.0",
                 "symfony/http-foundation": "~5.3.0",
                 "symfony/mime": "~5.3.0",
@@ -5312,23 +5323,23 @@
                 "docs": "https://developer.shopware.com",
                 "forum": "https://forum.shopware.com",
                 "issues": "https://issues.shopware.com",
-                "source": "https://github.com/shopware/administration/tree/v6.4.3.0",
+                "source": "https://github.com/shopware/administration/tree/v6.4.3.1",
                 "wiki": "https://developer.shopware.com"
             },
-            "time": "2021-08-01T08:09:47+00:00"
+            "time": "2021-08-16T08:22:45+00:00"
         },
         {
             "name": "shopware/core",
-            "version": "6.4.3.0",
+            "version": "6.4.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/core.git",
-                "reference": "25efc6d0d33593bae3ac8aa09fd173566a838db4"
+                "reference": "7ffce13d7366e8585c32362b103a8ef4169470d5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/core/zipball/25efc6d0d33593bae3ac8aa09fd173566a838db4",
-                "reference": "25efc6d0d33593bae3ac8aa09fd173566a838db4",
+                "url": "https://api.github.com/repos/shopware/core/zipball/7ffce13d7366e8585c32362b103a8ef4169470d5",
+                "reference": "7ffce13d7366e8585c32362b103a8ef4169470d5",
                 "shasum": ""
             },
             "require": {
@@ -5479,23 +5490,23 @@
                 "docs": "https://developer.shopware.com",
                 "forum": "https://forum.shopware.com",
                 "issues": "https://issues.shopware.com",
-                "source": "https://github.com/shopware/core/tree/v6.4.3.0",
+                "source": "https://github.com/shopware/core/tree/v6.4.3.1",
                 "wiki": "https://developer.shopware.com"
             },
-            "time": "2021-08-01T08:09:46+00:00"
+            "time": "2021-08-16T08:22:44+00:00"
         },
         {
             "name": "shopware/elasticsearch",
-            "version": "6.4.3.0",
+            "version": "6.4.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/elasticsearch.git",
-                "reference": "eb29aab36be51f5ea1c3bd2a1374f7fc5aab825e"
+                "reference": "4b317ddc3499e925d8254409b8dd72970bf9df49"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/elasticsearch/zipball/eb29aab36be51f5ea1c3bd2a1374f7fc5aab825e",
-                "reference": "eb29aab36be51f5ea1c3bd2a1374f7fc5aab825e",
+                "url": "https://api.github.com/repos/shopware/elasticsearch/zipball/4b317ddc3499e925d8254409b8dd72970bf9df49",
+                "reference": "4b317ddc3499e925d8254409b8dd72970bf9df49",
                 "shasum": ""
             },
             "require": {
@@ -5504,7 +5515,7 @@
                 "ext-curl": "*",
                 "ongr/elasticsearch-dsl": "7.2.1",
                 "php": "^7.4.3 || ^8.0",
-                "shopware/core": "v6.4.3.0",
+                "shopware/core": "v6.4.3.1",
                 "symfony/http-foundation": "~5.3.0",
                 "symfony/messenger": "~5.3.0"
             },
@@ -5536,28 +5547,28 @@
                 "docs": "https://developer.shopware.com",
                 "forum": "https://forum.shopware.com",
                 "issues": "https://issues.shopware.com",
-                "source": "https://github.com/shopware/elasticsearch/tree/v6.4.3.0",
+                "source": "https://github.com/shopware/elasticsearch/tree/v6.4.3.1",
                 "wiki": "https://developer.shopware.com"
             },
-            "time": "2021-08-01T08:09:46+00:00"
+            "time": "2021-08-16T08:22:44+00:00"
         },
         {
             "name": "shopware/recovery",
-            "version": "6.4.3.0",
+            "version": "6.4.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/recovery.git",
-                "reference": "0dd6825f04b05ffc496ebc2c470315a7d52fe089"
+                "reference": "a8cbc2eb4dbbc8c18f22a81965a5045354f3b485"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/recovery/zipball/0dd6825f04b05ffc496ebc2c470315a7d52fe089",
-                "reference": "0dd6825f04b05ffc496ebc2c470315a7d52fe089",
+                "url": "https://api.github.com/repos/shopware/recovery/zipball/a8cbc2eb4dbbc8c18f22a81965a5045354f3b485",
+                "reference": "a8cbc2eb4dbbc8c18f22a81965a5045354f3b485",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.4.3 || ^8.0",
-                "shopware/core": "v6.4.3.0"
+                "shopware/core": "v6.4.3.1"
             },
             "require-dev": {
                 "phpunit/phpunit": "^9.5"
@@ -5579,23 +5590,23 @@
                 "docs": "https://developer.shopware.com",
                 "forum": "https://forum.shopware.com",
                 "issues": "https://issues.shopware.com",
-                "source": "https://github.com/shopware/recovery/tree/v6.4.3.0",
+                "source": "https://github.com/shopware/recovery/tree/v6.4.3.1",
                 "wiki": "https://developer.shopware.com"
             },
-            "time": "2021-08-01T08:09:46+00:00"
+            "time": "2021-08-16T08:22:44+00:00"
         },
         {
             "name": "shopware/storefront",
-            "version": "6.4.3.0",
+            "version": "6.4.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/storefront.git",
-                "reference": "08da75186824a728734d67bdc79d9e1590a5a4b3"
+                "reference": "7ed9b98f87f2828d93e1ae0b3561957e932eeecd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/storefront/zipball/08da75186824a728734d67bdc79d9e1590a5a4b3",
-                "reference": "08da75186824a728734d67bdc79d9e1590a5a4b3",
+                "url": "https://api.github.com/repos/shopware/storefront/zipball/7ed9b98f87f2828d93e1ae0b3561957e932eeecd",
+                "reference": "7ed9b98f87f2828d93e1ae0b3561957e932eeecd",
                 "shasum": ""
             },
             "require": {
@@ -5604,7 +5615,7 @@
                 "padaliyajay/php-autoprefixer": "1.3",
                 "php": "^7.4.3 || ^8.0",
                 "scssphp/scssphp": "1.0.6",
-                "shopware/core": "v6.4.3.0",
+                "shopware/core": "v6.4.3.1",
                 "symfony/cache": "~5.3.0",
                 "symfony/cache-contracts": "2.2.0",
                 "symfony/config": "~5.3.0",
@@ -5654,10 +5665,10 @@
                 "docs": "https://developer.shopware.com",
                 "forum": "https://forum.shopware.com",
                 "issues": "https://issues.shopware.com",
-                "source": "https://github.com/shopware/storefront/tree/v6.4.3.0",
+                "source": "https://github.com/shopware/storefront/tree/v6.4.3.1",
                 "wiki": "https://developer.shopware.com"
             },
-            "time": "2021-08-01T08:09:47+00:00"
+            "time": "2021-08-16T08:22:45+00:00"
         },
         {
             "name": "sroze/messenger-enqueue-transport",
@@ -13082,7 +13093,6 @@
                     "type": "github"
                 }
             ],
-            "abandoned": true,
             "time": "2020-09-28T06:45:17+00:00"
         },
         {
