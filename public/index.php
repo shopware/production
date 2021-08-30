@@ -54,8 +54,10 @@ return function (array $context) {
 
     $trustedProxies = $context['TRUSTED_PROXIES'] ?? false;
     if ($trustedProxies) {
-        Request::setTrustedProxies(explode(',', $trustedProxies),
-            Request::HEADER_X_FORWARDED_FOR | Request::HEADER_X_FORWARDED_PORT | Request::HEADER_X_FORWARDED_PROTO);
+        Request::setTrustedProxies(
+            explode(',', $trustedProxies),
+            Request::HEADER_X_FORWARDED_FOR | Request::HEADER_X_FORWARDED_PORT | Request::HEADER_X_FORWARDED_PROTO
+        );
     }
 
     $trustedHosts = $context['TRUSTED_HOSTS'] ?? false;
@@ -65,8 +67,7 @@ return function (array $context) {
 
     $shopwareHttpKernel = new HttpKernel($appEnv, $debug, $classLoader);
 
-    return new class ($shopwareHttpKernel) implements HttpKernelInterface, TerminableInterface
-    {
+    return new class($shopwareHttpKernel) implements HttpKernelInterface, TerminableInterface {
         private HttpKernel $httpKernel;
 
         public function __construct(HttpKernel $httpKernel)
@@ -79,7 +80,7 @@ return function (array $context) {
             return $this->httpKernel->handle($request, $type, $catch)->getResponse();
         }
 
-        public function terminate(Request $request, Response $response)
+        public function terminate(Request $request, Response $response): void
         {
             $this->httpKernel->terminate($request, $response);
         }
