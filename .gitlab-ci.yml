@@ -287,10 +287,6 @@ Update (Mysql 8.0):
             command: [ "bin/elasticsearch", "-Expack.security.enabled=false", "-Ediscovery.type=single-node" ]
     script:
         - cd .gitlab-ci/e2e/test/
-        - timeout 5m $(npm bin)/cypress run
-            --browser chrome --config baseUrl=http://localhost:8000,numTestsKeptInMemory=0 --headless
-            --env expectedVersion=$TAG
-            --spec "cypress/integration/updater/pre-update/*"
         - timeout 20m $(npm bin)/cypress run
             --browser chrome --config baseUrl=http://localhost:8000,numTestsKeptInMemory=0 --headless
             --env expectedVersion=$TAG
@@ -356,6 +352,10 @@ Update from latest:
             - $E2E_INSTALL_PACKAGE_URL_LATEST
     script:
         - cd .gitlab-ci/e2e/test/
+        - timeout 5m $(npm bin)/cypress run
+            --browser chrome --config baseUrl=http://localhost:8000,numTestsKeptInMemory=0 --headless
+            --env expectedVersion=$TAG
+            --spec "cypress/integration/updater/pre-update/*"
         - timeout 20m $(npm bin)/cypress run
             --browser chrome --config baseUrl=http://localhost:8000,numTestsKeptInMemory=0 --headless
             --env expectedVersion=$TAG,testBase="Update"
