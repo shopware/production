@@ -365,6 +365,22 @@ class VersioningServiceTest extends TestCase
         );
     }
 
+    /**
+     * @dataProvider isSecurityUpdateDataProvider
+     */
+    public function testIsSecurityUpdate(string $tag, bool $expected): void
+    {
+        static::assertSame(VersioningService::isSecurityUpdate($tag), $expected);
+    }
+
+    public function isSecurityUpdateDataProvider(): \Generator
+    {
+        yield 'no detection for old style' => ['6.2.1',  false];
+        yield 'minor' => ['6.4.1.0', false];
+        yield 'major' => ['6.5.0.0', false];
+        yield 'patch' => ['6.4.5.1', true];
+    }
+
     private function createTestRepos(): array
     {
         $local = $this->localTestRepoPath = sys_get_temp_dir() . '/repo_' . bin2hex(random_bytes(16));

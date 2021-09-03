@@ -223,6 +223,11 @@ class Release extends SimpleXMLElement
         return (string) $this->security_update;
     }
 
+    public function isSecurityUpdate(): bool
+    {
+        return (string) $this->security_update === '1';
+    }
+
     public function isPublic(): bool
     {
         return (string) $this->public === '1';

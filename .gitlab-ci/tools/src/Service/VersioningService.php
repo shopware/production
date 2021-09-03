@@ -194,6 +194,13 @@ class VersioningService
         return $v['major'] . '.' . $v['minor']; // 6.1, 6.2
     }
 
+    public static function isSecurityUpdate(string $tag): bool
+    {
+        $v = self::parseTag($tag);
+
+        return $v['build'] > 0;
+    }
+
     private function getInitialMinorTag(string $constraint): string
     {
         $parsedConstraint = $this->versionParser->parseConstraints($constraint);

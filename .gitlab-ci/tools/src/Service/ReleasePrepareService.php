@@ -125,14 +125,20 @@ class ReleasePrepareService
     {
         $releaseTag = $release->getTag();
         $installUpload = $this->hashAndUpload($releaseTag, 'install.zip');
-        $release->download_link_install = $installUpload['url'];
-        $release->sha1_install = $installUpload['sha1'];
-        $release->sha256_install = $installUpload['sha256'];
+
+        if ($release->isPublic() || !$release->isSecurityUpdate()) {
+            $release->download_link_install = $installUpload['url'];
+            $release->sha1_install = $installUpload['sha1'];
+            $release->sha256_install = $installUpload['sha256'];
+        }
 
         $updateUpload = $this->hashAndUpload($releaseTag, 'update.zip');
-        $release->download_link_update = $updateUpload['url'];
-        $release->sha1_update = $updateUpload['sha1'];
-        $release->sha256_update = $updateUpload['sha256'];
+
+        if ($release->isPublic() || !$release->isSecurityUpdate()) {
+            $release->download_link_update = $updateUpload['url'];
+            $release->sha1_update = $updateUpload['sha1'];
+            $release->sha256_update = $updateUpload['sha256'];
+        }
 
         $this->hashAndUpload($releaseTag, 'install.tar.xz');
         $minorBranch = VersioningService::getMinorBranch($releaseTag);
@@ -193,6 +199,10 @@ class ReleasePrepareService
             '--update-sha256' => $release->getSha256Update(),
         ]);
 
+        if ($release->isSecurityUpdate()) {
+            $insertReleaseParameters['--release-security-update'] = 1;
+        }
+
         $this->updateApiService->insertReleaseData($insertReleaseParameters);
         $this->updateApiService->updateReleaseNotes($baseParams);
 
@@ -217,6 +227,10 @@ class ReleasePrepareService
             $tag,
             VersioningService::getMajorBranch($tag)
         );
+
+        if (VersioningService::isSecurityUpdate($tag)) {
+            $release->security_update = 1;
+        }
     }
 
     private function hashAndUpload(string $tag, string $source, ?string $targetPath = null): array
