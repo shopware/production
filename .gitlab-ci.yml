@@ -81,6 +81,8 @@ Build Test Package:
     script:
         # clone platform if it's not cached. We use caching to speed up the split
         - export TAG=${TAG:-$(.gitlab-ci/tools/console release:show-next-tag)}
+        - echo "$TAG"
+        - 'if [[ -z "$TAG" ]]; then echo "TAG is empty"; exit 1; fi'
         - '[[ -d .platform/ ]] || git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/platform.git -b ${DEFAULT_PLATFORM_BRANCH} --bare .platform'
         - git -C .platform remote set-url origin https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/platform.git
         # Find best matching branch. Example try: 6.3.2.1, 6.3.2, 6.3, master
@@ -172,6 +174,7 @@ Install (Visual, EN):
     only:
         refs:
             - schedules
+            - merge_requests
         variables:
             - $CYPRESS_PERCY_USAGE == "true"
     variables:
@@ -199,8 +202,9 @@ Install (EN):
     only:
         refs:
             - schedules
+            - merge_requests
         variables:
-            - $CYPRESS_PERCY_USAGE == "false"
+            - $CYPRESS_PERCY_USAGE != "true"
     variables:
         GIT_STRATEGY: none
     script:
@@ -304,6 +308,7 @@ Update (Visual, DE):
     only:
         refs:
             - schedules
+            - merge_requests
         variables:
             - $CYPRESS_PERCY_USAGE == "true"
     script:
@@ -326,8 +331,9 @@ Update (DE):
     only:
         refs:
             - schedules
+            - merge_requests
         variables:
-            - $CYPRESS_PERCY_USAGE == "false"
+            - $CYPRESS_PERCY_USAGE != "true"
     script:
         - cd .gitlab-ci/e2e/test/
         - timeout 20m $(npm bin)/cypress run
@@ -348,6 +354,7 @@ Update from latest:
     only:
         refs:
             - schedules
+            - merge_requests
         variables:
             - $E2E_INSTALL_PACKAGE_URL_LATEST
     script:

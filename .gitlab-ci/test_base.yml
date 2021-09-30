@@ -4,6 +4,7 @@
     only:
         refs:
             - schedules
+            - merge_requests
             - tags
     services:
         -   name: mariadb:10.3
