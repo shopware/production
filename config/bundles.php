@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-return [
+$bundles = [
     Symfony\Bundle\FrameworkBundle\FrameworkBundle::class => ['all' => true],
     Symfony\Bundle\MonologBundle\MonologBundle::class => ['all' => true],
     Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle::class => ['all' => true],
@@ -18,3 +18,9 @@ return [
     Shopware\Storefront\Storefront::class => ['all' => true],
     Shopware\Elasticsearch\Elasticsearch::class => ['all' => true],
 ];
+
+if (\class_exists('Shopware\Core\Maintenance\Maintenance')) {
+    $bundles[Shopware\Core\Maintenance\Maintenance::class] = ['all' => true];
+}
+
+return $bundles;

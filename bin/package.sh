@@ -30,7 +30,6 @@ rm -rf var/cache/* \
 
 CORE_TAG=$(php -r 'include_once "vendor/autoload.php"; echo ltrim(explode("@", Composer\InstalledVersions::getVersion("shopware/core"))[0], "v");')
 
-echo "$CORE_TAG" > public/recovery/install/data/version
 if [ -n "$DEFAULT_ENV" ]; then
     echo "$DEFAULT_ENV" > "$DEFAULT_ENV_FILENAME"
 fi
