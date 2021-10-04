@@ -4,6 +4,26 @@
 #    - prepare-release
 #    - release
 
+
+.install_alpine_deps: &install_alpine_deps
+    - apk --no-cache add npm openssh-client git bash jq composer php-ctype php-curl php-dom php-fileinfo php-gd php-iconv php-intl php-json php-mbstring php-pdo php-pdo_mysql php-simplexml php-xml php-zip php-xmlwriter php-tokenizer php-sodium php-session
+
+Test alpine image install:
+    stage: test
+    image: alpine:3.13
+    only:
+        refs:
+            - schedules
+            - merge_requests
+    before_script: []
+    script:
+        - *install_alpine_deps
+        - composer install
+
+Test docker image install:
+    extends: Test alpine image install
+    image: docker:19
+
 Prepare release:
     stage: prepare-release
     image: debian:bullseye-slim
@@ -46,7 +66,7 @@ Release tags:
         PLATFORM_REPO_URL: "git@gitlab.shopware.com:shopware/6/product/platform"
         CI_REPOSITORY_URL: "git@gitlab.shopware.com:/shopware/6/product/production"
     before_script:
-        - apk --no-cache add openssh-client git bash jq composer php-ctype php-curl php-dom php-fileinfo php-gd php-iconv php-intl php-json php-mbstring php-pdo php-pdo_mysql php-simplexml php-xml php-zip php-xmlwriter php-tokenizer php-sodium
+        - *install_alpine_deps
         - mkdir -p ~/.ssh/
         - echo -e "$SHOPWAREBOT_PRIVATE_KEY" > ~/.ssh/id_rsa
         - chmod 600 ~/.ssh/id_rsa
@@ -99,7 +119,7 @@ Build package:
         SHOPWARE_SKIP_ASSET_COPY: 1
         SHOPWARE_SKIP_THEME_COMPILE: 1
     before_script:
-        - apk --no-cache add git bash jq composer npm openssh-client php-ctype php-curl php-dom php-fileinfo php-gd php-iconv php-intl php-json php-mbstring php-pdo php-pdo_mysql php-simplexml php-xml php-zip php-xmlwriter php-tokenizer php-sodium
+        - *install_alpine_deps
         - umask 0022
         - git init .
         - git remote add origin ${CI_REPOSITORY_URL}
