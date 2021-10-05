@@ -73,7 +73,7 @@ class ReleasePrepareService
             $this->stdout->writeln('May not alter changelog');
         }
 
-        $this->storeReleaseList($releaseList);
+        $this->storeReleaseList(clone $releaseList);
 
         $this->registerUpdate($tag, $release);
 
@@ -126,19 +126,15 @@ class ReleasePrepareService
         $releaseTag = $release->getTag();
         $installUpload = $this->hashAndUpload($releaseTag, 'install.zip');
 
-        if ($release->isPublic() || !$release->isSecurityUpdate()) {
-            $release->download_link_install = $installUpload['url'];
-            $release->sha1_install = $installUpload['sha1'];
-            $release->sha256_install = $installUpload['sha256'];
-        }
+        $release->download_link_install = $installUpload['url'];
+        $release->sha1_install = $installUpload['sha1'];
+        $release->sha256_install = $installUpload['sha256'];
 
         $updateUpload = $this->hashAndUpload($releaseTag, 'update.zip');
 
-        if ($release->isPublic() || !$release->isSecurityUpdate()) {
-            $release->download_link_update = $updateUpload['url'];
-            $release->sha1_update = $updateUpload['sha1'];
-            $release->sha256_update = $updateUpload['sha256'];
-        }
+        $release->download_link_update = $updateUpload['url'];
+        $release->sha1_update = $updateUpload['sha1'];
+        $release->sha256_update = $updateUpload['sha256'];
 
         $this->hashAndUpload($releaseTag, 'install.tar.xz');
         $minorBranch = VersioningService::getMinorBranch($releaseTag);
@@ -167,6 +163,19 @@ class ReleasePrepareService
         $dom = new \DOMDocument('1.0');
         $dom->preserveWhiteSpace = false;
         $dom->formatOutput = true;
+
+        if (!$release->isPublic() && $release->isSecurityUpdate()) {
+            $release->download_link_install = null;
+            $release->sha1_install = null;
+            $release->sha256_install = null;
+        }
+
+        if (!$release->isPublic() && $release->isSecurityUpdate()) {
+            $release->download_link_update = null;
+            $release->sha1_update = null;
+            $release->sha256_update = null;
+        }
+
         $releaseXml = $release->asXML();
         if ($releaseXml === false) {
             throw new \RuntimeException('Release XML file is invalid');
