@@ -10,5 +10,6 @@ export APP_URL
 export STOREFRONT_PROXY_PORT
 export ESLINT_DISABLE
 
+"${CWD}"/console theme:compile
 "${CWD}"/console theme:dump
 npm --prefix vendor/shopware/storefront/Resources/app/storefront/ run-script hot-proxy
