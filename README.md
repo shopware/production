@@ -58,7 +58,7 @@ bin/console system:setup
 # create database with a basic setup (admin user and storefront sales channel)
 bin/console system:install --create-database --basic-setup
 
-# or use the interactive installer in the browser: /recovery/install/index.php
+# or run `bin/console assets:install` and use the interactive installer in the browser: /recovery/install/index.php
 ```
 
 ## Update

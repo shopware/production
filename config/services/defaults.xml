@@ -18,42 +18,10 @@
 
         <parameter key="default_cdn_strategy">physical_filename</parameter>
         <parameter key="shopware.cdn.strategy">%env(default:default_cdn_strategy:SHOPWARE_CDN_STRATEGY_DEFAULT)%</parameter>
+        <parameter key="env(INSTANCE_ID)">install</parameter>
     </parameters>
 
     <services>
-        <service id="Shopware\Production\Command\SystemInstallCommand">
-            <argument type="string">%kernel.project_dir%</argument>
-            <tag name="console.command"/>
-        </service>
-
-        <service id="Shopware\Production\Command\SystemSetupCommand">
-            <argument type="string">%kernel.project_dir%</argument>
-            <tag name="console.command"/>
-        </service>
-        <service id="Shopware\Production\Command\SystemUpdatePrepareCommand">
-            <argument type="string">%kernel.shopware_version%</argument>
-            <argument type="service" id="event_dispatcher"/>
-            <argument type="service" id="service_container"/>
-            <tag name="console.command"/>
-        </service>
-
-        <service id="Shopware\Production\Command\SystemUpdateFinishCommand">
-            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
-            <argument type="service" id="event_dispatcher"/>
-            <argument type="service" id="service_container"/>
-            <tag name="console.command"/>
-        </service>
-
-        <service id="Shopware\Production\Command\SystemGenerateAppSecretCommand">
-            <argument type="string">%kernel.project_dir%</argument>
-            <tag name="console.command"/>
-        </service>
-
-        <service id="Shopware\Production\Command\SystemGenerateJwtSecretCommand">
-            <argument type="string">%kernel.project_dir%</argument>
-            <tag name="console.command"/>
-        </service>
-
         <service class="League\OAuth2\Server\CryptKey" id="shopware.private_key">
             <argument>%kernel.project_dir%/config/jwt/private.pem</argument>
             <argument>%env(string:default:jwt_private_key_passphrase_default:JWT_PRIVATE_KEY_PASSPHRASE)%</argument>
