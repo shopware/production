@@ -165,15 +165,15 @@ class ReleasePrepareService
         $dom->formatOutput = true;
 
         if (!$release->isPublic() && $release->isSecurityUpdate()) {
-            $release->download_link_install = null;
-            $release->sha1_install = null;
-            $release->sha256_install = null;
+            $release->download_link_install = '';
+            $release->sha1_install = '';
+            $release->sha256_install = '';
         }
 
         if (!$release->isPublic() && $release->isSecurityUpdate()) {
-            $release->download_link_update = null;
-            $release->sha1_update = null;
-            $release->sha256_update = null;
+            $release->download_link_update = '';
+            $release->sha1_update = '';
+            $release->sha256_update = '';
         }
 
         $releaseXml = $release->asXML();
