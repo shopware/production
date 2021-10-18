@@ -14,6 +14,7 @@
         <env name="SHELL_VERBOSITY" value="-1" />
 
         <env name="SYMFONY_DEPRECATIONS_HELPER" value="weak" />
+        <server name="MAILER_URL" value="null://localhost"/>
     </php>
 
     <coverage>
