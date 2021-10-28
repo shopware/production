@@ -29,7 +29,11 @@ if [[ $(command -v jq) ]]; then
         if [[ -f "$path/package.json" && ! -f "$path/node_modules" && $name != "storefront" ]]; then
             echo "=> Installing npm dependencies for ${name}"
 
-            npm install --prefix "$path"
+            if [[ -f "$path/package-lock.json" ]]; then
+                npm clean-install --prefix "$path"
+            else
+                npm install --prefix "$path"
+            fi
         fi
     done
     cd "$OLDPWD" || exit
