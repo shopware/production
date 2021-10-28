@@ -31,7 +31,7 @@ if [[ $(command -v jq) ]]; then
         if [[ -f "$path/package.json" && ! -f "$path/node_modules" && $name != "administration" ]]; then
             echo "=> Installing npm dependencies for ${name}"
 
-            npm install --prefix "$path"
+            npm clean-install --prefix "$path"
         fi
     done
     cd "$OLDPWD" || exit
