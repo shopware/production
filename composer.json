@@ -77,6 +77,7 @@
         "smalot/pdfparser": "~0.14.0",
         "symfony/browser-kit": "~4.4 || ~5.2.3 || ~5.3.0",
         "symfony/dependency-injection": "~4.4 || ~5.2.3 || ~5.3.0",
+        "symfony/css-selector": "^5.3",
         "symfony/dom-crawler": "~4.4 || ~5.2.3 || ~5.3.0",
         "symfony/phpunit-bridge": "~4.4 || ~5.2.3 || ~5.3.0",
         "symfony/stopwatch": "~4.4 || ~5.2.3 || ~5.3.0",
