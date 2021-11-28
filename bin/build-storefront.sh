@@ -2,6 +2,8 @@
 
 CWD="$(cd -P -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 
+set -e
+
 export PROJECT_ROOT="${PROJECT_ROOT:-"$(dirname "$CWD")"}"
 STOREFRONT_ROOT="${STOREFRONT_ROOT:-"${PROJECT_ROOT}/vendor/shopware/storefront"}"
 
