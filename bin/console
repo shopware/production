@@ -24,14 +24,13 @@ if (!class_exists(Application::class)) {
     throw new RuntimeException('You need to add "symfony/framework-bundle" as a Composer dependency.');
 }
 
-$envFile = __DIR__ . '/../.env';
-
-if (class_exists(Dotenv::class) && is_readable($envFile) && !is_dir($envFile)) {
-    (new Dotenv())->usePutenv()->load($envFile);
+$projectRoot = dirname(__DIR__);
+if (class_exists(Dotenv::class) && (file_exists($projectRoot . '/.env.local.php') || file_exists($projectRoot . '/.env') || file_exists($projectRoot . '/.env.dist'))) {
+    (new Dotenv())->usePutenv()->bootEnv(dirname(__DIR__) . '/.env');
 }
 
 if (!isset($_SERVER['PROJECT_ROOT'])) {
-    $_SERVER['PROJECT_ROOT'] = dirname(__DIR__);
+    $_SERVER['PROJECT_ROOT'] = $projectRoot;
 }
 
 $input = new ArgvInput();

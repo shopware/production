@@ -5,11 +5,11 @@ use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\ErrorHandler\Debug;
 use Symfony\Component\HttpFoundation\Request;
 
-if (\PHP_VERSION_ID < 70400) {
+if (\PHP_VERSION_ID < 70403) {
     header('Content-type: text/html; charset=utf-8', true, 503);
 
     echo '<h2>Error</h2>';
-    echo 'Your server is running PHP version ' . \PHP_VERSION . ' but Shopware 6 requires at least PHP 7.4.0';
+    echo 'Your server is running PHP version ' . \PHP_VERSION . ' but Shopware 6 requires at least PHP 7.4.3';
     exit(1);
 }
 
@@ -39,21 +39,13 @@ if (is_file(dirname(__DIR__) . '/files/update/update.json') || is_dir(dirname(__
     return;
 }
 
-// The check is to ensure we don't use .env if APP_ENV is defined
-if (!isset($_SERVER['APP_ENV']) && !isset($_ENV['APP_ENV'])) {
-    if (!class_exists(Dotenv::class)) {
-        throw new \RuntimeException('APP_ENV environment variable is not defined. You need to define environment variables for configuration or add "symfony/dotenv" as a Composer dependency to load variables from a .env file.');
-    }
-    $envFile = __DIR__ . '/../.env';
-    if (file_exists($envFile)) {
-        (new Dotenv())
-            ->usePutenv(true)
-            ->load($envFile);
-    }
+$projectRoot = dirname(__DIR__);
+if (class_exists(Dotenv::class) && (file_exists($projectRoot . '/.env.local.php') || file_exists($projectRoot . '/.env') || file_exists($projectRoot . '/.env.dist'))) {
+    (new Dotenv())->usePutenv()->bootEnv(dirname(__DIR__) . '/.env');
 }
 
 $appEnv = $_SERVER['APP_ENV'] ?? $_ENV['APP_ENV'] ?? 'dev';
-$debug = (bool) ($_SERVER['APP_DEBUG'] ?? $_ENV['APP_DEBUG'] ?? ($appEnv !== 'prod'));
+$debug = (bool) ($_SERVER['APP_DEBUG'] ?? $_ENV['APP_DEBUG'] ?? ($appEnv !== 'prod' && $appEnv !== 'e2e'));
 
 if ($debug) {
     umask(0000);
