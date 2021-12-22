@@ -103,6 +103,8 @@ Clear cache:
 
 Build package:
     stage: build
+    tags:
+        - m5.large
     only:
         refs:
             - tags

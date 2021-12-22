@@ -22,11 +22,16 @@ include:
     -   local: .gitlab-ci/test_base.yml
     -   local: .gitlab-ci/integration_jobs.yml
 
+default:
+    tags:
+        - t3.medium
+
 Build Test Package:
     interruptible: true
     stage: build
     tags:
         - release
+        - m5.large
     only:
         refs:
             - schedules
