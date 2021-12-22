@@ -100,6 +100,8 @@ Build Test Package:
         - git -C .platform reset --soft FETCH_HEAD
         - git -C .platform fetch --tags origin
         - git -C .platform log -n 5
+        # export e2e tests for usage in test jobs
+        - git -C .platform archive --output $PWD/artifacts/tests.tar HEAD tests/
         # split platform into separate repos/packages
         - >
             for pkg in $SPLIT_REPOS ; do
@@ -184,23 +186,25 @@ Install (Visual, EN):
             - $CYPRESS_PERCY_USAGE == "true"
     variables:
         GIT_STRATEGY: none
+        CYPRESS_SKIP_INIT: 'true'
     script:
         - cp artifacts/install*.tar.xz install.tar.xz
         - tar -xf install.tar.xz
         - rm install.tar.xz
         - /entrypoint supervisord > /dev/null 2>&1 &
         - apt-get update && apt-get install -y xvfb
-        - cd vendor/shopware/recovery/Test/e2e
+        - tar -xf artifacts/tests.tar
+        - cd tests/e2e
         - npm clean-install
         - echo $PERCY_BUILD_NAME
         - timeout 20m npx percy exec -- cypress run
             --browser chrome --config baseUrl=http://localhost:8000,numTestsKeptInMemory=0 --headless
             --env expectedVersion=$TAG,usePercy=$CYPRESS_PERCY_USAGE
-            --spec cypress/integration/installer/basic.spec.js
+            --spec cypress/integration/recovery/installer/basic.spec.js
         - timeout 5m npx percy exec -- cypress run
             --browser chrome --config baseUrl=http://localhost:8000,numTestsKeptInMemory=0 --headless
             --env expectedVersion=$TAG,usePercy=$CYPRESS_PERCY_USAGE
-            --spec "cypress/integration/visual/*"
+            --spec "cypress/integration/recovery/visual/*"
 
 Install (EN):
     extends: .e2e_install_base
@@ -212,39 +216,43 @@ Install (EN):
             - $CYPRESS_PERCY_USAGE != "true"
     variables:
         GIT_STRATEGY: none
+        CYPRESS_SKIP_INIT: 'true'
     script:
         - cp artifacts/install*.tar.xz install.tar.xz
         - tar -xf install.tar.xz
         - rm install.tar.xz
         - /entrypoint supervisord > /dev/null 2>&1 &
         - apt-get update && apt-get install -y xvfb
-        - cd vendor/shopware/recovery/Test/e2e
+        - tar -xf artifacts/tests.tar
+        - cd tests/e2e
         - npm clean-install
         - timeout 20m $(npm bin)/cypress run
             --browser chrome --config baseUrl=http://localhost:8000,numTestsKeptInMemory=0 --headless
             --env expectedVersion=$TAG
-            --spec cypress/integration/installer/basic.spec.js
+            --spec cypress/integration/recovery/installer/basic.spec.js
         - timeout 5m $(npm bin)/cypress run
             --browser chrome --config baseUrl=http://localhost:8000,numTestsKeptInMemory=0 --headless
             --env expectedVersion=$TAG
-            --spec "cypress/integration/visual/*"
+            --spec "cypress/integration/recovery/visual/*"
 
 Install (NL):
     extends: .e2e_install_base
     variables:
         GIT_STRATEGY: none
+        CYPRESS_SKIP_INIT: 'true'
     script:
         - cp artifacts/install*.tar.xz install.tar.xz
         - tar -xf install.tar.xz
         - rm install.tar.xz
         - /entrypoint supervisord > /dev/null 2>&1 &
         - apt-get update && apt-get install -y xvfb
-        - cd vendor/shopware/recovery/Test/e2e
+        - tar -xf artifacts/tests.tar
+        - cd tests/e2e
         - npm clean-install
         - $(npm bin)/cypress run
             --browser chrome --config baseUrl=http://localhost:8000,numTestsKeptInMemory=0 --headless
             --env expectedVersion=$TAG,locale="nl-NL"
-            --spec cypress/integration/installer/install_nl.spec.js
+            --spec cypress/integration/recovery/installer/install_nl.spec.js
 
 # e2e update tests
 
@@ -253,20 +261,19 @@ Manual Update (EN):
     variables:
         E2E_INSTALL_PACKAGE_URL: $REFERENCE_INSTALLER_URL
         E2E_TEST_DATA_FILE: "v6.1.6_test_data.tar.xz"
+        CYPRESS_SKIP_INIT: 'true'
     script:
         - unzip -qqo artifacts/update.zip
         - chown -R application:application $CI_PROJECT_DIR
-        - cd vendor/shopware/recovery/Test/e2e/
-        - npm ci
-        - npm install --save-dev @percy/cypress
+        - cd tests/e2e
         - timeout 20m $(npm bin)/cypress run
             --browser chrome --config baseUrl=http://localhost:8000,numTestsKeptInMemory=0 --headless
             --env expectedVersion=$TAG
-            --spec cypress/integration/updater/manual-update.spec.js
+            --spec cypress/integration/recovery/updater/manual-update.spec.js
         - timeout 5m $(npm bin)/cypress run
             --browser chrome --config baseUrl=http://localhost:8000,numTestsKeptInMemory=0 --headless
             --env expectedVersion=$TAG,testDataUsage=true
-            --spec cypress/integration/updater/validation/storefront.spec.js
+            --spec cypress/integration/recovery/updater/validation/storefront.spec.js
     after_script:
         - npx mochawesome-merge .gitlab-ci/e2e/test/artifacts/mochawesome/single-reports/mochawesome*.json > .gitlab-ci/e2e/test/artifacts/mochawesome/single-reports/report-final.json
         - npx mochawesome-report-generator .gitlab-ci/e2e/test/artifacts/mochawesome/single-reports/report-final.json --cdn true --reportDir .gitlab-ci/e2e/test/artifacts/mochawesome
@@ -295,18 +302,19 @@ Update (Mysql 8.0):
             alias: elasticsearch
             command: [ "bin/elasticsearch", "-Expack.security.enabled=false", "-Ediscovery.type=single-node" ]
     script:
-        - cd .gitlab-ci/e2e/test/
+        - cd tests/e2e
         - timeout 20m $(npm bin)/cypress run
             --browser chrome --config baseUrl=http://localhost:8000,numTestsKeptInMemory=0 --headless
             --env expectedVersion=$TAG
-            --spec cypress/integration/updater/auto-update.spec.js
+            --spec cypress/integration/recovery/updater/auto-update.spec.js
         - timeout 5m $(npm bin)/cypress run
             --browser chrome --config baseUrl=http://localhost:8000,numTestsKeptInMemory=0 --headless
             --env expectedVersion=$TAG,testDataUsage=true
-            --spec "cypress/integration/updater/validation/*"
+            --spec "cypress/integration/recovery/updater/validation/*"
     variables:
         E2E_INSTALL_PACKAGE_URL: $REFERENCE_INSTALLER_URL
         E2E_TEST_DATA_FILE: "v6.1.6_test_data.tar.xz"
+        CYPRESS_SKIP_INIT: 'true'
 
 Update (Visual, DE):
     extends: .E2E Update
@@ -317,12 +325,12 @@ Update (Visual, DE):
         variables:
             - $CYPRESS_PERCY_USAGE == "true"
     script:
-        - cd .gitlab-ci/e2e/test/
+        - cd tests/e2e
         - echo $PERCY_BUILD_NAME
         - timeout 20m npx percy exec -- cypress run
             --browser chrome --config baseUrl=http://localhost:8000,numTestsKeptInMemory=0 --headless
             --env expectedVersion=$TAG,usePercy=$CYPRESS_PERCY_USAGE,testBase="Update"
-            --spec cypress/integration/updater/auto-update.spec.js
+            --spec cypress/integration/recovery/updater/auto-update.spec.js
         - timeout 5m npx percy exec -- cypress run
             --browser chrome --config baseUrl=http://localhost:8000,numTestsKeptInMemory=0 --headless
             --env expectedVersion=$TAG,testDataUsage=true,testBase="Update",locale="de-DE",usePercy=$CYPRESS_PERCY_USAGE
@@ -330,6 +338,7 @@ Update (Visual, DE):
     variables:
         E2E_INSTALL_PACKAGE_URL: $REFERENCE_INSTALLER_URL
         E2E_TEST_DATA_FILE: "v6.1.6_test_data.tar.xz"
+        CYPRESS_SKIP_INIT: 'true'
 
 Update (DE):
     extends: .E2E Update
@@ -340,18 +349,19 @@ Update (DE):
         variables:
             - $CYPRESS_PERCY_USAGE != "true"
     script:
-        - cd .gitlab-ci/e2e/test/
+        - cd tests/e2e
         - timeout 20m $(npm bin)/cypress run
             --browser chrome --config baseUrl=http://localhost:8000,numTestsKeptInMemory=0 --headless
             --env expectedVersion=$TAG,testBase="Update"
-            --spec cypress/integration/updater/auto-update.spec.js
+            --spec cypress/integration/recovery/updater/auto-update.spec.js
         - timeout 5m $(npm bin)/cypress run
             --browser chrome --config baseUrl=http://localhost:8000,numTestsKeptInMemory=0 --headless
             --env expectedVersion=$TAG,testDataUsage=true,testBase="Update",locale="de-DE"
-            --spec "cypress/integration/visual/*"
+            --spec "cypress/integration/recovery/visual/*"
     variables:
         E2E_INSTALL_PACKAGE_URL: $REFERENCE_INSTALLER_URL
         E2E_TEST_DATA_FILE: "v6.1.6_test_data.tar.xz"
+        CYPRESS_SKIP_INIT: 'true'
 
 
 Update from latest:
@@ -363,11 +373,11 @@ Update from latest:
         variables:
             - $E2E_INSTALL_PACKAGE_URL_LATEST
     script:
-        - cd .gitlab-ci/e2e/test/
+        - cd tests/e2e
         - timeout 20m $(npm bin)/cypress run
             --browser chrome --config baseUrl=http://localhost:8000,numTestsKeptInMemory=0 --headless
             --env expectedVersion=$TAG,testBase="Update"
-            --spec cypress/integration/updater/auto-update.spec.js
+            --spec cypress/integration/recovery/updater/auto-update.spec.js
         - timeout 5m $(npm bin)/cypress run
             --browser chrome --config baseUrl=http://localhost:8000,numTestsKeptInMemory=0 --headless
             --env expectedVersion=$TAG,testDataUsage=true,testBase="Update",locale="de-DE"
@@ -378,6 +388,7 @@ Update from latest:
     variables:
         E2E_INSTALL_PACKAGE_URL: $E2E_INSTALL_PACKAGE_URL_LATEST
         E2E_TEST_DATA_FILE: "v6.1.6_test_data.tar.xz"
+        CYPRESS_SKIP_INIT: 'true'
 
 Finalize Percy Build:
     extends: .e2e_install_base

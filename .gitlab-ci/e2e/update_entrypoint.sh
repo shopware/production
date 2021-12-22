@@ -10,11 +10,6 @@ set -e
 # E2E_TEST_DATA_FILE=v6.1.6_test_data.tar.xz
 E2E_TEST_DATA_URL="${E2E_TEST_DATA_BASE_URL}/${E2E_TEST_DATA_FILE}"
 
-if [[ -z ${E2E_INSTALL_PACKAGE_URL} || -z ${E2E_TEST_DATA_BASE_URL} || -z ${E2E_TEST_DATA_FILE} ]]; then
-    echo "please define the variables E2E_INSTALL_PACKAGE_URL, E2E_TEST_DATA_BASE_URL and E2E_TEST_DATA_FILE"
-    exit 1
-fi
-
 if [[ -n ${E2E_INSTALL_PACKAGE_USE_LATEST:-""} ]]; then
     major="$(echo "$REFERENCE_INSTALLER_URL" | sed -n -e 's/.*install_v\([0-9]\.[0-9]\).*/\1/p')"
     major="${major:-6}"
@@ -28,6 +23,11 @@ if [[ -n ${E2E_INSTALL_PACKAGE_USE_LATEST:-""} ]]; then
 
     echo "Changed package url to ${latest}"
     E2E_INSTALL_PACKAGE_URL="${latest}"
+fi
+
+if [[ -z ${E2E_INSTALL_PACKAGE_URL} || -z ${E2E_TEST_DATA_BASE_URL} || -z ${E2E_TEST_DATA_FILE} ]]; then
+    echo "please define the variables E2E_INSTALL_PACKAGE_URL, E2E_TEST_DATA_BASE_URL and E2E_TEST_DATA_FILE"
+    exit 1
 fi
 
 E2E_INSTALL_PACKAGE_FILE=$(basename "${E2E_INSTALL_PACKAGE_URL}")
