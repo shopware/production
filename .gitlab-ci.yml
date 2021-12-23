@@ -366,6 +366,8 @@ Update (DE):
 
 Update from latest:
     extends: .E2E Update
+    tags:
+        - m5.large
     only:
         refs:
             - schedules
