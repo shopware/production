@@ -11,6 +11,7 @@ custom/*
 /config/packages/local.yaml
 /config/packages/local.yml
 
+/public/recovery
 /public/fonts/*
 !/public/fonts/.gitkeep
 /public/img/*
