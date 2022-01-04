@@ -252,9 +252,6 @@ class ReleaseServiceTest extends TestCase
 
         static::assertSame($composerJson['minimum-stability'], 'stable');
 
-        static::assertFileExists($config['projectRoot'] . '/public/recovery/install/data/version');
-        static::assertSame($tag, file_get_contents($config['projectRoot'] . '/public/recovery/install/data/version'));
-
         $localProdSha = $this->execGit(['rev-parse', $tag], $this->fakeProd);
         $prodSha = $this->execGit(['rev-parse', $tag], $this->fakeRemoteRepos . '/prod');
         static::assertSame($localProdSha, $prodSha);

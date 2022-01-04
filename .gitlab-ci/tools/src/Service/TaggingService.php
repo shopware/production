@@ -186,7 +186,7 @@ class TaggingService
 
         $shellCode = <<<CODE
             set -e
-            git -C $repository add PLATFORM_COMMIT_SHA composer.json composer.lock public/recovery/install/data/version
+            git -C $repository add PLATFORM_COMMIT_SHA composer.json composer.lock
             git -C $repository commit -m $commitMsg $sign
             git -C $repository tag $escapedTag -a -m $commitMsg $signTag
             git -C $repository remote add release $gitRemoteUrl
