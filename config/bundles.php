@@ -23,4 +23,8 @@ if (\class_exists('Shopware\Core\Maintenance\Maintenance')) {
     $bundles[Shopware\Core\Maintenance\Maintenance::class] = ['all' => true];
 }
 
+if (\class_exists(Shopware\Core\DevOps\DevOps::class)) {
+    $bundles[Shopware\Core\DevOps\DevOps::class] = ['e2e' => true];
+}
+
 return $bundles;
