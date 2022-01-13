@@ -10,12 +10,10 @@ variables:
     CYPRESS_PERCY_USAGE: $CYPRESS_PERCY_USAGE
     PERCY_BUILD_NAME: '000'
     CYPRESS_shopwareRoot: $CI_PROJECT_DIR
-    # TODO: remove after test
-    PLATFORM_BRANCH: next-17762/add-jobs-for-scenarios
 
 stages:
     - build
-    #- analyze
+    - analyze
     - test
     - prepare-release
     - release
@@ -90,6 +88,9 @@ Build Test Package:
         # clone platform if it's not cached. We use caching to speed up the split
         - export TAG=${TAG:-$(.gitlab-ci/tools/console release:show-next-tag)}
         - echo "$TAG"
+        - SHOPWARE_VERSION="$(git describe --abbrev=0)"
+        - SHOPWARE_VERSION="${SHOPWARE_VERSION#"v"}"
+        - echo "$SHOPWARE_VERSION" > artifacts/SHOPWARE_VERSION
         - 'if [[ -z "$TAG" ]]; then echo "TAG is empty"; exit 1; fi'
         - '[[ -d .platform/ ]] || git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/platform.git -b ${DEFAULT_PLATFORM_BRANCH} --bare .platform'
         - git -C .platform remote set-url origin https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/platform.git
@@ -130,7 +131,6 @@ Build Test Package:
             /artifacts/additional_update_files
             /artifacts/additional_deleted_files
         - echo ${TAG} > artifacts/TAG
-        - git tag | tail -n1 > artifacts/LATEST_TAG
         - echo ${CI_JOB_ID} > artifacts/PACKAGE_JOB_ID
         - echo ${MATCHING_BRANCH} > artifacts/PLATFORM_BRANCH
 
@@ -140,7 +140,7 @@ Build Test Package:
             - artifacts/
             - repos/
 
-.Static Analysis:
+Static Analysis:
     stage: analyze
     image: shopware/development:7.4-composer-2
     only:
@@ -196,6 +196,18 @@ Install (Visual, EN):
         - cp artifacts/install*.tar.xz install.tar.xz
         - tar -xf install.tar.xz
         - rm install.tar.xz
+        - >
+            if [[ -n "$CI_MERGE_REQUEST_ID" ]]; then
+
+            mkdir -p config/packages/ || true
+
+            cat > config/packages/ci.yaml <<EOF
+
+            parameters:
+              kernel.shopware_version: '$SHOPWARE_VERSION'
+            EOF
+
+            fi
         - /entrypoint supervisord > /dev/null 2>&1 &
         - apt-get update && apt-get install -y xvfb
         - tar -xf artifacts/tests.tar
@@ -249,6 +261,19 @@ Install (NL):
         - cp artifacts/install*.tar.xz install.tar.xz
         - tar -xf install.tar.xz
         - rm install.tar.xz
+        - export SHOPWARE_VERSION=$(cat artifacts/SHOPWARE_VERSION)
+        - >
+            if [[ -n "$CI_MERGE_REQUEST_ID" ]]; then
+
+            mkdir -p config/packages/ || true
+
+            cat > config/packages/ci.yaml <<EOF
+
+            parameters:
+              kernel.shopware_version: '$SHOPWARE_VERSION'
+            EOF
+
+            fi
         - /entrypoint supervisord > /dev/null 2>&1 &
         - apt-get update && apt-get install -y xvfb
         - tar -xf artifacts/tests.tar
@@ -260,20 +285,36 @@ Install (NL):
             --spec cypress/integration/recovery/installer/install_nl.spec.js
 
 
-Install (NL) new:
+Install (NL) with scenarios:
     extends: .e2e_install_base
+    allow_failure: true
     variables:
         GIT_STRATEGY: none
         #CYPRESS_SKIP_INIT: 'true'
         CYPRESS_localUsage: 'true'
         APP_ENV: e2e
     script:
+        - export TAG=$(cat artifacts/TAG)
+        - export SHOPWARE_VERSION=$(cat artifacts/SHOPWARE_VERSION)
         - cp artifacts/install*.tar.xz install.tar.xz
         - tar -xf install.tar.xz
         - rm install.tar.xz
         - /entrypoint supervisord > /dev/null 2>&1 &
         - apt-get update && apt-get install -y xvfb jq
         - tar -xf artifacts/tests.tar
+        - >
+            if [[ -n "$CI_MERGE_REQUEST_ID" ]]; then
+
+            mkdir -p config/packages/ || true
+
+            cat > config/packages/ci.yaml <<EOF
+
+            parameters:
+              kernel.shopware_version: '$SHOPWARE_VERSION'
+            EOF
+
+            fi
+        - cat config/packages/ci.yaml || true
         - cd tests/e2e
         - npm clean-install
         - $(npm bin)/cypress run
@@ -281,8 +322,6 @@ Install (NL) new:
             --env expectedVersion=$TAG,locale="nl-NL"
             --spec cypress/integration/recovery/installer/install_nl.spec.js
         - cd $CI_PROJECT_DIR
-        - export TAG=$(cat artifacts/TAG)
-        - export LATEST_TAG=$(cat artifacts/LATEST_TAG)
         - .gitlab-ci/install_store_plugin.bash SwagLanguagePack SwagPayPal
         - bin/console e2e:dump-db
         - cd tests/e2e

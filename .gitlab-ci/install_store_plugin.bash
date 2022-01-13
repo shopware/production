@@ -114,8 +114,8 @@ activate_plugin() {
 }
 
 PROJECT_DIR="${PROJECT_DIR:-$PWD}"
-LATEST_TAG="${LATEST_TAG:-"$TAG"}"
-PLATFORM_VERSION="${LATEST_TAG#"v"}"
+SHOPWARE_VERSION="${SHOPWARE_VERSION:-"$TAG"}"
+PLATFORM_VERSION="${SHOPWARE_VERSION#"v"}"
 
 for technical_name in "$@"
 do
