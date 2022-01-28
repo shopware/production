@@ -2,6 +2,7 @@
 <?php declare(strict_types=1);
 
 use Composer\InstalledVersions;
+use Shopware\Core\DevOps\Environment\EnvironmentHelper;
 use Shopware\Core\Framework\Plugin\KernelPluginLoader\ComposerPluginLoader;
 use Shopware\Core\Framework\Plugin\KernelPluginLoader\DbalKernelPluginLoader;
 use Shopware\Core\Framework\Plugin\KernelPluginLoader\StaticKernelPluginLoader;
@@ -21,7 +22,7 @@ if (class_exists(Dotenv::class) && (file_exists($projectRoot . '/.env.local.php'
     (new Dotenv())->usePutenv()->bootEnv(dirname(__DIR__) . '/.env');
 }
 
-if (!isset($_SERVER['PROJECT_ROOT'])) {
+if (!EnvironmentHelper::hasVariable('PROJECT_ROOT')) {
     $_SERVER['PROJECT_ROOT'] = $projectRoot;
 }
 
@@ -31,7 +32,8 @@ $debug = ($_SERVER['APP_DEBUG'] ?? ($env !== 'prod')) && !$input->hasParameterOp
 
 $pluginLoader = new StaticKernelPluginLoader($classLoader, null);
 
-if (trim($_SERVER['DATABASE_URL'] ?? '') === '') {
+$databaseUrl = EnvironmentHelper::getVariable('DATABASE_URL', getenv('DATABASE_URL'));
+if (trim($databaseUrl ?? '') === '') {
     // fake DATABASE_URL
     $_SERVER['DATABASE_URL'] = Kernel::PLACEHOLDER_DATABASE_URL;
 
@@ -39,7 +41,7 @@ if (trim($_SERVER['DATABASE_URL'] ?? '') === '') {
         $pluginLoader = new ComposerPluginLoader($classLoader, null);
     }
 } else {
-    if (!isset($_SERVER['INSTALL'])) {
+    if (!EnvironmentHelper::hasVariable('INSTALL')) {
         $pluginLoader = new DbalKernelPluginLoader($classLoader, null, \Shopware\Core\Kernel::getConnection());
     }
 }
