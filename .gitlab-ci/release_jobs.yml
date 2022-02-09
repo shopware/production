@@ -6,7 +6,7 @@
 
 
 .install_alpine_deps: &install_alpine_deps
-    - apk --no-cache add npm openssh-client git bash jq composer php-ctype php-curl php-dom php-fileinfo php-gd php-iconv php-intl php-json php-mbstring php-pdo php-pdo_mysql php-simplexml php-xml php-zip php-xmlwriter php-tokenizer php-sodium php-session
+    - apk --no-cache add tar npm openssh-client git bash jq composer php-ctype php-curl php-dom php-fileinfo php-gd php-iconv php-intl php-json php-mbstring php-pdo php-pdo_mysql php-simplexml php-xml php-zip php-xmlwriter php-tokenizer php-sodium php-session
 
 Test alpine image install:
     stage: test
@@ -133,6 +133,9 @@ Build package:
         # set platform HEAD to commit in PLATFORM_COMMIT_SHA file
         - git -C .platform reset --soft FETCH_HEAD
         - git -C .platform fetch --tags origin
+        # export e2e tests for usage in test jobs
+        - git -C .platform archive --output $PWD/artifacts/tests.tar HEAD tests/
+        - tar --append -f $PWD/artifacts/tests.tar .gitlab-ci/install_store_plugin.bash
     script:
         - composer install --no-interaction
         - docker build . -t ${CI_REGISTRY_IMAGE}:${CI_COMMIT_TAG}
@@ -147,7 +150,10 @@ Build package:
             /artifacts/additional_update_files
             /artifacts/additional_deleted_files
         - echo ${CI_COMMIT_TAG} > artifacts/TAG
+        - echo ${CI_COMMIT_TAG} > artifacts/PLATFORM_BRANCH
         - echo ${CI_JOB_ID} > artifacts/PACKAGE_JOB_ID
+        - SHOPWARE_VERSION="${CI_COMMIT_TAG#"v"}"
+        - echo "$SHOPWARE_VERSION" > artifacts/SHOPWARE_VERSION
     artifacts:
         when: always
         paths:
