@@ -73,24 +73,36 @@ class ChangelogService
     public function fetchFixedIssues(string $version): array
     {
         $version = $this->findVersion($version);
-        $response = $this->client->request('GET', 'search', [
-            'headers' => [
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/json',
-            ],
-            'query' => [
-                'jql' => sprintf('project=\'NEXT\' AND status=Resolved AND resolution=done AND fixVersion=\'%s\' AND cf[10202]=Yes ORDER BY key ASC', $version),
-                'fields' => 'id,key,customfield_11901,customfield_11900,customfield_12101,customfield_12100',
-                'maxResults' => 1000,
-            ],
-        ]);
 
-        $items = json_decode($response->getBody()->getContents(), true);
-        if (json_last_error() !== \JSON_ERROR_NONE) {
-            throw new \RuntimeException('Failed to decode json');
-        }
+        $issues = [];
+        $startAt = 0;
 
-        return $items;
+        do {
+            $response = $this->client->request('GET', 'search', [
+                'headers' => [
+                    'Accept' => 'application/json',
+                    'Content-Type' => 'application/json',
+                ],
+                'query' => [
+                    'jql' => sprintf('project=\'NEXT\' AND status=Resolved AND resolution=done AND fixVersion=\'%s\' AND cf[10202]=Yes ORDER BY key ASC', $version),
+                    'fields' => 'id,key,customfield_11901,customfield_11900,customfield_12101,customfield_12100',
+                    'startAt' => $startAt,
+                ],
+            ]);
+
+            $result = json_decode($response->getBody()->getContents(), true);
+
+            if (json_last_error() !== \JSON_ERROR_NONE) {
+                throw new \RuntimeException('Failed to decode json');
+            }
+
+            $issues = array_merge($issues, $result['issues']);
+            $startAt += $result['maxResults'];
+        } while (!empty($result['issues']));
+
+        $result['issues'] = $issues;
+
+        return $result;
     }
 
     public function getChangeLog(string $version): array
