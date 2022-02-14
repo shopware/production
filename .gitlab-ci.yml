@@ -178,6 +178,10 @@ Tools unit test:
 Unit PHP 7.4:
     extends: .unit_base
     image: shopware/development:7.4-composer-2
+    only:
+        refs:
+            - schedules
+            - merge_requests
 
 # e2e install tests
 
@@ -287,6 +291,10 @@ Install (NL):
 
 Install (NL) with scenarios:
     extends: .e2e_install_base
+    only:
+        refs:
+            - schedules
+            - merge_requests
     allow_failure: true
     variables:
         GIT_STRATEGY: none

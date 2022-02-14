@@ -54,6 +54,7 @@ Release tags:
     stage: release
     image: alpine:3.13
     when: manual
+    needs: ['Build Test Package']
     only:
         refs:
             - schedules
