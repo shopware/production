@@ -6,7 +6,7 @@
 
 
 .install_alpine_deps: &install_alpine_deps
-    - apk --no-cache add tar npm openssh-client git bash jq composer php-ctype php-curl php-dom php-fileinfo php-gd php-iconv php-intl php-json php-mbstring php-pdo php-pdo_mysql php-simplexml php-xml php-zip php-xmlwriter php-tokenizer php-sodium php-session
+    - apk --no-cache add tar npm openssh-client git bash jq composer php-ctype php-curl php-dom php-fileinfo php-gd php-iconv php-intl php-json php-mbstring php-pdo php-pdo_mysql php-simplexml php-xml php-zip php-xmlwriter php-tokenizer php-sodium php-session xz
 
 Test alpine image install:
     stage: test
@@ -54,6 +54,7 @@ Release tags:
     stage: release
     image: alpine:3.13
     when: manual
+    needs: ['Build Test Package']
     only:
         refs:
             - schedules
