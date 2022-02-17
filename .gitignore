@@ -1,3 +1,5 @@
+/auth.json
+
 custom/*
 !custom/plugins/.gitkeep
 !custom/static-plugins/
