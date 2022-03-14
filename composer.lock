@@ -58,16 +58,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.212.4",
+            "version": "3.212.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "4961e8b34fab8b92a459067f264b4dc66f969a57"
+                "reference": "7f4c976df8a0fbe8d786e4b479d44e22478ce8af"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/4961e8b34fab8b92a459067f264b4dc66f969a57",
-                "reference": "4961e8b34fab8b92a459067f264b4dc66f969a57",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/7f4c976df8a0fbe8d786e4b479d44e22478ce8af",
+                "reference": "7f4c976df8a0fbe8d786e4b479d44e22478ce8af",
                 "shasum": ""
             },
             "require": {
@@ -143,9 +143,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.212.4"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.212.7"
             },
-            "time": "2022-03-08T19:19:48+00:00"
+            "time": "2022-03-11T19:14:33+00:00"
         },
         {
             "name": "brick/math",
@@ -2253,6 +2253,70 @@
                 "source": "https://github.com/php-enqueue/enqueue-dev"
             },
             "time": "2021-10-29T20:37:39+00:00"
+        },
+        {
+            "name": "enqueue/redis",
+            "version": "0.10.9",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-enqueue/redis.git",
+                "reference": "f07c93f36a7eb10a8f7ef02d4282781e448e5ab7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-enqueue/redis/zipball/f07c93f36a7eb10a8f7ef02d4282781e448e5ab7",
+                "reference": "f07c93f36a7eb10a8f7ef02d4282781e448e5ab7",
+                "shasum": ""
+            },
+            "require": {
+                "enqueue/dsn": "^0.10",
+                "php": "^7.3|^8.0",
+                "queue-interop/queue-interop": "^0.8",
+                "ramsey/uuid": "^3.5|^4"
+            },
+            "require-dev": {
+                "enqueue/null": "0.10.x-dev",
+                "enqueue/test": "0.10.x-dev",
+                "phpunit/phpunit": "^9.5",
+                "predis/predis": "^1.1",
+                "queue-interop/queue-spec": "^0.6.2"
+            },
+            "suggest": {
+                "ext-redis": "If you'd like to use phpredis extension."
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "0.10.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Enqueue\\Redis\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Message Queue Redis Transport",
+            "homepage": "https://enqueue.forma-pro.com/",
+            "keywords": [
+                "messaging",
+                "queue",
+                "redis"
+            ],
+            "support": {
+                "docs": "https://github.com/php-enqueue/enqueue-dev/blob/master/docs/index.md",
+                "email": "opensource@forma-pro.com",
+                "forum": "https://gitter.im/php-enqueue/Lobby",
+                "issues": "https://github.com/php-enqueue/enqueue-dev/issues",
+                "source": "https://github.com/php-enqueue/enqueue-dev"
+            },
+            "time": "2021-02-17T21:24:05+00:00"
         },
         {
             "name": "ezimuel/guzzlestreams",
@@ -5523,21 +5587,21 @@
         },
         {
             "name": "shopware/administration",
-            "version": "6.4.8.2",
+            "version": "6.4.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/administration.git",
-                "reference": "c82c650efd6841094f00835d1406c2e5003c0a59"
+                "reference": "565d6dbacba496df2166410df0dbdb2d0802e9ad"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/administration/zipball/c82c650efd6841094f00835d1406c2e5003c0a59",
-                "reference": "c82c650efd6841094f00835d1406c2e5003c0a59",
+                "url": "https://api.github.com/repos/shopware/administration/zipball/565d6dbacba496df2166410df0dbdb2d0802e9ad",
+                "reference": "565d6dbacba496df2166410df0dbdb2d0802e9ad",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.4.3 || ^8.0",
-                "shopware/core": "v6.4.8.2",
+                "shopware/core": "v6.4.9.0",
                 "symfony/framework-bundle": "~5.4.1",
                 "symfony/http-foundation": "~5.4.1",
                 "symfony/mime": "~5.4.0",
@@ -5565,10 +5629,10 @@
                 "docs": "https://developer.shopware.com",
                 "forum": "https://forum.shopware.com",
                 "issues": "https://issues.shopware.com",
-                "source": "https://github.com/shopware/administration/tree/v6.4.8.2",
+                "source": "https://github.com/shopware/administration/tree/v6.4.9.0",
                 "wiki": "https://developer.shopware.com"
             },
-            "time": "2022-03-09T00:11:07+00:00"
+            "time": "2022-03-14T03:08:27+00:00"
         },
         {
             "name": "shopware/conflicts",
@@ -5602,16 +5666,16 @@
         },
         {
             "name": "shopware/core",
-            "version": "6.4.8.2",
+            "version": "6.4.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/core.git",
-                "reference": "f186c17d0312f61ebd44fdcb06ce6f76bddb80a0"
+                "reference": "a3ff5273d439df2e03e07abc71b0e5921cdefd77"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/core/zipball/f186c17d0312f61ebd44fdcb06ce6f76bddb80a0",
-                "reference": "f186c17d0312f61ebd44fdcb06ce6f76bddb80a0",
+                "url": "https://api.github.com/repos/shopware/core/zipball/a3ff5273d439df2e03e07abc71b0e5921cdefd77",
+                "reference": "a3ff5273d439df2e03e07abc71b0e5921cdefd77",
                 "shasum": ""
             },
             "require": {
@@ -5625,6 +5689,7 @@
                 "doctrine/inflector": "~1.4.4",
                 "dompdf/dompdf": "1.0.2",
                 "enqueue/dbal": "0.10.11",
+                "enqueue/redis": "0.10.9",
                 "ext-curl": "*",
                 "ext-dom": "*",
                 "ext-fileinfo": "*",
@@ -5765,23 +5830,23 @@
                 "docs": "https://developer.shopware.com",
                 "forum": "https://forum.shopware.com",
                 "issues": "https://issues.shopware.com",
-                "source": "https://github.com/shopware/core/tree/v6.4.8.2",
+                "source": "https://github.com/shopware/core/tree/v6.4.9.0",
                 "wiki": "https://developer.shopware.com"
             },
-            "time": "2022-03-09T00:11:06+00:00"
+            "time": "2022-03-14T03:08:27+00:00"
         },
         {
             "name": "shopware/elasticsearch",
-            "version": "6.4.8.2",
+            "version": "6.4.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/elasticsearch.git",
-                "reference": "d21edc1f5c42a9e41428a5feb9ff1c9433c02f6b"
+                "reference": "49c32c85f0967becc3b5a876fcbf9128d83a348f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/elasticsearch/zipball/d21edc1f5c42a9e41428a5feb9ff1c9433c02f6b",
-                "reference": "d21edc1f5c42a9e41428a5feb9ff1c9433c02f6b",
+                "url": "https://api.github.com/repos/shopware/elasticsearch/zipball/49c32c85f0967becc3b5a876fcbf9128d83a348f",
+                "reference": "49c32c85f0967becc3b5a876fcbf9128d83a348f",
                 "shasum": ""
             },
             "require": {
@@ -5790,7 +5855,7 @@
                 "ext-curl": "*",
                 "ongr/elasticsearch-dsl": "7.2.2",
                 "php": "^7.4.3 || ^8.0",
-                "shopware/core": "v6.4.8.2",
+                "shopware/core": "v6.4.9.0",
                 "symfony/http-foundation": "~5.4.1",
                 "symfony/messenger": "~5.4.0"
             },
@@ -5822,28 +5887,28 @@
                 "docs": "https://developer.shopware.com",
                 "forum": "https://forum.shopware.com",
                 "issues": "https://issues.shopware.com",
-                "source": "https://github.com/shopware/elasticsearch/tree/v6.4.8.2",
+                "source": "https://github.com/shopware/elasticsearch/tree/v6.4.9.0",
                 "wiki": "https://developer.shopware.com"
             },
-            "time": "2022-03-09T00:11:06+00:00"
+            "time": "2022-03-14T03:08:27+00:00"
         },
         {
             "name": "shopware/recovery",
-            "version": "6.4.8.2",
+            "version": "6.4.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/recovery.git",
-                "reference": "f6f689dd2de22eb2354f6c24d9dab88d18070692"
+                "reference": "6977fa724845efbd40304c6bd8b61d2ff6b844c2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/recovery/zipball/f6f689dd2de22eb2354f6c24d9dab88d18070692",
-                "reference": "f6f689dd2de22eb2354f6c24d9dab88d18070692",
+                "url": "https://api.github.com/repos/shopware/recovery/zipball/6977fa724845efbd40304c6bd8b61d2ff6b844c2",
+                "reference": "6977fa724845efbd40304c6bd8b61d2ff6b844c2",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.4.3 || ^8.0",
-                "shopware/core": "v6.4.8.2"
+                "shopware/core": "v6.4.9.0"
             },
             "require-dev": {
                 "phpunit/phpunit": "~9.5.6"
@@ -5865,23 +5930,23 @@
                 "docs": "https://developer.shopware.com",
                 "forum": "https://forum.shopware.com",
                 "issues": "https://issues.shopware.com",
-                "source": "https://github.com/shopware/recovery/tree/v6.4.8.2",
+                "source": "https://github.com/shopware/recovery/tree/v6.4.9.0",
                 "wiki": "https://developer.shopware.com"
             },
-            "time": "2022-03-09T00:11:06+00:00"
+            "time": "2022-03-14T03:08:27+00:00"
         },
         {
             "name": "shopware/storefront",
-            "version": "6.4.8.2",
+            "version": "6.4.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/storefront.git",
-                "reference": "d426e8b4d16d3d4f4bc714149706c5dfd412673d"
+                "reference": "cca1588f36f31cbf963fa783c90abe0ee7507c46"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/storefront/zipball/d426e8b4d16d3d4f4bc714149706c5dfd412673d",
-                "reference": "d426e8b4d16d3d4f4bc714149706c5dfd412673d",
+                "url": "https://api.github.com/repos/shopware/storefront/zipball/cca1588f36f31cbf963fa783c90abe0ee7507c46",
+                "reference": "cca1588f36f31cbf963fa783c90abe0ee7507c46",
                 "shasum": ""
             },
             "require": {
@@ -5890,7 +5955,7 @@
                 "padaliyajay/php-autoprefixer": "1.3",
                 "php": "^7.4.3 || ^8.0",
                 "scssphp/scssphp": "1.10.0",
-                "shopware/core": "v6.4.8.2",
+                "shopware/core": "v6.4.9.0",
                 "symfony/cache": "~5.4.0",
                 "symfony/cache-contracts": "2.2.0",
                 "symfony/config": "~5.4.0",
@@ -5942,10 +6007,10 @@
                 "docs": "https://developer.shopware.com",
                 "forum": "https://forum.shopware.com",
                 "issues": "https://issues.shopware.com",
-                "source": "https://github.com/shopware/storefront/tree/v6.4.8.2",
+                "source": "https://github.com/shopware/storefront/tree/v6.4.9.0",
                 "wiki": "https://developer.shopware.com"
             },
-            "time": "2022-03-09T00:11:07+00:00"
+            "time": "2022-03-14T03:08:28+00:00"
         },
         {
             "name": "squirrelphp/twig-php-syntax",
