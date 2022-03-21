@@ -248,7 +248,7 @@ Install (EN):
         - cd tests/e2e
         - npm clean-install
         - timeout 20m $(npm bin)/cypress run
-            --browser chrome --config baseUrl=http://localhost:8000,numTestsKeptInMemory=0 --headless
+            --browser chrome --config baseUrl=http://localhost:8000,numTestsKeptInMemory=0,retries=0 --headless
             --env expectedVersion=$TAG
             --spec cypress/integration/recovery/installer/basic.spec.js
         - timeout 5m $(npm bin)/cypress run
@@ -284,7 +284,7 @@ Install (NL):
         - cd tests/e2e
         - npm clean-install
         - $(npm bin)/cypress run
-            --browser chrome --config baseUrl=http://localhost:8000,numTestsKeptInMemory=0 --headless
+            --browser chrome --config baseUrl=http://localhost:8000,numTestsKeptInMemory=0,retries=0 --headless
             --env expectedVersion=$TAG,locale="nl-NL"
             --spec cypress/integration/recovery/installer/install_nl.spec.js
 
@@ -326,7 +326,7 @@ Install (NL) with scenarios:
         - cd tests/e2e
         - npm clean-install
         - $(npm bin)/cypress run
-            --browser chrome --config baseUrl=http://localhost:8000,numTestsKeptInMemory=0 --headless
+            --browser chrome --config baseUrl=http://localhost:8000,numTestsKeptInMemory=0,retries=0 --headless
             --env expectedVersion=$TAG,locale="nl-NL"
             --spec cypress/integration/recovery/installer/install_nl.spec.js
         - cd $CI_PROJECT_DIR
