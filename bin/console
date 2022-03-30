@@ -3,6 +3,7 @@
 
 use Composer\InstalledVersions;
 use Shopware\Core\DevOps\Environment\EnvironmentHelper;
+use Shopware\Core\Framework\Plugin\KernelPluginLoader\ComposerPluginLoader;
 use Shopware\Core\Framework\Plugin\KernelPluginLoader\DbalKernelPluginLoader;
 use Shopware\Core\Framework\Plugin\KernelPluginLoader\StaticKernelPluginLoader;
 use Shopware\Production\HttpKernel;
@@ -60,6 +61,9 @@ if (trim($databaseUrl ?? '') === '') {
     $_SERVER['DATABASE_URL'] = Kernel::PLACEHOLDER_DATABASE_URL;
 } elseif (!EnvironmentHelper::hasVariable('INSTALL')) {
     $pluginLoader = new DbalKernelPluginLoader($classLoader, null, \Shopware\Core\Kernel::getConnection());
+}
+if ($_SERVER['COMPOSER_PLUGIN_LOADER'] ?? $_SERVER['DISABLE_EXTENSIONS'] ?? false) {
+    $pluginLoader = new ComposerPluginLoader($classLoader);
 }
 
 $kernel = new HttpKernel($env, $debug, $classLoader);
