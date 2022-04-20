@@ -1,8 +1,7 @@
 /auth.json
 
-custom/*
+custom/plugins/*
 !custom/plugins/.gitkeep
-!custom/static-plugins/
 
 /vendor/
 /bin/vendor/
