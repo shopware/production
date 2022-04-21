@@ -44,7 +44,7 @@
         - rm install.tar.xz
         - mkdir artifacts
         - mv /tmp/file_list artifacts/
-        - /entrypoint supervisord > artifacts/supervisord.log 2>&1 &
+        - SERVICE_PHPFPM_OPTS=--allow-to-run-as-root CONTAINER_UID=root /entrypoint supervisord > artifacts/supervisord.log 2>&1 &
     script:
         - bin/console system:install --drop-database --basic-setup --force
         - php src/TestBootstrap.php
@@ -151,7 +151,7 @@
         # start update api mock
         - DEBUG=* UPDATE_FILE_PATH=$CI_PROJECT_DIR/artifacts/update.zip node .gitlab-ci/e2e/update-api-mock.js &
         # start webserver
-        - /entrypoint supervisord > /dev/null 2>&1 &
+        - SERVICE_PHPFPM_OPTS=--allow-to-run-as-root CONTAINER_UID=root /entrypoint supervisord > artifacts/supervisord.log 2>&1 &
         - apt-get update && apt-get install -y xvfb
         # make sure that chrome uses latest version
         - apt-get -fy --only-upgrade install google-chrome-stable
@@ -191,7 +191,7 @@
         # start update api mock
         - DEBUG=* UPDATE_FILE_PATH=$CI_PROJECT_DIR/artifacts/update.zip node .gitlab-ci/e2e/update-api-mock.js &
         # start webserver
-        - /entrypoint supervisord > /dev/null 2>&1 &
+        - SERVICE_PHPFPM_OPTS=--allow-to-run-as-root CONTAINER_UID=root /entrypoint supervisord > artifacts/supervisord.log 2>&1 &
         - apt-get update && apt-get install -y xvfb jq
         # make sure that chrome uses latest version
         - apt-get -fy --only-upgrade install google-chrome-stable
