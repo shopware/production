@@ -10,7 +10,6 @@ STOREFRONT_ROOT="${STOREFRONT_ROOT:-"${PROJECT_ROOT}/vendor/shopware/storefront"
 BIN_TOOL="${CWD}/console"
 
 if [[ ${CI-""} ]]; then
-    echo "CI detected, using bin/ci"
     BIN_TOOL="${CWD}/ci"
     chmod +x "$BIN_TOOL"
 fi
