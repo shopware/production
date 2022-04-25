@@ -2,20 +2,20 @@
 
 CWD="$(cd -P -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 
-set -e
+set -euo pipefail
 
 export PROJECT_ROOT="${PROJECT_ROOT:-"$(dirname "$CWD")"}"
 ADMIN_ROOT="${ADMIN_ROOT:-"${PROJECT_ROOT}/vendor/shopware/administration"}"
 
 BIN_TOOL="${CWD}/console"
 
-if [[ ${CI} ]]; then
+if [[ ${CI-""} ]]; then
     BIN_TOOL="${CWD}/ci"
     chmod +x "$BIN_TOOL"
 fi
 
 # build admin
-[[ ${SHOPWARE_SKIP_BUNDLE_DUMP} ]] || "${BIN_TOOL}" bundle:dump
+[[ ${SHOPWARE_SKIP_BUNDLE_DUMP-""} ]] || "${BIN_TOOL}" bundle:dump
 
 if [[ $(command -v jq) ]]; then
     OLDPWD=$(pwd)
@@ -44,5 +44,5 @@ else
 fi
 
 (cd "${ADMIN_ROOT}"/Resources/app/administration && npm clean-install && npm run build)
-[[ ${SHOPWARE_SKIP_ASSET_COPY} ]] ||"${BIN_TOOL}" asset:install
+[[ ${SHOPWARE_SKIP_ASSET_COPY-""} ]] ||"${BIN_TOOL}" asset:install
 

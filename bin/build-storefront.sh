@@ -2,20 +2,21 @@
 
 CWD="$(cd -P -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 
-set -e
+set -euo pipefail
 
 export PROJECT_ROOT="${PROJECT_ROOT:-"$(dirname "$CWD")"}"
 STOREFRONT_ROOT="${STOREFRONT_ROOT:-"${PROJECT_ROOT}/vendor/shopware/storefront"}"
 
 BIN_TOOL="${CWD}/console"
 
-if [[ ${CI} ]]; then
+if [[ ${CI-""} ]]; then
+    echo "CI detected, using bin/ci"
     BIN_TOOL="${CWD}/ci"
     chmod +x "$BIN_TOOL"
 fi
 
 # build storefront
-[[ ${SHOPWARE_SKIP_BUNDLE_DUMP} ]] || "${BIN_TOOL}" bundle:dump
+[[ ${SHOPWARE_SKIP_BUNDLE_DUMP-""} ]] || "${BIN_TOOL}" bundle:dump
 DATABASE_URL="" "${BIN_TOOL}" feature:dump
 
 if [[ $(command -v jq) ]]; then
@@ -47,5 +48,5 @@ fi
 npm --prefix "${STOREFRONT_ROOT}"/Resources/app/storefront clean-install
 node "${STOREFRONT_ROOT}"/Resources/app/storefront/copy-to-vendor.js
 npm --prefix "${STOREFRONT_ROOT}"/Resources/app/storefront run production
-[[ ${SHOPWARE_SKIP_ASSET_COPY} ]] ||"${BIN_TOOL}" asset:install
-[[ ${SHOPWARE_SKIP_THEME_COMPILE} ]] || "${BIN_TOOL}" theme:compile
+[[ ${SHOPWARE_SKIP_ASSET_COPY-""} ]] ||"${BIN_TOOL}" asset:install
+[[ ${SHOPWARE_SKIP_THEME_COMPILE-""} ]] || "${BIN_TOOL}" theme:compile
