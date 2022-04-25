@@ -30,7 +30,7 @@ if [[ $(command -v jq) ]]; then
         path=$(dirname "$srcPath")
         name=$(echo "$config" | jq -r '.technicalName' )
 
-        if [[ -f "$path/package.json" && ! -f "$path/node_modules" && $name != "storefront" ]]; then
+        if [[ -f "$path/package.json" && ! -d "$path/node_modules" && $name != "storefront" ]]; then
             echo "=> Installing npm dependencies for ${name}"
 
             if [[ -f "$path/package-lock.json" ]]; then
