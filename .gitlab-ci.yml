@@ -212,7 +212,7 @@ Install (Visual, EN):
             EOF
 
             fi
-        - /entrypoint supervisord > /dev/null 2>&1 &
+        - SERVICE_PHPFPM_OPTS=--allow-to-run-as-root CONTAINER_UID=root /entrypoint supervisord > artifacts/supervisord.log 2>&1 &
         - apt-get update && apt-get install -y xvfb
         - tar -xf artifacts/tests.tar
         - cd tests/e2e
@@ -242,7 +242,7 @@ Install (EN):
         - cp artifacts/install*.tar.xz install.tar.xz
         - tar -xf install.tar.xz
         - rm install.tar.xz
-        - /entrypoint supervisord > /dev/null 2>&1 &
+        - SERVICE_PHPFPM_OPTS=--allow-to-run-as-root CONTAINER_UID=root /entrypoint supervisord > artifacts/supervisord.log 2>&1 &
         - apt-get update && apt-get install -y xvfb
         - tar -xf artifacts/tests.tar
         - cd tests/e2e
@@ -278,7 +278,7 @@ Install (NL):
             EOF
 
             fi
-        - /entrypoint supervisord > /dev/null 2>&1 &
+        - SERVICE_PHPFPM_OPTS=--allow-to-run-as-root CONTAINER_UID=root /entrypoint supervisord > artifacts/supervisord.log 2>&1 &
         - apt-get update && apt-get install -y xvfb
         - tar -xf artifacts/tests.tar
         - cd tests/e2e
@@ -307,7 +307,7 @@ Install (NL) with scenarios:
         - cp artifacts/install*.tar.xz install.tar.xz
         - tar -xf install.tar.xz
         - rm install.tar.xz
-        - /entrypoint supervisord > /dev/null 2>&1 &
+        - SERVICE_PHPFPM_OPTS=--allow-to-run-as-root CONTAINER_UID=root /entrypoint supervisord > artifacts/supervisord.log 2>&1 &
         - apt-get update && apt-get install -y xvfb jq
         - tar -xf artifacts/tests.tar
         - >
