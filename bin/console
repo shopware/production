@@ -71,4 +71,7 @@ $kernel = new HttpKernel($env, $debug, $classLoader);
 $kernel->setPluginLoader($pluginLoader);
 
 $application = new Application($kernel->getKernel());
+$kernel->getKernel()->boot();
+$application->setName('Shopware');
+$application->setVersion($kernel->getKernel()->getContainer()->getParameter('kernel.shopware_version'));
 $application->run($input);
