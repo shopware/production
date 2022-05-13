@@ -242,6 +242,19 @@ Install (EN):
         - cp artifacts/install*.tar.xz install.tar.xz
         - tar -xf install.tar.xz
         - rm install.tar.xz
+        - export SHOPWARE_VERSION=$(cat artifacts/SHOPWARE_VERSION)
+        - >
+            if [[ -n "$CI_MERGE_REQUEST_ID" ]]; then
+
+            mkdir -p config/packages/ || true
+
+            cat > config/packages/ci.yaml <<EOF
+
+            parameters:
+              kernel.shopware_version: '$SHOPWARE_VERSION'
+            EOF
+
+            fi
         - SERVICE_PHPFPM_OPTS=--allow-to-run-as-root CONTAINER_UID=root /entrypoint supervisord > artifacts/supervisord.log 2>&1 &
         - apt-get update && apt-get install -y xvfb
         - tar -xf artifacts/tests.tar
