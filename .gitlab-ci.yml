@@ -31,7 +31,6 @@ Build Test Package:
     interruptible: true
     stage: build
     tags:
-        - release
         - m5.large
     only:
         refs:
