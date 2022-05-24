@@ -115,7 +115,7 @@ Build package:
     image: docker:19
     services:
         -   name: docker:18.09.7-dind
-            alias: docker
+            alias: dind
     variables:
         GIT_STRATEGY: none
         SHOPWARE_SKIP_BUNDLE_DUMP: 1

@@ -1,7 +1,7 @@
 variables:
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: "/certs"
-    DOCKER_HOST: "tcp://docker:2375"
+    DOCKER_HOST: "tcp://dind:2375"
     # shopware 6
     WEB_DOCUMENT_ROOT: '$CI_PROJECT_DIR/public'
     MYSQL_ROOT_PASSWORD: root
@@ -39,7 +39,7 @@ Build Test Package:
     image: debian:bullseye-slim
     services:
         -   name: docker:18.09.7-dind
-            alias: docker
+            alias: dind
     variables:
         GIT_STRATEGY: none
         SPLIT_REPOS: "Administration Storefront Core Elasticsearch Recovery"
