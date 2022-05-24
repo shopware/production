@@ -114,13 +114,15 @@ Build package:
             - $CI_COMMIT_REF_PROTECTED == "true"
     image: docker:19
     services:
-        -   name: docker:18.09.7-dind
-            alias: docker
+      - name: docker:20.10-dind
+        alias: dockerdaemon
     variables:
         GIT_STRATEGY: none
         SHOPWARE_SKIP_BUNDLE_DUMP: 1
         SHOPWARE_SKIP_ASSET_COPY: 1
         SHOPWARE_SKIP_THEME_COMPILE: 1
+        DOCKER_HOST: tcp://dockerdaemon:2375/
+        DOCKER_TLS_CERTDIR: ""
     before_script:
         - *install_alpine_deps
         - umask 0022
