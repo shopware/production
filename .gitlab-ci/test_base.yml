@@ -86,7 +86,7 @@
 .e2e_base:
     extends: .test_base
     services:
-        -   name: mysql:5.7
+        -   name: mariadb:10.3
             alias: mysql
         -   name: elastic/elasticsearch:7.8.0
             alias: elasticsearch
