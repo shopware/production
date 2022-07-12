@@ -58,16 +58,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.229.2",
+            "version": "3.231.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "142a872fd7172bf5d067f4e30e4f89593296fc8f"
+                "reference": "f52b74060063d6545ee8324f1d161f37fcb87c8c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/142a872fd7172bf5d067f4e30e4f89593296fc8f",
-                "reference": "142a872fd7172bf5d067f4e30e4f89593296fc8f",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/f52b74060063d6545ee8324f1d161f37fcb87c8c",
+                "reference": "f52b74060063d6545ee8324f1d161f37fcb87c8c",
                 "shasum": ""
             },
             "require": {
@@ -85,6 +85,7 @@
                 "andrewsville/php-token-reflection": "^1.4",
                 "aws/aws-php-sns-message-validator": "~1.0",
                 "behat/behat": "~3.0",
+                "composer/composer": "^1.10.22",
                 "doctrine/cache": "~1.4",
                 "ext-dom": "*",
                 "ext-openssl": "*",
@@ -143,9 +144,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.229.2"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.231.3"
             },
-            "time": "2022-07-01T18:16:42+00:00"
+            "time": "2022-07-11T18:20:19+00:00"
         },
         {
             "name": "brick/math",
@@ -359,16 +360,16 @@
         },
         {
             "name": "composer/composer",
-            "version": "2.2.15",
+            "version": "2.2.16",
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/composer.git",
-                "reference": "509dcbd4f8d459e0ef2ef223a231b8c31bceed78"
+                "reference": "8c0ee53ff67399b0eec4eee2c5dc5189ec6938a6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/composer/zipball/509dcbd4f8d459e0ef2ef223a231b8c31bceed78",
-                "reference": "509dcbd4f8d459e0ef2ef223a231b8c31bceed78",
+                "url": "https://api.github.com/repos/composer/composer/zipball/8c0ee53ff67399b0eec4eee2c5dc5189ec6938a6",
+                "reference": "8c0ee53ff67399b0eec4eee2c5dc5189ec6938a6",
                 "shasum": ""
             },
             "require": {
@@ -438,7 +439,7 @@
             "support": {
                 "irc": "ircs://irc.libera.chat:6697/composer",
                 "issues": "https://github.com/composer/composer/issues",
-                "source": "https://github.com/composer/composer/tree/2.2.15"
+                "source": "https://github.com/composer/composer/tree/2.2.16"
             },
             "funding": [
                 {
@@ -454,7 +455,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-07-01T10:01:26+00:00"
+            "time": "2022-07-05T14:50:29+00:00"
         },
         {
             "name": "composer/metadata-minifier",
@@ -14618,5 +14619,5 @@
     "platform-overrides": {
         "php": "7.4.3"
     },
-    "plugin-api-version": "2.0.0"
+    "plugin-api-version": "2.2.0"
 }
