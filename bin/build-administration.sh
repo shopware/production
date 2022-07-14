@@ -11,7 +11,10 @@ BIN_TOOL="${CWD}/console"
 
 if [[ ${CI-""} ]]; then
     BIN_TOOL="${CWD}/ci"
-    chmod +x "$BIN_TOOL"
+
+    if [[ ! -x "$BIN_TOOL" ]]; then
+        chmod +x "$BIN_TOOL"
+    fi
 fi
 
 # build admin
