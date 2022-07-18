@@ -60,7 +60,7 @@
             for TEST_SUITE in $TEST_SUITES; do
                 log_unit_file=artifacts/$TEST_SUITE.junit.xml
                 set -x
-                php vendor/bin/phpunit --configuration phpunit.xml.dist --log-junit "$log_unit_file" --colors=never --testsuite "$TEST_SUITE" || FAILED=1
+                php vendor/bin/phpunit --configuration phpunit.xml.dist --exclude-group=quarantined --log-junit "$log_unit_file" --colors=never --testsuite "$TEST_SUITE" || FAILED=1
                 set +x
                 tail -n +3 "$log_unit_file" | head -n -1 >> artifacts/phpunit.junit.xml
             done
