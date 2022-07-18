@@ -8,6 +8,7 @@ variables:
     CYPRESS_PERCY_USAGE: $CYPRESS_PERCY_USAGE
     PERCY_BUILD_NAME: '000'
     CYPRESS_shopwareRoot: $CI_PROJECT_DIR
+    CYPRESS_grepTags: '-quarantined'
 
 stages:
     - build
