@@ -1,5 +1,6 @@
 <?php declare(strict_types=1);
 
+use DG\BypassFinals;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelLifecycleManager;
 use Symfony\Component\Dotenv\Dotenv;
 
@@ -50,6 +51,10 @@ chmod($jwtDir . '/private.pem', 0660);
 chmod($jwtDir . '/public.pem', 0660);
 
 $loader = require TEST_PROJECT_DIR . '/vendor/autoload.php';
+
+if (class_exists(BypassFinals::class)) {
+    BypassFinals::enable();
+}
 
 KernelLifecycleManager::prepare($loader);
 
