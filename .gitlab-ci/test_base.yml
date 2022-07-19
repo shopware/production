@@ -43,7 +43,8 @@
         - mv /tmp/install.tar.xz .
         - tar -xf install.tar.xz
         - rm install.tar.xz
-        - mkdir artifacts
+        - mkdir artifacts var/logs || true
+        - chmod +w var/logs
         - mv /tmp/file_list artifacts/
         - SERVICE_PHPFPM_OPTS=--allow-to-run-as-root CONTAINER_UID=root /entrypoint supervisord > artifacts/supervisord.log 2>&1 &
     script:
