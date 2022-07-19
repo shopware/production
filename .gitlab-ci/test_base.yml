@@ -48,6 +48,10 @@
         - mv /tmp/file_list artifacts/
         - SERVICE_PHPFPM_OPTS=--allow-to-run-as-root CONTAINER_UID=root /entrypoint supervisord > artifacts/supervisord.log 2>&1 &
     script:
+        # big hack to allow mocking of final classes. In platform this is handled by dg/bypass-finals, but it does not seem to work in production
+        - >
+          grep -R 'final class' vendor -l | grep '\.php$' | xargs sed -i -e 's/^final class/class/g';
+          grep -R 'final public function' vendor -l | grep '\.php$' | xargs sed -i -e 's/final public function/public function/g'
         - bin/console system:install --drop-database --basic-setup --force
         - php src/TestBootstrap.php
         - chown -R application:application .
