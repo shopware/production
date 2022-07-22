@@ -104,6 +104,10 @@
             - tests/e2e/artifacts/
             - var/log/*
 
+.install_node: &install_node
+  - curl https://get.volta.sh | bash
+  - volta install "node@$NODE_VERSION"
+
 .e2e_install_base:
     extends: .e2e_base
     before_script:
@@ -114,6 +118,7 @@
         - export PERCY_PARALLEL_TOTAL=-1
         - export TAG=$(cat artifacts/TAG)
         - export CYPRESS_CACHE_FOLDER="${PWD}/.cypress"
+        - *install_node
         - npm config set cache $PWD/.npm
         - npm install --save-dev @percy/cypress
     after_script:
@@ -130,6 +135,7 @@
         - export PERCY_PARALLEL_TOTAL=-1
         # delete everything but the caches and the .gitlab-ci dir
         - rm -Rf $(ls -a | grep -vE '^(\.gitlab-ci|\.cypress|\.npm|artifacts|\.\.?)$') || true
+        - *install_node
         - npm config set cache $PWD/.npm
         - export CYPRESS_CACHE_FOLDER="${PWD}/.cypress"
         - export TAG=${CI_COMMIT_TAG:-$(cat artifacts/TAG)}
@@ -179,6 +185,7 @@
         - export PERCY_PARALLEL_TOTAL=-1
         # delete everything but the caches and the .gitlab-ci dir
         - rm -Rf $(ls -a | grep -vE '^(\.gitlab-ci|\.cypress|\.npm|artifacts|\.\.?)$') || true
+        - *install_node
         - npm config set cache $PWD/.npm
         - export CYPRESS_CACHE_FOLDER="${PWD}/.cypress"
         - export TAG=${CI_COMMIT_TAG:-$(cat artifacts/TAG)}

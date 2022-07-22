@@ -9,6 +9,7 @@ variables:
     PERCY_BUILD_NAME: '000'
     CYPRESS_shopwareRoot: $CI_PROJECT_DIR
     CYPRESS_grepTags: '-quarantined'
+    NODE_VERSION: '16'
 
 stages:
     - build
