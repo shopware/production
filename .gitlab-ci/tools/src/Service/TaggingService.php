@@ -180,6 +180,11 @@ class TaggingService
         $commitMsg = escapeshellarg('Release ' . $tag);
         $escapedTag = escapeshellarg($tag);
         $gitRemoteUrl = escapeshellarg($gitRemoteUrl);
+        $targetBranch = $this->config['targetBranch'];
+
+        if (empty($targetBranch)) {
+            throw new \RuntimeException('The target branch to push the release commit to is missing. Please specify one using the TARGET_BRANCH environment variable.');
+        }
 
         $sign = $this->sign ? '--gpg-sign' : '--no-gpg-sign';
         $signTag = $this->sign ? '--sign' : '--no-sign';
@@ -190,6 +195,7 @@ class TaggingService
             git -C $repository commit -m $commitMsg $sign
             git -C $repository tag $escapedTag -a -m $commitMsg $signTag
             git -C $repository remote add release $gitRemoteUrl
+            git -C $repository push release $targetBranch
             git -C $repository push release --tags
 CODE;
 
