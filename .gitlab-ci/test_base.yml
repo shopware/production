@@ -1,3 +1,8 @@
+include:
+  project: 'shopware/6/product/platform'
+  ref: 'trunk'
+  file: '.gitlab/lib/scripts.yml'
+
 .test_base:
     image: shopware/development:7.4-composer-2
     stage: test
@@ -104,18 +109,6 @@
             - tests/e2e/artifacts/
             - var/log/*
 
-.install_node: &install_node
-  - curl https://get.volta.sh | bash
-  - export PATH="~/.volta/bin:$PATH"
-  - volta install "node@$NODE_VERSION"
-  - 'rm /usr/bin/{npm,node,npx}'
-  - ln -s ~/.volta/bin/node /usr/bin/node
-  - ln -s ~/.volta/bin/npm /usr/bin/npm
-  - ln -s ~/.volta/bin/npx /usr/bin/npx
-  - npm config set --global user 0
-  - npm config set --global unsafe-perm true
-  - node --version
-
 .e2e_install_base:
     extends: .e2e_base
     before_script:
@@ -126,7 +119,7 @@
         - export PERCY_PARALLEL_TOTAL=-1
         - export TAG=$(cat artifacts/TAG)
         - export CYPRESS_CACHE_FOLDER="${PWD}/.cypress"
-        - *install_node
+        - !reference [ .scripts, install-node, script ]
         - npm config set cache $PWD/.npm
         - npm install --save-dev @percy/cypress
     after_script:
@@ -143,7 +136,7 @@
         - export PERCY_PARALLEL_TOTAL=-1
         # delete everything but the caches and the .gitlab-ci dir
         - rm -Rf $(ls -a | grep -vE '^(\.gitlab-ci|\.cypress|\.npm|artifacts|\.\.?)$') || true
-        - *install_node
+        - !reference [ .scripts, install-node, script ]
         - npm config set cache $PWD/.npm
         - export CYPRESS_CACHE_FOLDER="${PWD}/.cypress"
         - export TAG=${CI_COMMIT_TAG:-$(cat artifacts/TAG)}
@@ -193,7 +186,7 @@
         - export PERCY_PARALLEL_TOTAL=-1
         # delete everything but the caches and the .gitlab-ci dir
         - rm -Rf $(ls -a | grep -vE '^(\.gitlab-ci|\.cypress|\.npm|artifacts|\.\.?)$') || true
-        - *install_node
+        - !reference [ .scripts, install-node, script ]
         - npm config set cache $PWD/.npm
         - export CYPRESS_CACHE_FOLDER="${PWD}/.cypress"
         - export TAG=${CI_COMMIT_TAG:-$(cat artifacts/TAG)}
