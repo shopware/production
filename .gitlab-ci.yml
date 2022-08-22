@@ -222,7 +222,7 @@ Install (Visual, EN):
         - timeout 20m npx percy exec -- cypress run
             --browser chrome --config baseUrl=http://localhost:8000,numTestsKeptInMemory=0 --headless
             --env expectedVersion=$TAG,usePercy=$CYPRESS_PERCY_USAGE,SKIP_INIT=true
-            --spec cypress/integration/recovery/installer/basic.spec.js
+            --spec cypress/integration/installer/basic.spec.js
         - $CI_PROJECT_DIR/bin/console e2e:dump-db
         - timeout 20m npx percy exec -- cypress run
             --browser chrome --config baseUrl=http://localhost:8000,numTestsKeptInMemory=0 --headless
@@ -265,7 +265,7 @@ Install (EN):
         - timeout 20m $(npm bin)/cypress run
             --browser chrome --config baseUrl=http://localhost:8000,numTestsKeptInMemory=0,retries=0 --headless
             --env expectedVersion=$TAG,SKIP_INIT=true
-            --spec cypress/integration/recovery/installer/basic.spec.js
+            --spec cypress/integration/installer/basic.spec.js
         - $CI_PROJECT_DIR/bin/console e2e:dump-db
         - timeout 5m $(npm bin)/cypress run
             --browser chrome --config baseUrl=http://localhost:8000,numTestsKeptInMemory=0 --headless
@@ -303,7 +303,7 @@ Install (NL):
         - $(npm bin)/cypress run
             --browser chrome --config baseUrl=http://localhost:8000,numTestsKeptInMemory=0,retries=0 --headless
             --env expectedVersion=$TAG,locale="nl-NL"
-            --spec cypress/integration/recovery/installer/install_nl.spec.js
+            --spec cypress/integration/installer/install_nl.spec.js
 
 
 Install (NL) with scenarios:
@@ -343,7 +343,7 @@ Install (NL) with scenarios:
         - $(npm bin)/cypress run
             --browser chrome --config baseUrl=http://localhost:8000,numTestsKeptInMemory=0,retries=0 --headless
             --env expectedVersion=$TAG,locale="nl-NL",SKIP_INIT=true
-            --spec cypress/integration/recovery/installer/install_nl.spec.js
+            --spec cypress/integration/installer/install_nl.spec.js
         - cd $CI_PROJECT_DIR
         - .gitlab-ci/install_store_plugin.bash SwagLanguagePack SwagPayPal
         - $CI_PROJECT_DIR/bin/console e2e:dump-db
@@ -483,4 +483,3 @@ Finalize Percy Build:
         - export PERCY_PARALLEL_TOTAL=-1
         - npm install -g percy --unsafe-perm=true
         - percy finalize --all
-
