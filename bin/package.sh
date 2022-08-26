@@ -94,6 +94,8 @@ fi
 
 cd "${PROJECT_ROOT}"
 
+cp "${PROJECT_ROOT}/public/.htaccess.dist" "${PROJECT_ROOT}/public/.htaccess"
+
 zip -qq -9 -r "$ARTIFACTS_DIR/install.zip" .
 
 if command -v xz >/dev/null 2>&1; then
