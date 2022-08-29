@@ -401,6 +401,7 @@ Update (Visual, DE):
     script:
         - cd tests/e2e
         - echo $PERCY_BUILD_NAME
+        - chown "$(id -u):$(id -g)" . # Hack to prevent npm exec from dropping privileges. This behaviour has been removed already, but is used either by our version of `npm` or probably `percy exec`: https://github.com/npm/promise-spawn/commit/a8b21fc66b31e3d724f6b91c77d8bc4f6172ed13#diff-e727e4bdf3657fd1d798edcd6b099d6e092f8573cba266154583a746bba0f346
         - timeout 20m npx percy exec -- cypress run
             --browser chrome --config baseUrl=http://localhost:8000,numTestsKeptInMemory=0 --headless
             --env expectedVersion=$TAG,usePercy=$CYPRESS_PERCY_USAGE,testBase="Update",SKIP_INIT=true
@@ -461,7 +462,6 @@ Update from latest:
             --spec "cypress/integration/recovery/visual/*"
         - cd $CI_PROJECT_DIR
         - php bin/console bundle:dump
-        - bash bin/build-administration.sh
     variables:
         E2E_INSTALL_PACKAGE_URL: $E2E_INSTALL_PACKAGE_URL_LATEST
         E2E_TEST_DATA_FILE: "v6.1.6_test_data.tar.xz"
@@ -481,5 +481,5 @@ Finalize Percy Build:
         - export PERCY_BUILD_NAME=$CI_PIPELINE_ID
         - export PERCY_PARALLEL_NONCE=$PERCY_BUILD_NAME
         - export PERCY_PARALLEL_TOTAL=-1
-        - npm install -g percy --unsafe-perm=true
-        - percy finalize --all
+        - npm install --save-dev @percy/cli
+        - npx percy build:finalize

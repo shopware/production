@@ -90,6 +90,10 @@ include:
 
 .e2e_base:
     extends: .test_base
+    variables:
+      CYPRESS_CACHE_FOLDER: "${CI_PROJECT_DIR}/.cypress"
+    tags:
+      - m5.large
     services:
         -   name: mariadb:10.3
             alias: mysql
@@ -118,7 +122,6 @@ include:
         - export PERCY_PARALLEL_NONCE=$PERCY_BUILD_NAME
         - export PERCY_PARALLEL_TOTAL=-1
         - export TAG=$(cat artifacts/TAG)
-        - export CYPRESS_CACHE_FOLDER="${PWD}/.cypress"
         - !reference [ .scripts, install-node, script ]
         - npm config set cache $PWD/.npm
         - npm install --save-dev @percy/cypress
@@ -138,7 +141,6 @@ include:
         - rm -Rf $(ls -a | grep -vE '^(\.gitlab-ci|\.cypress|\.npm|artifacts|\.\.?)$') || true
         - !reference [ .scripts, install-node, script ]
         - npm config set cache $PWD/.npm
-        - export CYPRESS_CACHE_FOLDER="${PWD}/.cypress"
         - export TAG=${CI_COMMIT_TAG:-$(cat artifacts/TAG)}
         - '[[ -n $E2E_INSTALL_PACKAGE_URL && -n $E2E_TEST_DATA_FILE ]]'
         - curl ${E2E_INSTALL_PACKAGE_URL} --silent -o install
@@ -188,7 +190,6 @@ include:
         - rm -Rf $(ls -a | grep -vE '^(\.gitlab-ci|\.cypress|\.npm|artifacts|\.\.?)$') || true
         - !reference [ .scripts, install-node, script ]
         - npm config set cache $PWD/.npm
-        - export CYPRESS_CACHE_FOLDER="${PWD}/.cypress"
         - export TAG=${CI_COMMIT_TAG:-$(cat artifacts/TAG)}
         - '[[ -n $E2E_INSTALL_PACKAGE_URL && -n $E2E_TEST_DATA_FILE ]]'
         - curl ${E2E_INSTALL_PACKAGE_URL} --silent -o install
