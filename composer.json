@@ -1,41 +1,14 @@
 {
     "name": "shopware/production",
-    "type": "project",
     "license": "MIT",
-    "config": {
-        "optimize-autoloader": true,
-        "platform": {
-            "php": "7.4.3"
-        },
-        "sort-packages": true,
-        "allow-plugins": {
-            "composer/package-versions-deprecated": true
-        }
-    },
-    "prefer-stable": true,
-    "minimum-stability": "stable",
-    "scripts": {
-        "pre-install-cmd": [
-            "[ ! -f vendor/autoload.php ] || $PHP_BINARY bin/console system:update:prepare"
-        ],
-        "pre-update-cmd": [
-            "[ ! -f vendor/autoload.php ] || $PHP_BINARY bin/console system:update:prepare"
-        ],
-        "post-install-cmd": [
-            "@composer install --working-dir vendor/shopware/recovery --no-interaction --no-scripts",
-            "@composer install --working-dir=vendor/shopware/recovery/Common --no-interaction --optimize-autoloader --no-suggest",
-            "[ ! -f vendor/autoload.php ] || $PHP_BINARY bin/console system:update:finish"
-        ],
-        "post-update-cmd": [
-            "@composer install --working-dir vendor/shopware/recovery --no-interaction --no-scripts",
-            "@composer install --working-dir=vendor/shopware/recovery/Common --no-interaction --optimize-autoloader --no-suggest",
-            "[ ! -f vendor/autoload.php ] || $PHP_BINARY bin/console system:update:finish"
-        ]
-    },
-    "autoload": {
-        "psr-4": {
-            "Shopware\\Production\\": "src/"
-        }
+    "type": "project",
+    "require": {
+        "composer-runtime-api": "^2.0",
+        "shopware/administration": "~v6.4.0",
+        "shopware/core": "~v6.4.0",
+        "shopware/elasticsearch": "~v6.4.0",
+        "shopware/storefront": "~v6.4.0",
+        "symfony/flex": "~2"
     },
     "repositories": [
         {
@@ -53,38 +26,37 @@
             }
         }
     ],
-    "require": {
-        "php": "^7.4.3 || ^8.0",
-        "composer-runtime-api": "^2.0",
-        "shopware/administration": "~v6.4.0",
-        "shopware/core": "~v6.4.0",
-        "shopware/elasticsearch": "~v6.4.0",
-        "shopware/recovery": "~v6.4.0",
-        "shopware/storefront": "~v6.4.0"
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "config": {
+        "allow-plugins": {
+            "symfony/flex": true
+        },
+        "optimize-autoloader": true,
+        "sort-packages": true
     },
-    "require-dev": {
-        "ext-openssl": "*",
-        "ext-tokenizer": "*",
-        "ext-xmlwriter": "*",
-        "defuse/php-encryption": "~2.2.1",
-        "dms/phpunit-arraysubset-asserts": "^0.2.1",
-        "fakerphp/faker": "~1.14.1",
-        "johnkary/phpunit-speedtrap": "~3.3.0",
-        "league/flysystem-memory": "~1.0.2",
-        "maltyxx/images-generator": "~1.0.0",
-        "mbezhanov/faker-provider-collection": "~2.0.1",
-        "nikic/php-parser": "~4.13.2",
-        "opis/json-schema": "~1.0.19",
-        "phpunit/php-code-coverage": "~9.2.14",
-        "phpunit/phpunit": "~9.5.17",
-        "smalot/pdfparser": "~0.14.0",
-        "symfony/browser-kit": "~4.4 || ~5.2.3 || ~5.3.0 || ~5.4.0",
-        "symfony/dependency-injection": "~4.4 || ~5.2.3 || ~5.3.0 || ~5.4.0",
-        "symfony/css-selector": "^5.3",
-        "symfony/dom-crawler": "~4.4 || ~5.2.3 || ~5.3.0 || ~5.4.0",
-        "symfony/phpunit-bridge": "~4.4 || ~5.2.3 || ~5.3.0 || ~5.4.0",
-        "symfony/stopwatch": "~4.4 || ~5.2.3 || ~5.3.0 || ~5.4.0",
-        "symfony/var-dumper": "~4.4 || ~5.2.3 || ~5.3.0 || ~5.4.0",
-        "symfony/web-profiler-bundle": "~4.4 || ~5.2.3 || ~5.3.0 || ~5.4.0"
+    "extra": {
+        "symfony": {
+            "allow-contrib": true,
+            "endpoint": [
+                "https://api.github.com/repos/shopware/recipes/contents/index.json?ref=flex/main"
+            ]
+        }
+    },
+    "scripts": {
+        "auto-scripts": {
+            "pre-install-cmd": [
+                "[ ! -f vendor/autoload.php ] || $PHP_BINARY bin/console system:update:prepare"
+            ],
+            "pre-update-cmd": [
+                "[ ! -f vendor/autoload.php ] || $PHP_BINARY bin/console system:update:prepare"
+            ],
+            "post-install-cmd": [
+                "[ ! -f vendor/autoload.php ] || $PHP_BINARY bin/console system:update:finish"
+            ],
+            "post-update-cmd": [
+                "[ ! -f vendor/autoload.php ] || $PHP_BINARY bin/console system:update:finish"
+            ]
+        }
     }
 }

@@ -1,4 +1,0 @@
-/tmp/*
-/tmp/fake-remote-repos/*
-!/tmp/fake-remote-repos
-!/tmp/fake-remote-repos/.gitkeep
