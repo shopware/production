@@ -44,19 +44,5 @@
                 "https://api.github.com/repos/shopware/recipes/contents/index.json?ref=flex/main"
             ]
         }
-    },
-    "scripts": {
-        "pre-install-cmd": [
-            "[ ! -f vendor/autoload.php ] || $PHP_BINARY bin/console system:update:prepare"
-        ],
-        "pre-update-cmd": [
-            "[ ! -f vendor/autoload.php ] || $PHP_BINARY bin/console system:update:prepare"
-        ],
-        "post-install-cmd": [
-            "[ ! -f vendor/autoload.php ] || $PHP_BINARY bin/console system:update:finish"
-        ],
-        "post-update-cmd": [
-            "[ ! -f vendor/autoload.php ] || $PHP_BINARY bin/console system:update:finish"
-        ]
     }
 }
