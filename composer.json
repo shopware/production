@@ -4,10 +4,10 @@
     "type": "project",
     "require": {
         "composer-runtime-api": "^2.0",
-        "shopware/administration": "~v6.4.0",
-        "shopware/core": "~v6.4.0",
-        "shopware/elasticsearch": "~v6.4.0",
-        "shopware/storefront": "~v6.4.0",
+        "shopware/administration": "~v6.4.11",
+        "shopware/core": "~v6.4.11",
+        "shopware/elasticsearch": "~v6.4.11",
+        "shopware/storefront": "~v6.4.11",
         "symfony/flex": "~2"
     },
     "repositories": [
@@ -44,19 +44,17 @@
         }
     },
     "scripts": {
-        "auto-scripts": {
-            "pre-install-cmd": [
-                "[ ! -f vendor/autoload.php ] || $PHP_BINARY bin/console system:update:prepare"
-            ],
-            "pre-update-cmd": [
-                "[ ! -f vendor/autoload.php ] || $PHP_BINARY bin/console system:update:prepare"
-            ],
-            "post-install-cmd": [
-                "[ ! -f vendor/autoload.php ] || $PHP_BINARY bin/console system:update:finish"
-            ],
-            "post-update-cmd": [
-                "[ ! -f vendor/autoload.php ] || $PHP_BINARY bin/console system:update:finish"
-            ]
-        }
+        "pre-install-cmd": [
+            "[ ! -f vendor/autoload.php ] || $PHP_BINARY bin/console system:update:prepare"
+        ],
+        "pre-update-cmd": [
+            "[ ! -f vendor/autoload.php ] || $PHP_BINARY bin/console system:update:prepare"
+        ],
+        "post-install-cmd": [
+            "[ ! -f vendor/autoload.php ] || $PHP_BINARY bin/console system:update:finish"
+        ],
+        "post-update-cmd": [
+            "[ ! -f vendor/autoload.php ] || $PHP_BINARY bin/console system:update:finish"
+        ]
     }
 }
