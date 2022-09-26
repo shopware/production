@@ -37,6 +37,16 @@
         "optimize-autoloader": true,
         "sort-packages": true
     },
+    "scripts": {
+        "auto-scripts": [
+        ],
+        "post-install-cmd": [
+            "@auto-scripts"
+        ],
+        "post-update-cmd": [
+            "@auto-scripts"
+        ]
+    },
     "extra": {
         "symfony": {
             "allow-contrib": true,
