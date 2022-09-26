@@ -31,7 +31,8 @@
     "prefer-stable": true,
     "config": {
         "allow-plugins": {
-            "symfony/flex": true
+            "symfony/flex": true,
+            "symfony/runtime": true
         },
         "optimize-autoloader": true,
         "sort-packages": true
