@@ -58,16 +58,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.238.0",
+            "version": "3.238.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "f55a1f9e34e45d87628937f04bba170fe56015bb"
+                "reference": "14fb64c934614ea5a52c9931189f687f30b6ba3b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/f55a1f9e34e45d87628937f04bba170fe56015bb",
-                "reference": "f55a1f9e34e45d87628937f04bba170fe56015bb",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/14fb64c934614ea5a52c9931189f687f30b6ba3b",
+                "reference": "14fb64c934614ea5a52c9931189f687f30b6ba3b",
                 "shasum": ""
             },
             "require": {
@@ -146,9 +146,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.238.0"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.238.3"
             },
-            "time": "2022-10-04T18:18:02+00:00"
+            "time": "2022-10-07T18:16:40+00:00"
         },
         {
             "name": "brick/math",
@@ -5846,21 +5846,21 @@
         },
         {
             "name": "shopware/administration",
-            "version": "6.4.15.2",
+            "version": "6.4.16.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/administration.git",
-                "reference": "5b224e797d1711b792700178529e3d5afa7a2c42"
+                "reference": "a3b0bbfb255cdf7f84a08df6adf1a5c3b7c02301"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/administration/zipball/5b224e797d1711b792700178529e3d5afa7a2c42",
-                "reference": "5b224e797d1711b792700178529e3d5afa7a2c42",
+                "url": "https://api.github.com/repos/shopware/administration/zipball/a3b0bbfb255cdf7f84a08df6adf1a5c3b7c02301",
+                "reference": "a3b0bbfb255cdf7f84a08df6adf1a5c3b7c02301",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.4.3 || ^8.0",
-                "shopware/core": "v6.4.15.2",
+                "shopware/core": "v6.4.16.0",
                 "symfony/framework-bundle": "~5.4.1",
                 "symfony/http-foundation": "~5.4.1",
                 "symfony/mime": "~5.4.0",
@@ -5888,10 +5888,10 @@
                 "docs": "https://developer.shopware.com",
                 "forum": "https://forum.shopware.com",
                 "issues": "https://issues.shopware.com",
-                "source": "https://github.com/shopware/administration/tree/v6.4.15.2",
+                "source": "https://github.com/shopware/administration/tree/v6.4.16.0",
                 "wiki": "https://developer.shopware.com"
             },
-            "time": "2022-10-05T00:13:12+00:00"
+            "time": "2022-10-10T03:09:48+00:00"
         },
         {
             "name": "shopware/conflicts",
@@ -5925,16 +5925,16 @@
         },
         {
             "name": "shopware/core",
-            "version": "6.4.15.2",
+            "version": "6.4.16.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/core.git",
-                "reference": "9faab748ba3c3bbea5c15524290ab54b4a4a2f3a"
+                "reference": "ab81e0ea34c632b8cc0ababedf5e86fa18197d33"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/core/zipball/9faab748ba3c3bbea5c15524290ab54b4a4a2f3a",
-                "reference": "9faab748ba3c3bbea5c15524290ab54b4a4a2f3a",
+                "url": "https://api.github.com/repos/shopware/core/zipball/ab81e0ea34c632b8cc0ababedf5e86fa18197d33",
+                "reference": "ab81e0ea34c632b8cc0ababedf5e86fa18197d33",
                 "shasum": ""
             },
             "require": {
@@ -6095,23 +6095,23 @@
                 "docs": "https://developer.shopware.com",
                 "forum": "https://forum.shopware.com",
                 "issues": "https://issues.shopware.com",
-                "source": "https://github.com/shopware/core/tree/v6.4.15.2",
+                "source": "https://github.com/shopware/core/tree/v6.4.16.0",
                 "wiki": "https://developer.shopware.com"
             },
-            "time": "2022-10-05T00:13:09+00:00"
+            "time": "2022-10-10T03:09:45+00:00"
         },
         {
             "name": "shopware/elasticsearch",
-            "version": "6.4.15.2",
+            "version": "6.4.16.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/elasticsearch.git",
-                "reference": "c68535a20af30cc0e2809d72ac4e8110150fcb6f"
+                "reference": "5d1c424f446551b1799385735a1b36dd2eee59bf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/elasticsearch/zipball/c68535a20af30cc0e2809d72ac4e8110150fcb6f",
-                "reference": "c68535a20af30cc0e2809d72ac4e8110150fcb6f",
+                "url": "https://api.github.com/repos/shopware/elasticsearch/zipball/5d1c424f446551b1799385735a1b36dd2eee59bf",
+                "reference": "5d1c424f446551b1799385735a1b36dd2eee59bf",
                 "shasum": ""
             },
             "require": {
@@ -6120,7 +6120,7 @@
                 "ext-curl": "*",
                 "ongr/elasticsearch-dsl": "7.2.2",
                 "php": "^7.4.3 || ^8.0",
-                "shopware/core": "v6.4.15.2",
+                "shopware/core": "v6.4.16.0",
                 "symfony/http-foundation": "~5.4.1",
                 "symfony/messenger": "~5.4.0"
             },
@@ -6152,28 +6152,28 @@
                 "docs": "https://developer.shopware.com",
                 "forum": "https://forum.shopware.com",
                 "issues": "https://issues.shopware.com",
-                "source": "https://github.com/shopware/elasticsearch/tree/v6.4.15.2",
+                "source": "https://github.com/shopware/elasticsearch/tree/v6.4.16.0",
                 "wiki": "https://developer.shopware.com"
             },
-            "time": "2022-10-05T00:13:09+00:00"
+            "time": "2022-10-10T03:09:45+00:00"
         },
         {
             "name": "shopware/recovery",
-            "version": "6.4.15.2",
+            "version": "6.4.16.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/recovery.git",
-                "reference": "fb1bb35d1a7d2e589676a7b580fe2766429b1c7b"
+                "reference": "15449704fc166a2eaa5d159af1d3d22608eca543"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/recovery/zipball/fb1bb35d1a7d2e589676a7b580fe2766429b1c7b",
-                "reference": "fb1bb35d1a7d2e589676a7b580fe2766429b1c7b",
+                "url": "https://api.github.com/repos/shopware/recovery/zipball/15449704fc166a2eaa5d159af1d3d22608eca543",
+                "reference": "15449704fc166a2eaa5d159af1d3d22608eca543",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.4.3 || ^8.0",
-                "shopware/core": "v6.4.15.2"
+                "shopware/core": "v6.4.16.0"
             },
             "require-dev": {
                 "phpunit/phpunit": "~9.5.17"
@@ -6195,23 +6195,23 @@
                 "docs": "https://developer.shopware.com",
                 "forum": "https://forum.shopware.com",
                 "issues": "https://issues.shopware.com",
-                "source": "https://github.com/shopware/recovery/tree/v6.4.15.2",
+                "source": "https://github.com/shopware/recovery/tree/v6.4.16.0",
                 "wiki": "https://developer.shopware.com"
             },
-            "time": "2022-10-05T00:13:09+00:00"
+            "time": "2022-10-10T03:09:45+00:00"
         },
         {
             "name": "shopware/storefront",
-            "version": "6.4.15.2",
+            "version": "6.4.16.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopware/storefront.git",
-                "reference": "fc923bd005f072076560405fb0fa133136096e3e"
+                "reference": "36b77e10bc1a2eebe0736215f305e5d0f08cf867"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopware/storefront/zipball/fc923bd005f072076560405fb0fa133136096e3e",
-                "reference": "fc923bd005f072076560405fb0fa133136096e3e",
+                "url": "https://api.github.com/repos/shopware/storefront/zipball/36b77e10bc1a2eebe0736215f305e5d0f08cf867",
+                "reference": "36b77e10bc1a2eebe0736215f305e5d0f08cf867",
                 "shasum": ""
             },
             "require": {
@@ -6221,7 +6221,7 @@
                 "padaliyajay/php-autoprefixer": "1.3",
                 "php": "^7.4.3 || ^8.0",
                 "scssphp/scssphp": "1.10.0",
-                "shopware/core": "v6.4.15.2",
+                "shopware/core": "v6.4.16.0",
                 "symfony/cache": "~5.4.0",
                 "symfony/cache-contracts": "v2.5.2",
                 "symfony/config": "~5.4.0",
@@ -6273,10 +6273,10 @@
                 "docs": "https://developer.shopware.com",
                 "forum": "https://forum.shopware.com",
                 "issues": "https://issues.shopware.com",
-                "source": "https://github.com/shopware/storefront/tree/v6.4.15.2",
+                "source": "https://github.com/shopware/storefront/tree/v6.4.16.0",
                 "wiki": "https://developer.shopware.com"
             },
-            "time": "2022-10-05T00:13:14+00:00"
+            "time": "2022-10-10T03:09:49+00:00"
         },
         {
             "name": "shopwarelabs/dompdf",
