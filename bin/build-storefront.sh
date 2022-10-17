@@ -50,5 +50,5 @@ fi
 npm --prefix "${STOREFRONT_ROOT}"/Resources/app/storefront clean-install
 node "${STOREFRONT_ROOT}"/Resources/app/storefront/copy-to-vendor.js
 npm --prefix "${STOREFRONT_ROOT}"/Resources/app/storefront run production
-[[ ${SHOPWARE_SKIP_ASSET_COPY-""} ]] ||"${BIN_TOOL}" asset:install
+[[ ${SHOPWARE_SKIP_ASSET_COPY-""} ]] ||"${BIN_TOOL}" assets:install
 [[ ${SHOPWARE_SKIP_THEME_COMPILE-""} ]] || "${BIN_TOOL}" theme:compile
