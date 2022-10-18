@@ -22,11 +22,8 @@
         "phpstan/phpstan-phpunit": "^0.12.19",
         "phpstan/phpstan-symfony": "^0.12.33",
         "phpunit/phpunit": "8.5.8",
-        "psalm/plugin-phpunit": "^0.15.1",
-        "psalm/plugin-symfony": "^2.3.0",
         "symfony/debug-bundle": "^5.2",
-        "symplify/easy-coding-standard": "^9.3.12",
-        "vimeo/psalm": "^4.7.2"
+        "symplify/easy-coding-standard": "^9.3.12"
     },
     "license": "MIT",
     "authors": [
