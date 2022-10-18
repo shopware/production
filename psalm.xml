@@ -40,12 +40,6 @@
 
         <PropertyNotSetInConstructor errorLevel="info"/>
 
-        <MethodSignatureMismatch>
-            <errorLevel type="info">
-                <file name="src/Kernel.php"/>
-            </errorLevel>
-        </MethodSignatureMismatch>
-
         <DeprecatedMethod>
             <errorLevel type="info">
                 <referencedMethod name="GuzzleHttp\Client::getConfig" />
