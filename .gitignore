@@ -46,6 +46,8 @@ custom/*
 
 .envrc
 
+/install.lock
+
 /var/*
 !/var/log/.gitkeep
 !/var/cache/.gitkeep
