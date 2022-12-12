@@ -9,7 +9,7 @@
         "shopware/elasticsearch": "~v6.4.15",
         "shopware/storefront": "~v6.4.15",
         "symfony/flex": "~2",
-        "symfony/runtime": "~5.4"
+        "symfony/runtime": "^5.0|^6.0"
     },
     "repositories": [
         {
