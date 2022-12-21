@@ -68,7 +68,7 @@ Build Test Package:
         - apt-get install -y --download-only curl && apt-get install -y curl
         - curl -sL https://deb.nodesource.com/setup_12.x | bash -
         - apt-get install -y --download-only $DEB_PACKAGES && apt-get install -y $DEB_PACKAGES
-        - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+        - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer --2.4
         - npm config set cache $PWD/.npm
         # we need to do the checkout to have correct permissions. See: https://gitlab.com/gitlab-org/gitlab-runner/-/issues/1736
         - umask 0022
