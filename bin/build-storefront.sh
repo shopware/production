@@ -44,7 +44,8 @@ if [[ $(command -v jq) ]]; then
     done
     cd "$OLDPWD" || exit
 else
-    echo "Cannot check extensions for required npm installations as jq is not installed"
+    echo "FATAL: Cannot check extensions for required npm installations as jq is not installed"
+    exit
 fi
 
 npm --prefix "${STOREFRONT_ROOT}"/Resources/app/storefront clean-install
