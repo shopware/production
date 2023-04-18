@@ -3,7 +3,9 @@
 use Shopware\Core\HttpKernel;
 use Shopware\Core\Installer\InstallerKernel;
 use Symfony\Component\Dotenv\Dotenv;
+use Symfony\Component\ErrorHandler\BufferingLogger;
 use Symfony\Component\ErrorHandler\Debug;
+use Symfony\Component\ErrorHandler\ErrorHandler;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -58,6 +60,8 @@ if ($debug) {
     umask(0000);
 
     Debug::enable();
+} else {
+    ErrorHandler::register(new ErrorHandler(new BufferingLogger(), false));
 }
 
 $trustedProxies = $_SERVER['TRUSTED_PROXIES'] ?? $_ENV['TRUSTED_PROXIES'] ?? false;
