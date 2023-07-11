@@ -10,7 +10,7 @@ version: "3.7"
 #  change port for install
 services:
     e2e_update:
-        image: shopware/development:7.4
+        image: shopware/development:8.0-composer-2
         entrypoint: '/e2e/update_entrypoint.sh'
         volumes:
             - ".gitlab-ci/e2e/:/e2e"
@@ -31,7 +31,7 @@ services:
             # E2E_INSTALL_PACKAGE_USE_LATEST: 'true'
 
     e2e_install:
-        image: shopware/development:7.4
+        image: shopware/development:8.0-composer-2
         entrypoint: '/e2e/install_entrypoint.sh'
         volumes:
             - ".gitlab-ci/e2e/:/e2e"
