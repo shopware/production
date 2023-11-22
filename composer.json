@@ -8,8 +8,7 @@
         "shopware/core": "~v6.5.0",
         "shopware/elasticsearch": "~v6.5.0",
         "shopware/storefront": "~v6.5.0",
-        "symfony/flex": "~2",
-        "symfony/runtime": "^5.0|^6.0"
+        "symfony/flex": "~2"
     },
     "repositories": [
         {
