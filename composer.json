@@ -33,7 +33,7 @@
             }
         }
     ],
-    "minimum-stability": "stable",
+    "minimum-stability": "RC",
     "prefer-stable": true,
     "config": {
         "allow-plugins": {
