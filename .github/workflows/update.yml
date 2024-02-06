@@ -13,7 +13,10 @@ jobs:
       with:
        fetch-depth: 0
     - name: Create missing tags
-      run: bash update.sh
+      run: |
+        git config --global user.name "$GITHUB_ACTOR"
+        git config --global user.email "<>"
+        bash update.sh
     - name: Push tags
       run: |
         git push --tags
