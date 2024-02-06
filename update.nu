@@ -9,7 +9,6 @@ http get https://api.github.com/repos/shopware/core/tags | each {|item|
         } else {
             $composerJson.minimum-stability = "stable"
         }
-        $composerJson.minimum-stability = "RC"
         $composerJson.require.shopware/core = $item.name
 
         $composerJson | to json | save composer.json --force
