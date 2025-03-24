@@ -38,7 +38,7 @@
             "App\\": "src/"
         }
     },
-    "minimum-stability": "rc",
+    "minimum-stability": "RC",
     "prefer-stable": true,
     "config": {
         "allow-plugins": {
