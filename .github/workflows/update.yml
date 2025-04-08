@@ -12,13 +12,11 @@ jobs:
       uses: actions/checkout@v4
       with:
        fetch-depth: 0
-    - name: Setup Nushell
-      uses: hustcer/setup-nu@v3.8
     - name: Create missing tags
       run: |
         git config --global user.name "$GITHUB_ACTOR"
         git config --global user.email "<>"
-        nu update.nu
+        node update.js
     - name: Push tags
       run: |
         git push --tags
