@@ -3,6 +3,14 @@
 import fs from 'fs';
 import { execSync } from 'child_process';
 
+const headers = {
+  'User-Agent': 'shopware tag updater',
+}
+
+if (process.env.GITHUB_TOKEN) {
+  headers['Authorization'] = `Bearer ${process.env.GITHUB_TOKEN}`;
+}
+
 /**
  * Update Shopware core to latest version
  * 
@@ -14,7 +22,9 @@ import { execSync } from 'child_process';
 async function update() {
   try {
     // Fetch tags from GitHub
-    const response = await fetch('https://api.github.com/repos/shopware/core/tags?per_page=50');
+    const response = await fetch('https://api.github.com/repos/shopware/core/tags?per_page=50', {
+      headers
+    });
     const tags = await response.json();
 
     // Process each tag
