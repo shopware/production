@@ -14,7 +14,7 @@ import { execSync } from 'child_process';
 async function update() {
   try {
     // Fetch tags from GitHub
-    const response = await fetch('https://api.github.com/repos/shopware/core/tags');
+    const response = await fetch('https://api.github.com/repos/shopware/core/tags?per_page=50');
     const tags = await response.json();
 
     // Process each tag
