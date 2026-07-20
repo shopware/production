@@ -46,6 +46,7 @@
     "prefer-stable": true,
     "config": {
         "allow-plugins": {
+            "php-http/discovery": false,
             "symfony/flex": true,
             "symfony/runtime": true
         },
